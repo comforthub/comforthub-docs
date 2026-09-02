@@ -73,7 +73,7 @@ These come from the Google and Microsoft style guides and from Diátaxis, cut do
 
 ## When a page gets written
 
-A handbook page is part of the definition of done for its Linear test. The deep test plan (`~/Downloads/Documents/business-flow-test-plan.md`, section "When to update the handbook") lists which pages belong to which milestone. When an issue passes, write or update its page before moving the issue to Done. A page nobody has tested against stays tagged TODO.
+A handbook page is part of the definition of done for its Linear test. The deep test plan (`~/Downloads/Documents/business-flow-test-plan.md`, section "When to update the handbook") lists which pages belong to which milestone. When an issue passes, write or update its page, commit, and only then move the issue to Done with a one-line comment naming the page. Docs and Linear move together in one sitting. A page nobody has tested against stays tagged TODO.
 
 ## Rules and gates
 
