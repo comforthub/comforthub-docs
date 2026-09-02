@@ -1,0 +1,7 @@
+export const NotWrittenYet = ({ issue }) => (
+  <Warning>
+    Not written yet. This page gets written when Linear issue{" "}
+    <a href={"https://linear.app/comforthub/issue/" + issue}>{issue}</a> passes.
+    Until then, the deep test plan next to <code>business-flow.md</code> is the best source.
+  </Warning>
+);

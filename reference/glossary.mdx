@@ -1,0 +1,32 @@
+---
+title: "Glossary"
+description: "Short definitions of the words the handbook uses, including the few technical ones"
+kind: reference
+---
+
+| Word | Means |
+|---|---|
+| **allowlist** | The short list of email addresses that mail is allowed to reach. Everything else is redirected to the owner. |
+| **asset** | A piece of equipment at a customer's property. Same thing as *equipment*. |
+| **billable, warranty, subscription** | The three kinds of line item. Only billable lines end up on an invoice. |
+| **billing decision** | Supabase looking at a work order's lines and marking it *draft* (to be invoiced) or *non-billable*. |
+| **crosswalk** | The table that remembers which Zoho record is which Supabase record. Rows are never deleted, only marked. |
+| **dead letter** | A queued job that failed too many times and was parked. An alert email tells you. |
+| **human-review flag** | A note the system leaves when the two sides disagree about money and a person must rule. |
+| **line item** | One part or one block of labour on a work order. |
+| **pay calendar** | The year's pay periods and holidays, parsed from ADP's PDF. Timesheets read it. |
+| **pay page** | The web page a customer opens from the invoice email to pay. Runs on Helcim. |
+| **push** | A notification on a technician's phone. |
+| **stocking order** | An order sent to a supplier for parts, made from a stock list. Not the same as a purchase order. |
+| **purchase order** | The supplier's paperwork from a counter pickup, recorded in the app. |
+| **required actions** | The rings at the top of a work order in the app: forms, serials, photos. All must be done before Complete. |
+| **sync** | The mirror between Zoho and Supabase. Two directions, one minute, never loops. |
+| **territory** | A map area. A property falls into one; technicians are scheduled by it. |
+| **the engine** | Supabase: the database and the automation around it. |
+| **webhook** | A message a vendor (QuickBooks, Stripe, Zoho, Twilio) sends us when something happened on their side. |
+| **widget** | A screen embedded inside Zoho, like the dispatch calendar. |
+
+## Related
+
+- [Names](/reference/names)
+- [Using these docs](/handbook/how-to-use-these-docs)

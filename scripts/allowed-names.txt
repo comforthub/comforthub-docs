@@ -1,0 +1,9 @@
+# Code-shaped words that are fine in prose. One per line, exact match.
+# Everything else that looks like a database or Zoho name fails the check,
+# except on pages with `raw-names: allowed` in the front matter (only reference/names).
+docs.json
+check.sh
+mint dev
+mint validate
+mint broken-links
+core.hooksPath

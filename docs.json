@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Ops Docs",
+  "name": "Comfort Hub handbook",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -9,18 +9,191 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "pages": [
+    "tabs": [
       {
-        "group": "Start here",
-        "pages": [
-          "index"
+        "tab": "Handbook",
+        "icon": "book-open",
+        "groups": [
+          {
+            "group": "Start here",
+            "pages": [
+              "index",
+              "handbook/how-to-use-these-docs",
+              "handbook/writing-here"
+            ]
+          },
+          {
+            "group": "The business",
+            "pages": [
+              "handbook/the-business/how-comfort-hub-runs",
+              "handbook/the-business/the-customer-lifecycle"
+            ]
+          },
+          {
+            "group": "New customers",
+            "pages": [
+              "handbook/new-customers/how-a-prospect-becomes-a-customer",
+              "handbook/new-customers/add-a-prospect",
+              "handbook/new-customers/convert-a-prospect",
+              "handbook/new-customers/fix-a-customer-that-did-not-set-up"
+            ]
+          },
+          {
+            "group": "Catalog, suppliers and staff",
+            "pages": [
+              "handbook/catalog-and-staff/what-lives-where",
+              "handbook/catalog-and-staff/add-a-product",
+              "handbook/catalog-and-staff/add-a-supplier",
+              "handbook/catalog-and-staff/add-a-technician",
+              "handbook/catalog-and-staff/author-a-checklist-template",
+              "handbook/catalog-and-staff/draw-a-service-territory"
+            ]
+          },
+          {
+            "group": "Booking",
+            "pages": [
+              "handbook/booking/how-booking-works",
+              "handbook/booking/book-a-work-order",
+              "handbook/booking/reschedule-or-restaff",
+              "handbook/booking/cancel-a-work-order",
+              "handbook/booking/assign-a-checklist"
+            ]
+          },
+          {
+            "group": "On site",
+            "pages": [
+              "handbook/on-site/a-visit-in-the-app",
+              "handbook/on-site/complete-a-work-order",
+              "handbook/on-site/answer-a-checklist",
+              "handbook/on-site/record-equipment",
+              "handbook/on-site/add-parts-and-labour",
+              "handbook/on-site/handle-a-no-show",
+              "handbook/on-site/quote-extra-work"
+            ]
+          },
+          {
+            "group": "Invoicing",
+            "pages": [
+              "handbook/invoicing/how-invoicing-works",
+              "handbook/invoicing/fix-an-invoice",
+              "handbook/invoicing/void-an-invoice",
+              "handbook/invoicing/certificates"
+            ]
+          },
+          {
+            "group": "Payments",
+            "pages": [
+              "handbook/payments/how-payments-work",
+              "handbook/payments/take-a-payment",
+              "handbook/payments/record-a-payment-in-quickbooks",
+              "handbook/payments/subscriptions"
+            ]
+          },
+          {
+            "group": "Parts and purchase orders",
+            "pages": [
+              "handbook/parts/how-ordering-parts-works",
+              "handbook/parts/order-stock",
+              "handbook/parts/raise-a-purchase-order",
+              "handbook/parts/record-a-return"
+            ]
+          },
+          {
+            "group": "Hours, time off and payroll",
+            "pages": [
+              "handbook/hours/how-timesheets-work",
+              "handbook/hours/load-the-payroll-calendar",
+              "handbook/hours/approve-timesheets-and-time-off",
+              "handbook/hours/file-hours-and-request-time-off"
+            ]
+          },
+          {
+            "group": "Phone and messages",
+            "pages": [
+              "handbook/phone/how-the-phone-works",
+              "handbook/phone/set-up-a-phone-agent",
+              "handbook/phone/change-hours-and-holidays",
+              "handbook/phone/handle-voicemail-and-callbacks",
+              "handbook/phone/text-a-customer",
+              "handbook/phone/transfer-and-record-calls"
+            ]
+          },
+          {
+            "group": "The app, day to day",
+            "pages": [
+              "handbook/app/the-app-tour",
+              "handbook/app/invite-someone-to-the-app",
+              "handbook/app/roles-and-what-they-can-do",
+              "handbook/app/tasks-and-notes",
+              "handbook/app/the-assistant"
+            ]
+          },
+          {
+            "group": "Keeping it running",
+            "pages": [
+              "handbook/running/how-sync-works",
+              "handbook/running/how-alerts-work",
+              "handbook/running/when-an-alert-email-arrives",
+              "handbook/running/fix-a-record-that-did-not-sync",
+              "handbook/running/redrive-a-dead-letter",
+              "handbook/running/resolve-a-human-review-flag",
+              "handbook/running/email-safety"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Systems",
+        "icon": "server",
+        "groups": [
+          {
+            "group": "The ecosystem",
+            "pages": [
+              "systems/how-it-all-fits-together",
+              "systems/who-is-the-source-of-truth",
+              "systems/environments-and-secrets"
+            ]
+          },
+          {
+            "group": "One page per system",
+            "pages": [
+              "systems/zoho-crm",
+              "systems/supabase-backend",
+              "systems/the-7am-app",
+              "systems/quickbooks",
+              "systems/pay-page",
+              "systems/stripe",
+              "systems/twilio",
+              "systems/resend",
+              "systems/the-assistant",
+              "systems/crm-widgets",
+              "systems/website-and-portal"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "icon": "table",
+        "groups": [
+          {
+            "group": "Look things up",
+            "pages": [
+              "reference/names",
+              "reference/glossary",
+              "reference/sync-rules-by-module",
+              "reference/statuses",
+              "reference/emails-we-send",
+              "reference/notifications-we-send",
+              "reference/scheduled-jobs",
+              "reference/alerts",
+              "reference/documents-and-pdfs",
+              "reference/repos-and-links"
+            ]
+          }
         ]
       }
     ]
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
   },
   "contextual": {
     "options": [
@@ -31,5 +204,10 @@
       "cursor",
       "vscode"
     ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/comforthub"
+    }
   }
 }

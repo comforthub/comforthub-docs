@@ -1,0 +1,54 @@
+---
+title: "Sync rules by module"
+description: "For each Zoho module: which way it flows, and what a delete in Zoho does on our side"
+kind: reference
+---
+
+Every module below is mirrored between Zoho and Supabase. Almost all flow both ways. The interesting column is the last one: what happens here when someone deletes the record in Zoho.
+
+| What a delete does | Meaning |
+|---|---|
+| **deactivate** | The row stays and is marked inactive. Nothing else is touched. |
+| **delete** | The row is removed, along with only the child rows it owns. |
+| **refuse and flag** | Nothing is written. A human-review flag is raised because this record moved money. The two systems now disagree until a person rules. |
+
+| Module | Flows up from Supabase? | On delete in Zoho |
+|---|---|---|
+| Contacts (customers) | yes | deactivate |
+| Accounts | yes | deactivate |
+| Prospects | yes | deactivate |
+| Properties | yes | deactivate |
+| Assets | yes | deactivate |
+| Products | yes | deactivate |
+| Stock materials | yes | deactivate |
+| Vendors (suppliers) | yes | deactivate |
+| Service territories | yes | deactivate |
+| Technicians | yes | deactivate |
+| Agents | yes | deactivate |
+| Subscriptions | yes | deactivate |
+| Supplier orders (purchase orders) | yes | delete |
+| Service appointments | yes | delete |
+| Timesheets and entries | yes | delete |
+| Time off requests and days | yes | delete |
+| Checklist templates | **no**, Zoho only | delete |
+| Assigned checklists | yes | delete |
+| Checklist submissions | yes | delete |
+| Payroll | yes | delete |
+| Call history | yes | delete |
+| Email tracking | yes | delete |
+| Record lock history | yes | delete |
+| Work orders and line items | yes | **refuse and flag** |
+| Invoices | yes | **refuse and flag** |
+| Payments | yes | **refuse and flag** |
+| Subscription payments | yes | **refuse and flag** |
+
+## Two rules that apply to every module
+
+- **A locked record in Zoho is a one-way door.** A change made here is skipped and noted, and nothing alarms. Unlocking is the office's call.
+- **A change never bounces.** When the sync writes a record, it marks the write as its own so the other side does not push it straight back.
+
+## Related
+
+- [How sync works](/handbook/running/how-sync-works)
+- [Who is the source of truth](/systems/who-is-the-source-of-truth)
+- [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync)

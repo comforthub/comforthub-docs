@@ -1,0 +1,11 @@
+export const Touches = ({ systems }) => (
+  <p>
+    <strong>Systems involved:</strong>{" "}
+    {systems.split(",").map((s, i) => (
+      <span key={s}>
+        {i > 0 ? " · " : ""}
+        <a href={"/systems/" + s.trim()}>{s.trim().replace(/-/g, " ")}</a>
+      </span>
+    ))}
+  </p>
+);

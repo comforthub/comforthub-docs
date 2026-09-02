@@ -1,0 +1,31 @@
+# One phrase per line. The check fails on any of these, case-insensitive.
+# They read as machine-written or as filler. Say the plain thing instead.
+leverage
+utilize
+utilise
+seamless
+seamlessly
+robust
+in order to
+it is important to note
+it's important to note
+it is worth noting
+it's worth noting
+note that
+please note
+delve
+streamline
+cutting-edge
+state-of-the-art
+facilitate
+a wide range of
+as mentioned above
+furthermore
+moreover
+additionally,
+comprehensive
+holistic
+empower
+unlock the
+best practices
+end-to-end

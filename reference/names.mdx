@@ -1,0 +1,61 @@
+---
+title: "Names"
+description: "What we call each thing, and what Zoho and Supabase call it. The only page where code names are allowed"
+kind: reference
+raw-names: allowed
+---
+
+Use the first column everywhere in the handbook. The other columns exist so you can find the record when you are inside a tool. This is the one page the check allows code names on.
+
+| We say | In Zoho | In Supabase |
+|---|---|---|
+| customer | Contacts | core.customers |
+| account | Accounts | core.accounts |
+| prospect | Prospects | sales.prospects |
+| property | Properties | core.properties |
+| equipment, asset | Assets | core.assets |
+| product | Products | catalog.items |
+| stock material | Stock_Materials | catalog.materials |
+| supplier | Vendors | catalog.suppliers |
+| purchase order | Supplier_Orders | operations.purchase_orders |
+| work order | Work_Orders | operations.workorders |
+| line item | Work_Order_Items (a subform) | operations.workorder_line_items |
+| appointment | Service_Appointments | operations.service_appointments |
+| territory | Service_Territories | scheduling.territories |
+| technician | Technicians | scheduling.technicians |
+| phone agent | Agents | communication.agents |
+| invoice | Invoices | billing.invoices |
+| payment | Payments | billing.payment_transactions |
+| subscription | Subscriptions | billing.subscriptions |
+| subscription payment | Subscription_Payments | billing.subscription_payments |
+| checklist template | Checklist_Templates | checklists.templates |
+| assigned checklist | Assigned_Checklists | checklists.crm_assigned_checklists |
+| checklist submission | Checklist_Submissions | checklists.assigned_checklists |
+| timesheet | Timesheets | app.timesheets |
+| time off request | Time_Off_Requests | app.time_off_requests |
+| payroll calendar | Payroll | payroll.schedules, payroll.pay_periods |
+| call | Call_History | communication.calls |
+| email | Email_Tracking | communication.email_messages |
+| record lock | Record_Lock_History | communication.record_locks |
+| quote | (not in Zoho) | operations.work_order_quotes |
+| stock list | (not in Zoho) | app.stock_lists |
+| task, note | (not in Zoho) | operations.tasks, app.notes |
+| app user | (not in Zoho) | app.users |
+
+## Statuses people say
+
+| We say | Means |
+|---|---|
+| draft | the work order will be invoiced when complete |
+| non-billable | nothing on the job is billable; no invoice will be made |
+| invoiced | the invoice exists in QuickBooks and Zoho |
+| paid, partially paid | what QuickBooks told us |
+| void | the invoice was cancelled everywhere |
+
+The full list is on [Statuses](/reference/statuses).
+
+## Related
+
+- [Glossary](/reference/glossary)
+- [Who is the source of truth](/systems/who-is-the-source-of-truth)
+- [Sync rules by module](/reference/sync-rules-by-module)

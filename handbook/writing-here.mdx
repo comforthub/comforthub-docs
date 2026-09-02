@@ -1,0 +1,51 @@
+---
+title: "Writing here"
+description: "Add or change a page without breaking the rules the check enforces"
+kind: how-to
+---
+
+## Before you start
+
+- The `mint` command installed (`npm i -g mint`) so you can preview and validate.
+- The git hook wired once per clone: `git config core.hooksPath scripts/githooks`.
+- A clear answer to "is this page an explanation, a how-to, or a reference?" If you cannot answer, it is two pages.
+
+## Steps
+
+<Steps>
+  <Step title="Copy a template">
+    Copy the matching file from `templates/` into the right folder. The folders mirror the menu: `handbook/`, `systems/`, `reference/`.
+  </Step>
+  <Step title="Fill the front matter">
+    Every page needs `title`, `description`, and `kind` (`explanation`, `how-to`, `reference`, or `hub`). Leave `tag: "TODO"` on until the page is finished, then delete that line.
+  </Step>
+  <Step title="Write it like you would say it">
+    Short sentences. "You", not "the user". Say *customer* and *work order*, never the code names. If you must show a code name, it goes on the [Names](/reference/names) page, nowhere else.
+  </Step>
+  <Step title="End with Related">
+    Every page ends with a `## Related` list of at least one link: the explanation page for its chapter, the system pages it touches, or the reference tables it leans on.
+  </Step>
+  <Step title="Put it in the menu">
+    Add the path to `docs.json` under the right tab and group. A page not in the menu fails the check.
+  </Step>
+  <Step title="Run the check">
+    ```bash
+    bash scripts/check.sh
+    ```
+    It reads every page. It fails on a missing title or kind, a page not in the menu, a broken link, a code name outside the Names page, a robotic phrase, a Title Case Heading, or anything that looks like a secret.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+`scripts/check.sh` prints `ok`, and `mint dev` shows the page in the menu where you expect it, without a TODO badge.
+
+## When a page gets written
+
+A handbook page is part of the definition of done for its Linear test. When an issue in *Walk the whole business* passes, the page it names is written or updated before the issue is moved to Done. The deep test plan next to `business-flow.md` lists which pages belong to which milestone.
+
+## Related
+
+- [Using these docs](/handbook/how-to-use-these-docs)
+- [Names](/reference/names)
+- [Repos and links](/reference/repos-and-links)

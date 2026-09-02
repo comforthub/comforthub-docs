@@ -1,0 +1,39 @@
+---
+title: "Who is the source of truth"
+description: "For every kind of record, which system owns it and which side wins when they disagree"
+kind: reference
+---
+
+When two systems both hold a record, one of them is the owner. An edit on the owner's side sticks. An edit on the other side is either carried over, or overwritten the next time the owner speaks.
+
+| Record | Owner | Also lives in | Notes |
+|---|---|---|---|
+| Prospect | Zoho | Supabase | Converting one is done in Zoho |
+| Customer, account, property | Zoho and Supabase, last edit wins | QuickBooks (customer only) | Address changes flow to QuickBooks |
+| Equipment (asset) | Zoho and Supabase, last edit wins | | The app can add and edit them on site |
+| Work order and its lines | Zoho and Supabase, last edit wins | | The app writes lines; the billing decision is made in Supabase |
+| Appointment | Zoho and Supabase, last edit wins | | The app marks no-show and complete |
+| Checklist template | Zoho | Supabase (read-only copy) | Author in Zoho only |
+| Checklist answers | Supabase (the app) | Zoho gets the submission | |
+| Invoice | Zoho owns the amount; Supabase builds it | QuickBooks | An amount edited only in Supabase is overwritten |
+| Payment | QuickBooks | Supabase, Zoho | QuickBooks tells us; we never invent one |
+| Subscription | Stripe | Supabase, Zoho | |
+| Product (catalog item) | Zoho | Supabase, QuickBooks item | |
+| Stock material, supplier | Zoho | Supabase | |
+| Technician | Zoho | Supabase | The app login is separate and made by hand today |
+| Phone agent | Zoho | Supabase | The Twilio side is made by hand today |
+| Timesheet, time off | The app | Zoho | Approvals can happen on either side |
+| Purchase order | The app | Zoho | One made in Zoho comes down too |
+| Payroll calendar | Zoho (the parsed PDF) | Supabase | |
+| Calls, voicemail, texts | Supabase (from Twilio) | Zoho gets call history | |
+| Emails we send | Supabase | Not in Zoho yet | Known gap |
+
+## What happens on delete
+
+Deleting in Zoho does one of three things, fixed per module. See [Sync rules by module](/reference/sync-rules-by-module).
+
+## Related
+
+- [How sync works](/handbook/running/how-sync-works)
+- [Names](/reference/names)
+- [How it all fits together](/systems/how-it-all-fits-together)

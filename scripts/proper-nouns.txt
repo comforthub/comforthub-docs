@@ -1,0 +1,31 @@
+# Words allowed to be capitalised inside a heading. One per line.
+# The check flags a heading whose later words are capitalised, because headings are sentence case.
+Comfort
+Hub
+Zoho
+CRM
+Supabase
+QuickBooks
+Helcim
+Stripe
+Twilio
+Resend
+Linear
+GitHub
+Google
+Apple
+ADP
+PDF
+PDFs
+SMS
+PO
+ID
+TODO
+Complete
+Converted
+Draft
+Non-Billable
+Related
+Street
+View
+7AM

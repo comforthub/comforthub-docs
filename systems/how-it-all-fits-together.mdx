@@ -1,0 +1,74 @@
+---
+title: "How it all fits together"
+description: "The map of every system, what flows between them, and which way"
+kind: explanation
+---
+
+There are nine systems. Two of them, Zoho and Supabase, are the spine. Everything else hangs off Supabase.
+
+```mermaid
+%%{init: {'flowchart': {'defaultRenderer': 'elk'}}}%%
+flowchart LR
+  subgraph office [The office]
+    Z[Zoho CRM]
+    WG[Widgets inside Zoho]
+  end
+  subgraph engine [The engine]
+    S[(Supabase)]
+  end
+  subgraph field [The field]
+    APP[7AM app]
+  end
+  subgraph money [Money]
+    QB[QuickBooks]
+    PAY[Pay page on Helcim]
+    ST[Stripe]
+  end
+  subgraph reach [Reaching people]
+    TW[Twilio phone and texts]
+    RS[Resend email]
+    PUSH[Push notifications]
+  end
+  AS[The assistant]
+
+  Z <-->|two-way sync, 27 modules| S
+  WG -->|writes Zoho fields| Z
+  APP <-->|reads views, writes tables| S
+  S -->|customers, items, invoices| QB
+  QB -->|payment happened| S
+  PAY -->|paid| S
+  ST -->|subscription events| S
+  S <-->|calls, voicemail, texts| TW
+  S -->|booking, invoice, receipt, alerts| RS
+  S -->|appointments, approvals, messages| PUSH --> APP
+  AS -->|proposals to approve| S
+```
+
+## Reading the map
+
+- **Zoho and Supabase mirror each other.** A change on either side crosses over within a minute. Which side wins for each field is fixed in advance; see [Who is the source of truth](/systems/who-is-the-source-of-truth).
+- **The widgets never write to Supabase.** They write a Zoho field, and the sync carries it over. That keeps one door into the engine.
+- **The app talks only to Supabase.** It reads prepared views and writes a small set of tables. It never talks to Zoho or QuickBooks directly.
+- **QuickBooks is told about invoices and tells us about payments.** The pay page records the payment in Supabase and QuickBooks; the QuickBooks webhook is what starts the receipt.
+- **Email goes out through one door**, and that door redirects every message to the owner's inbox until the allowlist is widened on purpose. See [Email safety](/handbook/running/email-safety).
+
+## The systems
+
+<Columns cols={2}>
+  <Card title="Zoho CRM" href="/systems/zoho-crm">The office's system of record.</Card>
+  <Card title="The Supabase backend" href="/systems/supabase-backend">Database, sync, workers, functions.</Card>
+  <Card title="The 7AM app" href="/systems/the-7am-app">The technicians' iPhone app.</Card>
+  <Card title="QuickBooks" href="/systems/quickbooks">Customers, items, invoices, payments.</Card>
+  <Card title="The pay page" href="/systems/pay-page">Where a customer pays an invoice.</Card>
+  <Card title="Stripe" href="/systems/stripe">Subscriptions only.</Card>
+  <Card title="Twilio" href="/systems/twilio">The phone line and texts.</Card>
+  <Card title="Resend" href="/systems/resend">Transactional email.</Card>
+  <Card title="The assistant" href="/systems/the-assistant">Drafts email replies for approval.</Card>
+  <Card title="CRM widgets" href="/systems/crm-widgets">Screens embedded in Zoho.</Card>
+</Columns>
+
+## Related
+
+- [How Comfort Hub runs](/handbook/the-business/how-comfort-hub-runs)
+- [Who is the source of truth](/systems/who-is-the-source-of-truth)
+- [Environments and secrets](/systems/environments-and-secrets)

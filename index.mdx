@@ -1,33 +1,39 @@
 ---
 title: "Start here"
-description: "What these docs are, who they are for, and how to add to them"
+description: "The handbook for how Comfort Hub runs, written so you can forget things safely"
+kind: hub
 ---
 
-These docs explain the projects that run the business. What each one does, how it is operated day to day, and what to do when something goes wrong.
+This is the handbook for the systems that run Comfort Hub: Zoho, Supabase, the 7AM app, QuickBooks, the pay page, Stripe, Twilio and the email service. It says what each process does, how to do the everyday tasks, and what to do when something breaks.
 
-They are written for people first. Plain words. Short pages. When a page needs a technical term, it explains the term the first time it appears.
+It is written for the owner and the developers, not for customers. It uses plain words and the names people say out loud, never the names the databases use inside.
 
-## One page, one job
+## Pick a door
 
-Every page is one of three kinds. Do not mix them on one page.
+<Columns cols={3}>
+  <Card title="Handbook" icon="book-open" href="/handbook/the-business/how-comfort-hub-runs">
+    The business, one process at a time. Start with how it runs, then go chapter by chapter.
+  </Card>
+  <Card title="Systems" icon="server" href="/systems/how-it-all-fits-together">
+    One page per system, and the map of how they talk to each other.
+  </Card>
+  <Card title="Reference" icon="table" href="/reference/names">
+    Tables to look things up: names, statuses, emails, jobs, alerts.
+  </Card>
+</Columns>
 
-- **How-to**: do one task, step by step. Start with what you need, end with how you know it worked.
-- **Reference**: the facts, laid out to be looked up. No stories, no opinions.
-- **Explanation**: why something works the way it does, and what the trade-offs were.
+## How the handbook is arranged
 
-## Adding a page
+The **Handbook** tab follows the order the business runs: a new customer, then booking, then the visit, then the invoice, then the payment, and on to parts, hours, the phone, and keeping it all running. Each chapter opens with one page that explains how that part works, then has short pages for each task.
 
-<Steps>
-  <Step title="Write the page">
-    Create an `.mdx` file with a `title` and a one-line `description` at the top.
-  </Step>
-  <Step title="Put it in the menu">
-    Add the file path to `docs.json` under `navigation`. A page that is not in the menu cannot be found.
-  </Step>
-  <Step title="Run the check">
-    ```bash
-    bash scripts/check.sh
-    ```
-    It fails if a page is missing a title, is not in the menu, has a broken link, or contains something that looks like a secret.
-  </Step>
-</Steps>
+The **Systems** tab is the same story told by system instead of by process. Go there when you are inside one tool and want to know what it owns and what it talks to.
+
+The **Reference** tab is for looking things up. No stories, just the facts in tables.
+
+## Pages marked TODO
+
+A page with a **TODO** tag in the menu is not written yet. It gets written the day its process is tested and passes. The test list lives in Linear, in the project *Walk the whole business*.
+
+## If you want to add to this
+
+Read [Writing here](/handbook/writing-here). It is short. The rules exist so that you in three months can still read what you in three months ago wrote.
