@@ -22,7 +22,7 @@ How to work in this docs repo. Read it before editing anything.
 
 ## Rules and gates
 
-`scripts/check.sh` is the gate. Run it before every commit, or wire it once with `git config core.hooksPath scripts/githooks`. It also runs on every push in GitHub. It fails when:
+`scripts/check.sh` is the gate. Run it before every commit, or wire it once with `git config core.hooksPath scripts/githooks`. It fails when:
 
 1. A page has no `title` or `description`.
 2. A page exists but is not in `docs.json`, or `docs.json` lists a page that does not exist.
