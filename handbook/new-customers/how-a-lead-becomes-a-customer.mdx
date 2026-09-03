@@ -40,6 +40,7 @@ The customer, the account and the properties are ordinary two-way records from t
 - An email change in Zoho reached our side in 2 seconds, and QuickBooks a second later.
 - An account name change in either direction crossed in 2 seconds.
 - A postal code change on our side, and a city change in Zoho, each crossed in 2 seconds.
+- A street change on the service property in Zoho reached our side in 2 seconds and the QuickBooks customer's shipping address 2 seconds after that. The service address is the shipping address in QuickBooks; the billing property is the billing address.
 
 One thing to know: if the same record is edited on both sides within a few seconds, the side that pushes last wins and the other edit is lost. That happened once during the test, when a Zoho email edit landed 2 seconds before a push from our side. Edit one side, wait a few seconds, then the other.
 
