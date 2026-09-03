@@ -2,11 +2,54 @@
 title: "How a lead becomes a customer"
 description: "What happens the moment a lead is marked Converted, and where each record ends up"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-12" />
+<Touches systems="zoho-crm, supabase-backend, quickbooks" />
 
-The provisioning run: Contact, Account, Property, QuickBooks customer, Street View, territory.
+The moment a lead's **Status** is saved as **Converted** in Zoho, the engine sets the customer up everywhere at once. Nobody types the customer into Zoho or QuickBooks. Tested 2 September 2026 on a lead with a billing address different from its service address: the whole run took 11 seconds, and the pictures and territories were on the properties 4 seconds after that.
+
+## What gets created
+
+| Record | Where | What it carries |
+|---|---|---|
+| Customer | Our side | The lead's name, email and phone, and a pointer back to the lead |
+| Contact | Zoho | Same name, email and phone; linked to the account and to both addresses; shows the QuickBooks customer number in **QBO Id** |
+| Account | Zoho and our side | Named after the person; linked to the contact and to both addresses |
+| Property (service address) | Zoho and our side | The service address; linked to the account |
+| Property (billing address) | Zoho and our side | Only when billing differs from service. Same address, same links |
+| Customer | QuickBooks | Name, email, phone and addresses, so an invoice can be raised later |
+
+Each new property then gets its own follow-up: a map position, a Street View picture and a **Major Service Area** (the territory). See [A new property gets its picture and territory](/handbook/new-customers/convert-a-lead#how-you-know-it-worked) for what that looks like in Zoho.
+
+## It runs once
+
+A lead that already has its customer is left alone. Setting **Status** back to **New** and then to **Converted** again was tested: nothing new was made, and nothing was changed. The safety catch is on our side, so it holds no matter who flips the status or how many times.
+
+## What the lead shows afterwards
+
+- **Supabase Lead Id** fills in on the lead. That is the only visible change to the lead in Zoho.
+- The lead does not link to its new Contact in Zoho. The link exists on our side only. If you need to get from a lead to its contact in Zoho, search Contacts by the email.
+
+## After the conversion
+
+The customer, the account and the properties are ordinary two-way records from then on. Tested the same day, one edit each way on each of the three:
+
+- A phone change on our side reached the Zoho contact in 4 seconds, and QuickBooks in the same run.
+- An email change in Zoho reached our side in 2 seconds, and QuickBooks a second later.
+- An account name change in either direction crossed in 2 seconds.
+- A postal code change on our side, and a city change in Zoho, each crossed in 2 seconds.
+
+One thing to know: if the same record is edited on both sides within a few seconds, the side that pushes last wins and the other edit is lost. That happened once during the test, when a Zoho email edit landed 2 seconds before a push from our side. Edit one side, wait a few seconds, then the other.
+
+## What the engine refuses
+
+Unverified in the live system, but written into the engine: a lead with no email or with an incomplete service address is not converted, and the reason is recorded. [Fix a customer that did not set up properly](/handbook/new-customers/fix-a-customer-that-did-not-set-up) will cover reading that reason once it has been tested.
+
+## Related
+
+- [Convert a lead into a customer](/handbook/new-customers/convert-a-lead)
+- [Add a lead](/handbook/new-customers/add-a-lead)
+- [Who is the source of truth](/systems/who-is-the-source-of-truth)
+- [QuickBooks](/systems/quickbooks)

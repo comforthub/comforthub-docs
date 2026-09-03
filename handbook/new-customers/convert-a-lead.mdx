@@ -2,11 +2,57 @@
 title: "Convert a lead into a customer"
 description: "Turn a lead into a customer with all their records created once"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-12" />
+<Touches systems="zoho-crm, supabase-backend, quickbooks" />
 
-The Converted flag and what to check afterwards.
+Converting is one field change. You set the lead's **Status** to **Converted** and save. The engine makes the Contact, the Account, the Property or Properties and the QuickBooks customer, and links them all. Do not use Zoho's own **Convert** button: the engine only watches **Status**, and what the button does to our side has not been tested.
+
+## Before you start
+
+- The lead has an email, a phone and a complete service address: street, city, province, postal code and country.
+- If the customer is billed somewhere else, the billing address is filled in too. A different billing address makes a second property; a blank one does not.
+- The email is lowercase.
+
+## Steps
+
+<Steps>
+  <Step title="Open the lead">
+    In **Leads**, open the lead. Check the addresses one more time; they become the property records exactly as typed.
+  </Step>
+  <Step title="Set the status">
+    Set **Status** to **Converted** and click **Save**.
+  </Step>
+  <Step title="Wait a moment">
+    Give it 15 seconds, then refresh the lead.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- **Supabase Lead Id** on the lead is filled in.
+- In **Contacts** there is one contact with the lead's name. It shows a **QBO Id**, an **Account Name**, a **Service Address** and a **Billing Address**.
+- In **Accounts** there is one account with the same name, linked to the contact and to the same addresses.
+- In **Properties** there is one property per distinct address. Each shows a **Latitude** and **Longitude**, a picture of the house, and a **Major Service Area**.
+- In QuickBooks there is one customer with that name.
+
+Tested 2 September 2026: all of this was in place 15 seconds after Save.
+
+## If it did not work
+
+- **Nothing appeared after a minute.** The lead is probably missing an email or part of the service address. Fill it in, set **Status** to **New**, save, then set it to **Converted** again. The engine only runs on the change to **Converted**.
+- **Something appeared but not all of it.** See [Fix a customer that did not set up properly](/handbook/new-customers/fix-a-customer-that-did-not-set-up).
+
+## Good to know
+
+- Converting the same lead twice does nothing the second time. There will never be two contacts or two QuickBooks customers for one lead.
+- The lead stays in **Leads** with **Status** Converted. It is not moved or deleted.
+- From here on, edit the contact, account and property, not the lead. Changes to the lead after conversion do not reach the customer records.
+
+## Related
+
+- [How a lead becomes a customer](/handbook/new-customers/how-a-lead-becomes-a-customer)
+- [Add a lead](/handbook/new-customers/add-a-lead)
+- [Fix a customer that did not set up properly](/handbook/new-customers/fix-a-customer-that-did-not-set-up)
