@@ -30,12 +30,12 @@ A lead is a person who might become a customer. You add them in Zoho, in the **L
 ## How you know it worked
 
 - Honestly, Zoho shows you nothing. The **Supabase Lead Id** field stays blank for a lead made in Zoho; it only fills in when the engine created the record itself. The copy is on our side, and only a developer can look.
-- Tested 2 September 2026 on a lead typed into Zoho: the copy arrived with both names, email, phone, both address blocks, province, country, source, notes and interests, all matching. An edit made on our side reached Zoho in under two seconds, and Zoho's own notification of that edit came back without causing a second push.
+- Tested 2 September 2026 on a lead typed into Zoho: the copy arrived with the name, email, phone, both address blocks, province, country, source, notes and interests, all matching. An edit made on our side reached Zoho in two seconds; an edit made in Zoho reached our side in two seconds; a delete in Zoho switched the row off in one.
 
 ## If it did not work
 
 - **Someone says the lead is missing on our side.** The two usual causes: a capital letter in the email, or the sync being stopped. See [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync).
-- **The lead shows as inactive.** You did not tick **Is Active**. Tick it in Zoho; the change crosses over.
+- **The lead shows as inactive on our side.** It was deleted in Zoho. A deleted lead is never removed here, only switched off.
 
 ## Good to know
 
