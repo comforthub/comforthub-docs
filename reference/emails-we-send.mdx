@@ -2,9 +2,23 @@
 title: "Emails we send"
 description: "Every email the system sends, who gets it, what triggers it, and what is attached"
 kind: reference
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+Every customer email goes through one sender that checks the address first: only our own addresses and our alias domain are delivered to as written; anything else is redirected to the operator with "[TEST → …]" in the subject. See [Email safety](/handbook/running/email-safety).
 
-<NotWrittenYet issue="COM-35" />
+| Email | Subject | To | When | Attached | Seen |
+|---|---|---|---|---|---|
+| Booking confirmation | Your Comfort Hub appointment on … | customer | appointment booked with Notify Client on | none; add-to-calendar link | 3 Sep 2026 |
+| Appointment moved | Your Comfort Hub appointment has moved to … | customer | date changed | none | 3 Sep 2026 |
+| Invoice | Invoice INV… from Comfort Hub | customer | invoice reaches QuickBooks | invoice PDF; pay link | 3 Sep 2026 |
+| Receipt | Payment received for INV… | customer | invoice fully paid | receipt PDF | 3 Sep 2026 |
+| Quote | Your Comfort Hub quote for WO… | customer | technician sends a quote | none; approve button | being built |
+| Dead-letter alert | [ops] a message died in … | operator | a message dies in a queue | none | 3 Sep 2026 |
+
+Not sent today: an appointment reminder the day before, and invoice reminders.
+
+## Related
+
+- [How booking works](/handbook/booking/how-booking-works)
+- [How invoicing works](/handbook/invoicing/how-invoicing-works)
+- [Resend](/systems/resend)

@@ -2,9 +2,37 @@
 title: "Void an invoice"
 description: "Cancel an invoice everywhere it exists"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-64" />
+<Touches systems="zoho-crm, supabase-backend, quickbooks" />
+
+An invoice is voided from Zoho. The engine voids it in QuickBooks and files a VOID copy of the PDF.
+
+## Before you start
+
+- The invoice open in Zoho, unpaid. A paid invoice is not voided this way.
+
+## Steps
+
+<Steps>
+  <Step title="Set the status">
+    Set **Status** to **Void** and save.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- Tested 3 September 2026 on INV008344: our side was Void in 2 seconds, QuickBooks voided the invoice 1 second later, and the VOID PDF was stored 6 seconds after that.
+- The pay page for that invoice shows it as void and offers no pay button.
+
+## Good to know
+
+- Cancelling an invoiced work order voids its invoice the same way.
+- The work order keeps saying Invoiced after a void. Known.
+
+## Related
+
+- [How invoicing works](/handbook/invoicing/how-invoicing-works)
+- [Cancel a work order](/handbook/booking/cancel-a-work-order)

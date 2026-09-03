@@ -2,9 +2,39 @@
 title: "Reschedule or restaff an appointment"
 description: "Move a visit to another day or another technician"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-36" />
+<Touches systems="zoho-crm, supabase-backend, resend, the-7am-app" />
+
+Both are done on the appointment in Zoho. A move sends the customer a new notice; a new technician gets the stop on their phone.
+
+## Before you start
+
+- The appointment open in Zoho.
+
+## Steps
+
+<Steps>
+  <Step title="Move it">
+    Change **Scheduled Date** and, if needed, **Arrival Time Slot**. Save.
+  </Step>
+  <Step title="Restaff it">
+    Change the technician in **Assigned Technicians**, and change one other field on the record with it (the widget does this for you). A technician change alone does not reach our side today; see below.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- Tested 3 September 2026: the new date was on our side in 2 seconds and "Your Comfort Hub appointment has moved to …" went out 1 second later. No second confirmation was sent.
+- The new technician's phone gets a push, and the old one no longer sees the stop. Needs a technician with the app.
+
+## If it did not work
+
+- **The technician did not change on our side.** Only the technician was changed. Change any other field on the appointment and save again. Known, being fixed.
+
+## Related
+
+- [How booking works](/handbook/booking/how-booking-works)
+- [Book a work order](/handbook/booking/book-a-work-order)

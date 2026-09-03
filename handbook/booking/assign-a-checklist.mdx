@@ -2,9 +2,41 @@
 title: "Assign a checklist to a visit"
 description: "Attach the right form to an appointment so it matches the right equipment"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-34" />
+<Touches systems="zoho-crm, supabase-backend, the-7am-app" />
+
+A checklist template attached to an appointment becomes the form the technician fills on site. The engine picks the piece of equipment it belongs to: the one already on the work order of that type, or failing that the newest one of that type the customer owns.
+
+## Before you start
+
+- The appointment exists in Zoho.
+- A template for that equipment type exists; see [Author a checklist template](/handbook/catalog-and-staff/author-a-checklist-template).
+
+## Steps
+
+<Steps>
+  <Step title="Attach the template">
+    On the appointment in Zoho, add the template in the **Checklist** list (the widget does this in the wizard).
+  </Step>
+  <Step title="Save the appointment">
+    Attaching alone does not wake our side. Save the appointment itself, for example by touching its duration, or let the widget save it as it does.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- Tested 3 September 2026: the assignment appeared on our side 2 seconds after the appointment was saved, matched to the furnace already on the work order rather than a newer one.
+- In the app the technician sees the checklist on the appointment.
+
+## Good to know
+
+- Removing the template from the appointment removes a checklist that has not been started. A completed one is kept.
+- Cancelling the work order removes the not-yet-started checklists too.
+
+## Related
+
+- [How booking works](/handbook/booking/how-booking-works)
+- [Answer a checklist](/handbook/on-site/answer-a-checklist)

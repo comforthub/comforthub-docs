@@ -2,9 +2,19 @@
 title: "Certificates"
 description: "Which jobs produce a certificate, where it is stored, and who gets it"
 kind: reference
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+A certificate is a PDF the engine writes when a maintenance or commissioning job is completed. It lists the equipment and the readings the technician took.
 
-<NotWrittenYet issue="COM-62" />
+| Job type | Certificate | Where it goes | Tested |
+|---|---|---|---|
+| Maintenance | Certificate of Maintenance | stored on the work order; attached to the Zoho work order | 3 Sep 2026, 9 s after completion |
+| Commissioning | Certificate of Commissioning | same | not yet |
+| Service, installation, warranty | none | | |
+
+The certificate is not sent with the invoice email today; that email carries the invoice PDF only. Readings come from the completed checklist; a checklist completed without readings gives a certificate with none.
+
+## Related
+
+- [How invoicing works](/handbook/invoicing/how-invoicing-works)
+- [Answer a checklist](/handbook/on-site/answer-a-checklist)

@@ -2,11 +2,31 @@
 title: "How payments work"
 description: "From the pay page or QuickBooks to a paid invoice, a receipt, and a paid work order"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-69" />
+<Touches systems="pay-page, quickbooks, supabase-backend, zoho-crm, resend" />
 
-The pay page runs on Helcim. QuickBooks is what tells us a payment happened.
+QuickBooks is the one that tells us a payment happened. Whether the customer paid on the pay page (Helcim) or the office recorded a payment in QuickBooks, the same thing follows: QuickBooks sends us the payment, and the engine does the rest.
+
+## What follows a payment
+
+Seen on 3 September 2026, two payments on a $5.65 invoice:
+
+| After | Our side | Zoho | Email |
+|---|---|---|---|
+| $2.00, first | payment recorded with its receipt PDF; invoice Partial, $3.65 due | a Payment on the invoice | none, on purpose |
+| $3.65, second | invoice Paid, paid-on date set; work order Paid | a second Payment; the paid PDF attached to the invoice | "Payment received for INV…" with the receipt |
+
+Each step landed within 13 seconds of the payment.
+
+## The pay page
+
+The pay link in the invoice email opens the invoice with its lines, total and PDF. Paying there records the payment in QuickBooks, and QuickBooks tells us as above.
+
+## Related
+
+- [Record a payment in QuickBooks](/handbook/payments/record-a-payment-in-quickbooks)
+- [How invoicing works](/handbook/invoicing/how-invoicing-works)
+- [The pay page](/systems/pay-page)

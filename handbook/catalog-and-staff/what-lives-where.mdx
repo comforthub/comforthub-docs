@@ -2,11 +2,36 @@
 title: "What lives where"
 description: "Products, materials, suppliers, technicians, territories, checklist templates and agents: which system owns each"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-21" />
+<Touches systems="zoho-crm, supabase-backend, quickbooks, the-7am-app" />
 
-The setup data and its home.
+Everything the business runs on is typed into Zoho once. The engine copies it to our side within seconds, and for the things money touches it makes the QuickBooks record too. Nobody types setup data into QuickBooks or the app.
+
+| Setup data | Typed in | Copied to | Also made in | Tested |
+|---|---|---|---|---|
+| Product (something we sell) | Zoho | our catalog, 3 s | QuickBooks item, 5 s | 3 Sep 2026 |
+| Stock material | Zoho | our side, 5 s; the app's material search | | 3 Sep 2026 |
+| Supplier and its branches | Zoho | our side, 2 s; each branch gets a Street View picture | | 3 Sep 2026 |
+| Technician | Zoho | our side, 2 s | app login: by hand today | 3 Sep 2026 |
+| Service territory | Zoho | our side, 2 s | | partly, see below |
+| Checklist template | Zoho | our side with its questions, 2 s | | 3 Sep 2026 |
+| Phone agent | Zoho | our side | phone line: not built | gap |
+
+## Edits and deletes
+
+A price change on a product reaches QuickBooks in 3 seconds. Deleting a product in Zoho switches it off on our side and makes the QuickBooks item inactive; nothing is ever removed. A rename of a territory or technician crosses in 2 seconds.
+
+## What does not cross yet
+
+- A technician's email and home location stay in Zoho.
+- A territory's active flag has nowhere to go: Zoho's territory module has no such box. The time windows a territory allows are not carried either, and there is no way to draw its map area outside a developer's hands. See [Draw a service territory](/handbook/catalog-and-staff/draw-a-service-territory).
+- A phone agent needs a phone line and an extension that nothing sets up yet.
+
+## Related
+
+- [Add a product](/handbook/catalog-and-staff/add-a-product)
+- [Add a supplier and its branches](/handbook/catalog-and-staff/add-a-supplier)
+- [Who is the source of truth](/systems/who-is-the-source-of-truth)

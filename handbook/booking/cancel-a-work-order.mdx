@@ -2,9 +2,33 @@
 title: "Cancel a work order"
 description: "Cancel a job and know what gets cleaned up and what gets voided"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-38" />
+<Touches systems="zoho-crm, supabase-backend, quickbooks, the-7am-app" />
+
+Cancel the work order in Zoho and the engine cleans up behind it: appointments are cancelled here and in Zoho, checklists that were never started are removed, and an invoice that was already made is voided.
+
+## Before you start
+
+- The work order open in Zoho.
+
+## Steps
+
+<Steps>
+  <Step title="Set the status">
+    Set **Status** to **Cancelled** and save.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- Tested 3 September 2026 on WO459: the work order was cancelled on our side in 2 seconds, its appointment was cancelled here and written back to Zoho as Cancelled, and its pending checklist was gone.
+- The technician's phone gets a cancelled push.
+- If the job was already invoiced, the invoice is voided; see [Void an invoice](/handbook/invoicing/void-an-invoice).
+
+## Related
+
+- [How booking works](/handbook/booking/how-booking-works)
+- [Void an invoice](/handbook/invoicing/void-an-invoice)

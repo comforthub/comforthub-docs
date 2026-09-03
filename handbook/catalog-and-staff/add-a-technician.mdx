@@ -2,11 +2,36 @@
 title: "Add a technician"
 description: "Create the technician in Zoho and give them an app login"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-25" />
+<Touches systems="zoho-crm, supabase-backend, the-7am-app" />
 
-Today the login is a dashboard invite plus a role set by SQL.
+A technician is created in Zoho, in **Technicians**. That makes them bookable on the dispatch calendar. Their app login is a separate step done by hand today.
+
+## Before you start
+
+- Zoho open, on **Technicians**.
+- The person's name, email and hourly rate.
+
+## Steps
+
+<Steps>
+  <Step title="Create the technician">
+    In **Technicians**, click **Create**. Fill in **Name**, **Email**, **Hourly Rate**, and tick **Is Active**. Save.
+  </Step>
+  <Step title="Give them an app login (by hand today)">
+    Ask a developer to invite the email from the Supabase dashboard and set the role. Nothing does this on its own yet; see [Invite someone to the app](/handbook/app/invite-someone-to-the-app).
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- Tested 3 September 2026: the technician was on our side in 2 seconds with name, rate and active flag, and could be put on an appointment.
+- The email and home location typed in Zoho are not carried over.
+
+## Related
+
+- [What lives where](/handbook/catalog-and-staff/what-lives-where)
+- [Book a work order](/handbook/booking/book-a-work-order)

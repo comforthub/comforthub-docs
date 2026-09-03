@@ -2,9 +2,45 @@
 title: "Add a product"
 description: "Create something we sell so it is in the catalog and in QuickBooks"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-21" />
+<Touches systems="zoho-crm, supabase-backend, quickbooks" />
+
+A product is anything that can be a line on a work order: a service call, a part, a unit. You add it in Zoho, in **Products**. The engine puts it in our catalog and makes the matching QuickBooks item.
+
+## Before you start
+
+- Zoho open, on **Products**.
+- The name, the price before tax, and whether it is a service or goods.
+
+## Steps
+
+<Steps>
+  <Step title="Create the product">
+    In **Products**, click **Create**. Fill in **Product Name**, **Unit Price** and **Product Type** (Services or Goods). Pick a **Usage Unit**. Leave **Product Active** ticked.
+  </Step>
+  <Step title="Save">
+    Click **Save**. The **SKU** is given by Zoho.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- Within a few seconds the product shows a **QBO Id**. That number is the QuickBooks item.
+- Tested 3 September 2026: our catalog had the product in 3 seconds and QuickBooks had the item 2 seconds later, as a service with the price and the sales income account.
+
+## Changing or removing one
+
+- Change the price in Zoho. QuickBooks follows in about 3 seconds.
+- Delete the product in Zoho. Our side keeps it, switched off, and the QuickBooks item goes inactive with "(deleted)" added to its name by QuickBooks. Old invoices keep their lines.
+
+## If it did not work
+
+- **No QBO Id after a minute.** The engine could not reach QuickBooks. See [When an alert email arrives](/handbook/running/when-an-alert-email-arrives).
+
+## Related
+
+- [What lives where](/handbook/catalog-and-staff/what-lives-where)
+- [QuickBooks](/systems/quickbooks)

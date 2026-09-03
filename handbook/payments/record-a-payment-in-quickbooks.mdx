@@ -2,9 +2,31 @@
 title: "Record a payment in QuickBooks"
 description: "Log a payment that did not come through the pay page"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-72" />
+<Touches systems="quickbooks, supabase-backend, zoho-crm, resend" />
+
+A cheque, a transfer or a card taken over the phone is recorded in QuickBooks against the invoice. Everything else follows from there.
+
+## Before you start
+
+- QuickBooks open. The invoice number.
+
+## Steps
+
+<Steps>
+  <Step title="Receive the payment">
+    In QuickBooks, receive a payment for the customer, tick the invoice, enter the amount, and save. A part payment is fine.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- Tested 3 September 2026: within 13 seconds our side had the payment and its receipt, the invoice state was right (Partial after $2, Paid after the rest), Zoho had the payment, and on the closing payment the customer got "Payment received for INV…".
+
+## Related
+
+- [How payments work](/handbook/payments/how-payments-work)
+- [QuickBooks](/systems/quickbooks)

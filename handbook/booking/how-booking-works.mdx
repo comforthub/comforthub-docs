@@ -2,11 +2,45 @@
 title: "How booking works"
 description: "From a work order in Zoho to a technician's phone, and how the billing decision is made"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-30" />
+<Touches systems="zoho-crm, crm-widgets, supabase-backend, resend, the-7am-app" />
 
-Work order, line items, appointment, checklists, the Draft or Non-Billable decision, the confirmation email.
+A job starts as a **work order** in Zoho with its lines, its equipment and one or more **appointments**. The dispatch calendar widget writes all of that in one go; the engine copies each piece to our side within seconds and does three things with it.
+
+## What the engine does with a booking
+
+| Piece | Reaches our side | Then |
+|---|---|---|
+| Work order and lines | 2 s | the billing decision runs |
+| Equipment on the job | when the work order is saved | linked to the job here |
+| Appointment | 2 s | technician, window, territory and property set; the booking email goes out |
+| Checklist on the appointment | when the appointment is saved | becomes an assignment matched to the right equipment |
+
+Tested 3 September 2026 on WO458 and WO459.
+
+## The billing decision
+
+Every line is billed to the customer or to warranty (and, for plan customers, to the subscription). The engine looks at the lines the moment the work order arrives and again on every line change, and writes the answer back to Zoho's **Billing Status** within 2 seconds:
+
+- Any line billed to the customer: **Draft**, to be invoiced on completion.
+- Only warranty lines: **Non-Billable**. No invoice will ever be made.
+
+## Emails and pushes
+
+- With **Notify Client** on, the customer gets "Your Comfort Hub appointment on …" within 2 seconds, with an add-to-calendar link.
+- Moving the appointment sends "has moved to …" and sends no second confirmation.
+- The technician's phone gets a push for a new, moved or cancelled appointment. That needs the technician to have the app; see [Add a technician](/handbook/catalog-and-staff/add-a-technician).
+
+## Two things to know
+
+- **Line descriptions.** What you type on a line is replaced by the catalog item's description on both sides. Known, being fixed.
+- **Changing only the technician, equipment or checklist** on a saved appointment does not reach our side until some other field on the record changes too. The widget saves the date and window with every change, so it is fine there. Known, being fixed.
+
+## Related
+
+- [Book a work order](/handbook/booking/book-a-work-order)
+- [Assign a checklist to a visit](/handbook/booking/assign-a-checklist)
+- [How invoicing works](/handbook/invoicing/how-invoicing-works)

@@ -2,9 +2,36 @@
 title: "Fix an invoice"
 description: "Change a discount or due date, and know which edits stick"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-63" />
+<Touches systems="zoho-crm, supabase-backend, quickbooks" />
+
+Small fixes are made on the Zoho invoice. The engine carries them to our side and to QuickBooks.
+
+## Before you start
+
+- The invoice open in Zoho, not yet paid.
+
+## Steps
+
+<Steps>
+  <Step title="Change the discount or the due date">
+    Edit **Discount** or **Due Date** and save.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- Tested 3 September 2026: a $1 discount reached our side in 2 seconds and QuickBooks 2 seconds later, shown as a discount line; the total went from $5.65 to $4.52 in all three places.
+
+## What you cannot change
+
+- The amount. It is computed from the lines. Change the lines on the work order instead, before the job is completed.
+- The invoice number and the payment state. Those are ours and QuickBooks'.
+
+## Related
+
+- [How invoicing works](/handbook/invoicing/how-invoicing-works)
+- [Void an invoice](/handbook/invoicing/void-an-invoice)

@@ -2,11 +2,41 @@
 title: "How invoicing works"
 description: "How completing a job becomes an invoice in QuickBooks, Zoho and the customer's inbox"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-58" />
+<Touches systems="supabase-backend, quickbooks, zoho-crm, resend, pay-page" />
 
-Billable lines only, the QuickBooks push, the Zoho copy, the email, the certificate.
+The moment a billable job's appointment is completed, the engine builds the invoice from the lines billed to the customer, sends it to QuickBooks, files the PDF, makes the Zoho copy, and emails the customer. Nobody builds an invoice by hand.
+
+## What happens, in order
+
+| Step | Seen on 3 September 2026 |
+|---|---|
+| Invoice built here from the billable lines, HST added | within 1 s of completion |
+| QuickBooks invoice made, PDF fetched and filed | 2 s later |
+| Zoho invoice made, linked to the contact, account, work order and addresses | 3 s later |
+| Email "Invoice INV… from Comfort Hub" with the PDF and the pay link | 7 s after the invoice |
+| Work order marked Invoiced | with the invoice |
+
+A $5.00 line invoiced at $5.65: Ontario HST is always applied. A job with only warranty lines is marked Non-Billable and never invoiced.
+
+## Edits
+
+A discount or due date changed on the Zoho invoice reaches our side and QuickBooks within seconds. A discount changed on our side reaches both too. The amount itself is Zoho's: it is computed from the lines and never typed.
+
+## Void
+
+Setting the Zoho invoice to Void voids it in QuickBooks within seconds and files a VOID PDF. See [Void an invoice](/handbook/invoicing/void-an-invoice).
+
+## Two things to know
+
+- The unpaid PDF is not attached to the Zoho invoice; the paid one is, once the customer pays.
+- A maintenance or commissioning job also produces a certificate; see [Certificates](/handbook/invoicing/certificates).
+
+## Related
+
+- [How payments work](/handbook/payments/how-payments-work)
+- [Fix an invoice](/handbook/invoicing/fix-an-invoice)
+- [QuickBooks](/systems/quickbooks)

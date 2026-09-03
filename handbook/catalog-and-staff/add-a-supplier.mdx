@@ -2,9 +2,41 @@
 title: "Add a supplier and its branches"
 description: "Create a vendor so technicians can order from it and pick up at its branches"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-24" />
+<Touches systems="zoho-crm, supabase-backend, the-7am-app" />
+
+A supplier is where we buy parts. Its branches are the counters a technician drives to. Both are typed into Zoho, in **Vendors**, and the branches live in the vendor's **Vendor Branches** list on the same record.
+
+## Before you start
+
+- Zoho open, on **Vendors**.
+- The supplier's name, and for each branch a name, a full street address, and a phone or email if you have them.
+
+## Steps
+
+<Steps>
+  <Step title="Create the vendor">
+    In **Vendors**, click **Create**. Fill in **Vendor Name** and, if you have it, **Email** and **Website**.
+  </Step>
+  <Step title="Add the branches">
+    In **Vendor Branches**, add one row per counter: **Branch Name**, **Branch Address**, **Branch Phone**, **Branch Email**. Save.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- Tested 3 September 2026: the supplier was on our side in 2 seconds, both branches with it, and each branch had its Street View picture within a few seconds more.
+- The app's Suppliers screen lists it with both branches.
+
+## Good to know
+
+- A branch you remove from the list in Zoho is removed here, unless a purchase order names it; then it stays.
+- Branch coordinates are set by hand by a developer, not from the address.
+
+## Related
+
+- [What lives where](/handbook/catalog-and-staff/what-lives-where)
+- [Raise a purchase order](/handbook/parts/raise-a-purchase-order)
