@@ -2,11 +2,44 @@
 title: "The customer lifecycle"
 description: "Lead, customer, equipment, and the visits that repeat for as long as they own it"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-12" />
+<Touches systems="zoho-crm, supabase-backend, quickbooks, resend, the-7am-app" />
 
-The four kinds of visit and which ones are billed.
+A customer's life with Comfort Hub is one loop that runs again every year. It was walked end to end on 3 September 2026 with a made-up homeowner, every step done in Zoho the way the office does it. Times below are what the walk measured.
+
+## The first visit: installation
+
+| Step | Where the office acts | What the engine does, and how fast |
+|---|---|---|
+| A lead is typed in | Zoho, Leads | Mirrored here in 1 s once Zoho notifies |
+| Status set to Converted | Zoho | Contact, account, property, QuickBooks customer, map pin and photo, all linked, 8 s |
+| Work order typed with a furnace line | Zoho | Here in 2 s, line matched to the catalog, billing decision Draft written back |
+| Appointment booked with the commissioning checklist | Zoho | Here in 4 s; booking email to the customer and push to the technician the same second |
+| Checklist done, Complete tapped | The app | Appointment and work order Completed in Zoho within 2 s |
+| Nothing | | Invoice built, in QuickBooks, in Zoho, emailed, and the Certificate of Commissioning filed on the work order: 9 s in all |
+| Payment recorded | QuickBooks | Partial after $2, Paid after the rest, receipt emailed, 16 s each |
+
+## Every visit after: maintenance
+
+The same customer, the same furnace. A maintenance work order in Zoho with the furnace picked on it, an appointment with the maintenance checklist, Complete, invoice, certificate, payments, receipt. The maintenance checklist found the furnace on its own. 3½ minutes from work order to receipt, most of it waiting for the office.
+
+## What repeats and what does not
+
+- The customer, account and property are made once. Every later job hangs off them.
+- Equipment is made once, on the job that installs it, and every later job links to it.
+- Certificates are made per visit and filed on that visit's work order.
+- Each invoice is its own QuickBooks invoice and its own Zoho invoice, and each payment its own record in both.
+
+## Two things the walk found
+
+- A work order typed straight into Zoho gets no equipment made for what it installs; only the dispatch widget does that today (COM-181).
+- The certificate stays in Zoho and our storage. The customer's invoice email does not carry it (COM-180).
+
+## Related
+
+- [How Comfort Hub runs](/handbook/the-business/how-comfort-hub-runs)
+- [How a lead becomes a customer](/handbook/new-customers/how-a-lead-becomes-a-customer)
+- [How invoicing works](/handbook/invoicing/how-invoicing-works)

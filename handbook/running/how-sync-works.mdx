@@ -2,9 +2,33 @@
 title: "How sync works"
 description: "How a change in Zoho reaches Supabase and back, and why it never loops"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-154" />
+<Touches systems="zoho-crm, supabase-backend" />
+
+Zoho tells the engine when a record changes; the engine tells Zoho when it changes one. Each side keeps a copy, and the rules on [Sync rules by module](/reference/sync-rules-by-module) say which side wins for each field.
+
+## Zoho to us
+
+Zoho sends a notification for every create, edit and delete in the 27 modules we watch. The engine reads the record back from Zoho and applies it. From Zoho's notification to the change being on our side takes about 1 second; the whole trip is usually 1 to 4 seconds.
+
+The wait is Zoho's, not ours. On 3 September 2026 Zoho held its notifications for 40 seconds to 2½ minutes between 06:38 and 06:47 EDT, then went back to instant. Delivery from Zoho's stamp to our door was 1 second every time, and Zoho's status page showed nothing. Nothing on our side can shorten that.
+
+## Us to Zoho
+
+A change here is queued and pushed within a few seconds. The push writes every shared field of the record, so an edit made in Zoho during those same seconds is overwritten: edit one side at a time.
+
+## Why it never loops
+
+Every write the sync makes is marked as its own. When Zoho echoes a change we pushed, the engine sees the mark and applies nothing; when we apply a change from Zoho, no push goes back. Seen 3 September 2026: five pushes came back as five silent applies, and one Zoho edit came in as exactly one apply.
+
+## When something did not sync
+
+See [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync). The nightly sweep compares both sides and lists every difference; see [Scheduled jobs](/reference/scheduled-jobs).
+
+## Related
+
+- [Who is the source of truth](/systems/who-is-the-source-of-truth)
+- [Sync rules by module](/reference/sync-rules-by-module)

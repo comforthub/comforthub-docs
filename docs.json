@@ -2,6 +2,10 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Comfort Hub handbook",
+  "logo": {
+    "light": "/logo/ch-icon.png",
+    "dark": "/logo/ch-icon.png"
+  },
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
