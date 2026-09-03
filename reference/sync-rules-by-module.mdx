@@ -9,6 +9,8 @@ Every module below is mirrored between Zoho and Supabase. Almost all flow both w
 | What a delete does | Meaning |
 |---|---|
 | **deactivate** | The row stays and is marked inactive. Nothing else is touched. |
+
+Tested 2 September 2026 on a lead, a contact and a property: each was inactive on our side within 6 seconds of the delete in Zoho, and the records linked to it were not changed. A deactivated customer keeps its QuickBooks customer.
 | **delete** | The row is removed, along with only the child rows it owns. |
 | **refuse and flag** | Nothing is written. A human-review flag is raised because this record moved money. The two systems now disagree until a person rules. |
 
