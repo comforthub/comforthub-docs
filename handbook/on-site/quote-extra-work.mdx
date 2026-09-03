@@ -1,12 +1,50 @@
 ---
 title: "Quote extra work"
-description: "Build a quote on the work order for work found on site"
+description: "Build a quote on the work order for work found on site, and what happens when the customer approves it"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-53" />
+<Touches systems="the-7am-app, supabase-backend, resend, zoho-crm" />
 
-Today the quote is saved but not sent. This page is written when quotes are wired up.
+When a technician finds more work than the job was booked for, they build a quote in the app and send it. The customer gets an email with an **Approve** button. Tapping it adds the quoted lines to the work order, tells the technician, and carries the lines to Zoho. Nobody in the office has to touch it.
+
+## Before you start
+
+- The work order open in the app, on the day of the visit.
+- The parts and labour you want to quote. Catalog items pull their price; a part that is not in the catalog can be typed in with its own price.
+
+## Steps
+
+<Steps>
+  <Step title="Build the quote">
+    On the work order, open **Actions → Quote**. Add the lines with quantity and price.
+  </Step>
+  <Step title="Send it">
+    Tap **Send**. The customer gets "Your Comfort Hub quote for WO…" with the lines, the tax and the total, and an Approve button. The button works for 30 days.
+  </Step>
+  <Step title="The customer approves">
+    They tap Approve and see "Thank you, your quote is approved". Tapping it again shows "Already approved" and changes nothing.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- The technician gets a push: "&lt;customer&gt; approved your quote", with the total, that opens the work order.
+- The quoted lines are on the work order, charged to the customer and marked as added by Quote. The original lines are untouched.
+- The same lines are on the work order in Zoho within a few seconds, and the billing decision runs again.
+- Tested 3 September 2026 on a probe job: the email left in under a second, the approval added two lines and the push reached every one of the technician's devices in one second, and Zoho had both lines seven seconds after the tap.
+
+## If something goes wrong
+
+- **"That link is not right"** means the link was cut short or was for another quote. Send the quote again.
+- **"This link has expired"** means more than 30 days went by. Send the quote again; the new email has a fresh link.
+- **The customer has no email** on their record: the quote is saved but nothing is sent, and the skip is logged. Add the email in Zoho and send again.
+- The name on a quoted line that matches a catalog item is replaced by the catalog description when it lands on the job. That is a known wrinkle, tracked as COM-174.
+
+## Related
+
+- [Add parts and labour](/handbook/on-site/add-parts-and-labour)
+- [Complete a work order](/handbook/on-site/complete-a-work-order)
+- [Emails we send](/reference/emails-we-send)
