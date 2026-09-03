@@ -1,0 +1,61 @@
+---
+title: "Set up a customer by hand"
+description: "Type a contact, account and property straight into Zoho when there is no lead to convert"
+kind: how-to
+---
+
+import { Touches } from "/snippets/touches.mdx";
+
+<Touches systems="zoho-crm, supabase-backend, quickbooks" />
+
+Most customers come from a converted lead. When one does not, you can type the three records into Zoho yourself. Each one reaches our side in about 2 seconds, the contact gets a QuickBooks customer, and the property gets its picture and territory. What matters is the links between them, because our side copies those too.
+
+## Before you start
+
+- The person's name, email (lowercase) and phone.
+- The service address, and the billing address if it differs.
+- One account per customer. Our side allows exactly one, so a contact who already has an account cannot be given a second.
+
+## Steps
+
+<Steps>
+  <Step title="Create the contact">
+    In **Contacts**, click **Create**, fill in the name, **Email** and **Phone**, and save. Leave **Is Active** ticked; it starts ticked.
+  </Step>
+  <Step title="Create the account">
+    In **Accounts**, click **Create**. Name it after the person, set **Contact Name** to the contact, and save.
+  </Step>
+  <Step title="Create the property">
+    In **Properties**, click **Create**. Fill in the address, set **Account** to the account, and save. Make a second property if billing differs.
+  </Step>
+  <Step title="Link them together">
+    Open the contact. Set **Account Name** to the account, then **Service Address** and **Billing Address** to the properties. Do the same two address fields on the account. Save each.
+  </Step>
+</Steps>
+
+The address fields only offer properties that belong to the contact's account, so the account has to be set first.
+
+## How you know it worked
+
+- The property shows a **Latitude**, a picture and a **Major Service Area** within a few seconds.
+- The contact shows a **QBO Id**.
+- In QuickBooks, the customer has the billing and shipping addresses. They appear a few seconds after you link the addresses on the contact, not before.
+
+Tested 2 September 2026: all three records were on our side in 2 seconds each, linked to each other and active, and the QuickBooks customer had both addresses 4 seconds after the links were set.
+
+## When the house sells
+
+The buyer is a new contact. Create them as in step 1, then open the account and change **Contact Name** to the buyer. Our side follows in 2 seconds, and the same change made on our side reaches Zoho in 2 seconds. Tested the same day.
+
+Do not point the account at a contact who already has one; our side refuses it and the change sits in the queue until you undo it.
+
+## If it did not work
+
+- **The contact or account shows as inactive on our side.** Someone unticked **Is Active**. Tick it and save.
+- **QuickBooks has the customer but no address.** The contact's **Service Address** and **Billing Address** are not set. Set them and save.
+
+## Related
+
+- [How a lead becomes a customer](/handbook/new-customers/how-a-lead-becomes-a-customer)
+- [Convert a lead into a customer](/handbook/new-customers/convert-a-lead)
+- [Who is the source of truth](/systems/who-is-the-source-of-truth)
