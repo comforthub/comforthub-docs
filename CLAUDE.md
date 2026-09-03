@@ -53,7 +53,7 @@ Copy the matching file from `templates/` to start. A page that is not finished k
 
 Say what people say. *customer*, not the Zoho module. *work order*, not the table. The check fails any page that contains a code-shaped word: `Names_Like_This`, `schema.table`, or `snake_case`. The one exception is `reference/names.mdx`, which is flagged `raw-names: allowed` and maps every human name to its Zoho and Supabase name. If a new human name is needed, add it there first and use it everywhere else.
 
-Words we use: customer, account, prospect, property, equipment (or asset), product, stock material, supplier, purchase order, stocking order, work order, line item, appointment, territory, technician, phone agent, invoice, payment, subscription, checklist, checklist template, timesheet, time off, pay calendar, quote, stock list, task, note, the app, the pay page, the engine (Supabase).
+Words we use: customer, account, lead, property, equipment (or asset), product, stock material, supplier, purchase order, stocking order, work order, line item, appointment, territory, technician, phone agent, invoice, payment, subscription, checklist, checklist template, timesheet, time off, pay calendar, quote, stock list, task, note, the app, the pay page, the engine (Supabase).
 
 ## Writing rules
 

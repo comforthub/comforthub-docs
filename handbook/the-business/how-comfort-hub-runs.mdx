@@ -16,7 +16,7 @@ A **work order** says what the job is. A **service appointment** puts a technici
 
 ```mermaid
 flowchart LR
-  P[Prospect] -->|converted| C[Customer + property]
+  P[Lead] -->|converted| C[Customer + property]
   C --> W[Work order]
   W --> A[Appointment]
   A -->|done in the app| I[Invoice]
@@ -38,7 +38,7 @@ The work order's line items decide this. Every line is billable, warranty, or su
 
 ## Who does what
 
-- **The office works in Zoho.** Prospects, customers, booking, checklists, timesheet approvals, and anything that needs a record edited by hand.
+- **The office works in Zoho.** Leads, customers, booking, checklists, timesheet approvals, and anything that needs a record edited by hand.
 - **Supabase is the engine.** It mirrors Zoho both ways, makes the billing decision, builds invoices, talks to QuickBooks, sends the emails, and runs the phone. Nothing here is edited by hand day to day.
 - **Technicians work in the 7AM app.** Their day, the work order, checklists, parts, quotes, hours, time off, the phone and texts.
 - **QuickBooks holds the money.** Customers, items, invoices, payments. It is the one that tells us a payment happened.
@@ -49,7 +49,7 @@ The work order's line items decide this. Every line is billable, warranty, or su
 The rest of the handbook walks this loop in order. Each chapter opens with a page like this one, then has a short page per task.
 
 <Columns cols={2}>
-  <Card title="New customers" href="/handbook/new-customers/how-a-prospect-becomes-a-customer">From a lead to a customer with all their records.</Card>
+  <Card title="New customers" href="/handbook/new-customers/how-a-lead-becomes-a-customer">From a lead to a customer with all their records.</Card>
   <Card title="Booking" href="/handbook/booking/how-booking-works">The work order, the appointment, the billing decision.</Card>
   <Card title="On site" href="/handbook/on-site/a-visit-in-the-app">What the technician does in the app.</Card>
   <Card title="Invoicing" href="/handbook/invoicing/how-invoicing-works">How Complete becomes an invoice.</Card>

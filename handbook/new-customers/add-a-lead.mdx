@@ -1,0 +1,50 @@
+---
+title: "Add a lead"
+description: "Enter a new lead in Zoho so it exists on both sides within seconds"
+kind: how-to
+---
+
+import { Touches } from "/snippets/touches.mdx";
+
+<Touches systems="zoho-crm, supabase-backend" />
+
+A lead is a person who might become a customer. You add them in Zoho, in the **Leads** module. The engine copies them over on its own; you never type them into Supabase.
+
+## Before you start
+
+- Zoho open, on **Leads**.
+- The person's last name at minimum. Email and a service address are needed before they can be converted, so get them now if you can.
+- The email in lowercase. Our side refuses a capital letter in an email, and today Zoho does not stop you typing one.
+
+## Steps
+
+<Steps>
+  <Step title="Create the lead">
+    In **Leads**, click **Create**. Fill in **First Name**, **Last Name**, **Email**, **Phone**, the service address (street, city, province, postal code, country), and the billing address if it differs. Pick a **Source**, set **Status** to **New**, and tick the equipment they are interested in.
+  </Step>
+  <Step title="Save">
+    Click **Save**. That is all. There is no sync button.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- Honestly, Zoho shows you nothing. The **Supabase Lead Id** field stays blank for a lead made in Zoho; it only fills in when the engine created the record itself. The copy is on our side, and only a developer can look.
+- Tested 2 September 2026 on a lead typed into Zoho: the copy arrived with both names, email, phone, both address blocks, province, country, source, notes and interests, all matching. An edit made on our side reached Zoho in under two seconds, and Zoho's own notification of that edit came back without causing a second push.
+
+## If it did not work
+
+- **Someone says the lead is missing on our side.** The two usual causes: a capital letter in the email, or the sync being stopped. See [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync).
+- **The lead shows as inactive.** You did not tick **Is Active**. Tick it in Zoho; the change crosses over.
+
+## Good to know
+
+- A lead may reuse the email of an old lead that was deactivated. Two live leads still cannot share one.
+- A lead created from the sales calendar widget arrives the same way, email included.
+- A lead's **Deal** field points at the deal the sales calendar booked for it. The engine ignores it on purpose; the sales pipeline is not mirrored.
+
+## Related
+
+- [How a lead becomes a customer](/handbook/new-customers/how-a-lead-becomes-a-customer)
+- [Convert a lead into a customer](/handbook/new-customers/convert-a-lead)
+- [Sync rules by module](/reference/sync-rules-by-module)
