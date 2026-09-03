@@ -2,9 +2,68 @@
 title: "Scheduled jobs"
 description: "Everything that runs on a timer, when, and what it does"
 kind: reference
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+Times are Ottawa time (Eastern). The engine keeps them in UTC, so they shift by an hour when the clocks change.
 
-<NotWrittenYet issue="COM-165" />
+## Every minute
+
+| Job | What it does |
+|---|---|
+| Wake the sync worker | Nudges the worker that carries changes between Zoho and Supabase, in case a queue has work |
+| Wake the action worker | Nudges the worker that does everything else: QuickBooks, emails, PDFs, pushes, invites |
+
+## Watches that send an alert
+
+Each runs on its own clock, looks for one kind of trouble, and emails the operator once per finding. See [Alerts](/reference/alerts) and [When an alert email arrives](/handbook/running/when-an-alert-email-arrives).
+
+| Job | When | Looks for |
+|---|---|---|
+| Dead-letter watch | every 15 minutes | a message that died in a queue |
+| Human-review watch | every 15 minutes | an event waiting for a person |
+| Delete-refused watch | every 15 minutes | a Zoho delete the rules refused |
+| Queue-health watch | every 15 minutes | a queue growing faster than it drains |
+| Wake-failure watch | every 15 minutes | a wake-up call that did not reach its worker |
+| Orphan-action watch | 20 past the hour | a queued action no worker owns |
+| Sweep watch | 25 past the hour | a nightly drift sweep that has not run |
+| Cancelled-but-collectible watch | 35 past the hour | a cancelled job whose invoice is still owed in QuickBooks |
+| Card-number scan | 45 past the hour | a card number in a text or a transcript |
+| Imagery watch | 50 past the hour | a property still without its Street View image |
+| Invoice-amounts check | 1:10 am | an invoice whose amount differs between Supabase, QuickBooks and Zoho |
+| Payroll-calendar check | 2:55 am | fewer than 60 days of pay periods left |
+
+## Nightly clean-ups
+
+| Job | When | What it does |
+|---|---|---|
+| Prune cron history | 11:25 pm | Drops old cron run records |
+| Prune queue archives | 11:35 pm | Drops old archived queue messages |
+| Close the call sync window | 12:17 am | Stops syncing calls older than 30 days |
+| Prune integration history | 12:30 am | Drops old integration events past their keep window |
+| Sweep property imagery | 1:40 am | Fetches the Street View image for any property still missing one |
+
+## Reminders and pushes
+
+| Job | When | What it does |
+|---|---|---|
+| Open-appointment push | every hour | Tells a technician about an appointment still open past its window |
+| Auto-submit overdue timesheets | 1:00 am | Submits any timesheet still open after its deadline |
+| Timesheet reminder, morning | 9:00 am | Push to anyone whose timesheet is due |
+| Tasks due soon | 9:00 am | Push for tasks due today |
+| Timesheet reminder, evening | 7:00 pm | Second push to anyone whose timesheet is still open |
+
+## Digests
+
+| Job | When | What it does |
+|---|---|---|
+| Pipeline digest | 8:40 am daily | The day's summary email to the operator |
+| Pipeline heartbeat | 8:50 am Mondays | A weekly "still alive" email |
+
+## The nightly drift sweep
+
+The sweep itself runs from GitHub, not from this list. It compares every synced record on both sides and opens a finding for each difference. See [How sync works](/handbook/running/how-sync-works).
+
+## Related
+
+- [Alerts](/reference/alerts)
+- [How alerts work](/handbook/running/how-alerts-work)
