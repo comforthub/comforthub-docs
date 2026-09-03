@@ -2,9 +2,42 @@
 title: "Redrive a dead letter"
 description: "Put a failed message back on the queue once the cause is fixed"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-157" />
+<Touches systems="supabase-backend" />
+
+A message that fails all its retries is moved to the queue's dead-letter box and the dead-letter alert tells you. Nothing is lost: the message is a pointer to a record, and once the cause is fixed it can be put back on the queue and run again, from the record's current state.
+
+## Before you start
+
+- The dead-letter alert, which names the queue and the message number.
+- The cause fixed. A redrive with the cause still there just dies again.
+
+## Steps
+
+<Steps>
+  <Step title="Find the cause">
+    The alert body and the flagged event say why in plain words. Fix that first: add the missing catalog item, correct the record, ship the code fix.
+  </Step>
+  <Step title="Run the redrive">
+    In the engine's GitHub repository, run the **redrive** workflow with mode **write**, the queue named in the alert, and the message number. It moves the message back onto its queue, and the worker picks it up within a minute.
+  </Step>
+  <Step title="Check the record">
+    Look at the record the message pointed to. The outcome the message was meant to produce is now there.
+  </Step>
+  <Step title="Clear any twins">
+    If the same record died more than once (two triggers, two messages), redrive one and delete the others; the second run would only repeat the first.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- The dead-letter box is empty and the next dead-letter watch stays quiet.
+- Seen 3 September 2026: probe job WO461's invoice died twice (a typed-in part with no QuickBooks item). After the fix shipped, message 39 was redriven at 06:00 UTC and the invoice existed 3 seconds later, in QuickBooks and Zoho within 10 seconds, with the invoice email out at 06:00:04. Message 40, its twin, was deleted.
+
+## Related
+
+- [When an alert email arrives](/handbook/running/when-an-alert-email-arrives)
+- [How alerts work](/handbook/running/how-alerts-work)
