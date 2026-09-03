@@ -2,9 +2,34 @@
 title: "Alerts"
 description: "Every alert email, what fires it, and what to do"
 kind: reference
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+Every alert is an email to the operator with a subject that starts with **[ops]**. Each watch runs on its own clock (see [Scheduled jobs](/reference/scheduled-jobs)), and a finding is emailed once: the same trouble does not page again until it clears and comes back. What to do when one arrives is on [When an alert email arrives](/handbook/running/when-an-alert-email-arrives).
 
-<NotWrittenYet issue="COM-158" />
+| Alert | Subject looks like | Fires when | Seen |
+|---|---|---|---|
+| Dead letter | [ops] (queue name) holds 2 dead letters | a message died in a queue after its retries | 3 Sep 2026 |
+| Dead letter, already cleared | [ops] a message died in (queue name) and was already cleared | a message died and was redriven or dropped before the watch ran | 3 Sep 2026 |
+| Human review | [ops] 11 events await a person | an integration event is flagged for a person to look at | 3 Sep 2026 |
+| Queue health | [ops] 2 queues are growing faster than they drain | a queue backs up for longer than its window | not yet |
+| Wake failure | [ops] 3 wake-up calls failed | the minute-by-minute nudge to a worker did not get through | not yet |
+| Cron failure | [ops] 2 scheduled jobs failed | a timed job errored | not yet |
+| Orphan action | [ops] 1 queued action has no worker | a queued action name no worker owns | not yet |
+| Delete refused | [ops] a CRM delete of a invoice was refused | a Zoho delete the sync rules refused to mirror | 2 Sep 2026 |
+| Sweep stale | [ops] the reconciliation sweep has not run in 2 days | the nightly drift sweep is overdue | not yet |
+| Sweep watch blind | [ops] the sweep staleness watch has gone blind | the sweep watch itself cannot read the sweep log | not yet |
+| Cancelled but collectible | [ops] INV… is still collectible and its work order is cancelled | a cancelled job still has money owed in QuickBooks | not yet |
+| Cancelled after payment | [ops] INV… was PAID and its work order is cancelled | a job was cancelled after its invoice was paid | not yet |
+| Card number stored | [ops] a card number is stored in sms | a card number reached a text or a transcript | not yet |
+| Imagery missing | [ops] 3 properties still have no Street View image | a property has waited a day for its image | not yet |
+| Invoice amounts | [ops] 3 invoices disagree across Postgres, QuickBooks and Zoho | the nightly amounts check finds a difference | 3 Sep 2026 |
+| Payroll runway | [ops] the payroll calendar runs out in 45 days | fewer than 60 days of pay periods are loaded | not yet |
+| Timesheets off calendar | [ops] 2 timesheets sit outside the payroll calendar | a timesheet's dates match no pay period | not yet |
+
+"Seen" is the last day the alert was watched landing in the operator's inbox during the walk.
+
+## Related
+
+- [How alerts work](/handbook/running/how-alerts-work)
+- [When an alert email arrives](/handbook/running/when-an-alert-email-arrives)
+- [Redrive a dead letter](/handbook/running/redrive-a-dead-letter)
