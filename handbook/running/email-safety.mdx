@@ -2,9 +2,33 @@
 title: "Email safety"
 description: "Why no email can reach a real customer today, and how to change that on purpose"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-161" />
+<Touches systems="supabase-backend, resend" />
+
+Every email the engine sends passes one gate before it leaves. The gate has a short list of addresses that may receive mail. Anything else is not sent to the customer: it is sent to the operator instead, with the intended address written into the subject.
+
+## The three outcomes
+
+| The address is | What happens | How it looks |
+|---|---|---|
+| On the allowed list (the operator's own address today) | delivered as written | normal subject |
+| At the test mail domain used for probe records | delivered as written | normal subject |
+| Anything else, including every real customer | delivered to the operator | subject starts with **[TEST → the address it was meant for]** |
+
+There is no fourth outcome. A mistake in a record, a typo, an old customer email: none of them can reach a person outside the company.
+
+## What was seen
+
+On 3 September 2026 every email in the walk went through this gate: booking confirmations, the invoice, the receipt, the quote, the technician's app invite. The ones addressed to a probe address at the test domain arrived there. One addressed to a made-up customer address arrived in the operator's inbox with the TEST prefix, and the engine logged it as delivered to the operator instead.
+
+## Turning it on for real
+
+Widening the allowed list is a decision, not a setting. It lives in the engine's code, and changing it is a code change that goes through review, so nobody can flip it in a hurry. When the day comes, the list is replaced by the rule "any address", and the TEST prefix stops appearing.
+
+## Related
+
+- [Emails we send](/reference/emails-we-send)
+- [How sync works](/handbook/running/how-sync-works)

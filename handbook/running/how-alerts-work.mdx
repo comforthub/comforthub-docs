@@ -2,9 +2,34 @@
 title: "How alerts work"
 description: "What watches the system, what each alert means, and why you only get one email"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-157" />
+<Touches systems="supabase-backend, resend" />
+
+Nothing in the engine waits for a person to notice a problem. A set of watches runs on timers, each looking for one kind of trouble, and each emails the operator when it finds some. The subject always starts with **[ops]** so the emails sort together.
+
+## What is watched
+
+- **Queues.** Work between systems travels as messages in queues. A message that fails all its retries is moved to a dead-letter box and reported. A queue that grows faster than it drains is reported.
+- **Workers.** Every minute something nudges the two workers awake. A nudge that does not get through is reported.
+- **Timed jobs.** A scheduled job that errors is reported.
+- **Records that need a person.** Some outcomes are deliberately left for a person: a Zoho delete the rules refused, an invoice that could not be built, a payment that matched nothing. Each is flagged, and the count of open flags is reported.
+- **Money.** A cancelled job whose invoice is still owed. An invoice whose amount differs between our side, QuickBooks and Zoho.
+- **Housekeeping.** A property without its Street View image after a day. A payroll calendar with fewer than 60 days left. The nightly drift sweep not running.
+
+The full list, with the subject each one uses, is on [Alerts](/reference/alerts). When each runs is on [Scheduled jobs](/reference/scheduled-jobs).
+
+## Why you get one email, not fifty
+
+Each watch remembers what it already reported. The same dead letter, the same open flag, the same stale sweep does not page again on the next run. You get a fresh email when the count changes or when the trouble clears and comes back. On 3 September 2026 two invoice refusals on one job produced one dead-letter email and one human-review email, fifteen minutes apart, and then silence.
+
+## Where the emails go
+
+To the operator's inbox, through the same guarded mailer as every other email. See [Email safety](/handbook/running/email-safety).
+
+## Related
+
+- [When an alert email arrives](/handbook/running/when-an-alert-email-arrives)
+- [Alerts](/reference/alerts)

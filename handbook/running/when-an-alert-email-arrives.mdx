@@ -2,9 +2,49 @@
 title: "When an alert email arrives"
 description: "Read the subject, find the cause, fix it, and confirm it is quiet"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-158" />
+<Touches systems="supabase-backend, zoho-crm, quickbooks" />
+
+An alert names one kind of trouble and, where it can, the record involved. The job is to find the cause, fix it at the source, and watch the next run stay quiet.
+
+## Before you start
+
+- The alert email open.
+- Access to the system that owns the record it names: Zoho, QuickBooks, or the engine's tables.
+
+## Steps
+
+<Steps>
+  <Step title="Read the subject">
+    The subject says what and how many: "holds 2 dead letters", "11 events await a person", "INV008343 is still collectible and its work order is cancelled". Match it to the row on [Alerts](/reference/alerts).
+  </Step>
+  <Step title="Open the body">
+    The body lists the records: the queue and message, the flagged events with their reasons, the invoice numbers. The reason is written in plain words, for example "work order WO-1189 has billable lines but 1 line with no QuickBooks item".
+  </Step>
+  <Step title="Fix the cause, not the symptom">
+    A record problem is fixed in the system that owns the record (see [Who is the source of truth](/systems/who-is-the-source-of-truth)). A missing catalog item is added in Zoho. A cancelled job still owed is settled or voided in QuickBooks. A dead letter is put back on the queue only after its cause is gone; see [Redrive a dead letter](/handbook/running/redrive-a-dead-letter).
+  </Step>
+  <Step title="Close the flag">
+    An event flagged for a person stays counted until it is marked reviewed; see [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
+  </Step>
+  <Step title="Confirm it is quiet">
+    The watch runs again on its schedule (most every 15 minutes). No new email means the trouble is gone.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- The next run of that watch sends nothing.
+- Seen 3 September 2026: two invoice refusals on one probe job raised one dead-letter email and one human-review email at 05:30 UTC; after the cause was fixed and the messages redriven, the 05:45 run was silent.
+
+## If the same alert keeps coming
+
+The count in the subject is changing, so something new is failing each time. Look at the newest record in the body, not the oldest.
+
+## Related
+
+- [How alerts work](/handbook/running/how-alerts-work)
+- [Scheduled jobs](/reference/scheduled-jobs)
