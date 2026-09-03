@@ -1,10 +1,47 @@
 ---
 title: "Complete a work order"
-description: "Finish a visit so it closes in Supabase and Zoho and billing starts"
+description: "The last tap of a visit, and everything it sets in motion"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-52" />
+<Touches systems="the-7am-app, supabase-backend, zoho-crm, quickbooks" />
+
+When the work is done, the technician writes the note and taps **Complete** twice. That one action closes the appointment and the work order on both sides, stamps who and when, and starts billing.
+
+## Before you start
+
+- Every required ring on the work order done: checklists answered, serials and photos where the job asks for them.
+- The completion note written.
+
+## Steps
+
+<Steps>
+  <Step title="Tap Complete">
+    On the work order, tap **Complete**. The app shows what is still open, if anything.
+  </Step>
+  <Step title="Confirm">
+    Tap **Complete** again. The appointment is marked complete with the time, and the work order is marked complete with your name and your note.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- In Zoho, the appointment and the work order show Completed, with Completed By and Completed At.
+- Completed At on the work order is the moment the last checklist was finished, not the moment of the tap, so it matches what the customer saw.
+- Seen 3 September 2026: one second after completing probe job WO461, Zoho showed both records Completed with the person and the time, and the invoice step began in the same second.
+
+## What happens next
+
+Billing runs on its own: see [How invoicing works](/handbook/invoicing/how-invoicing-works). A job with only warranty or plan lines is marked Non-Billable and stops there.
+
+## If the job was completed in Zoho instead
+
+The status arrives here and the time is stamped, but that stamp does not go back to Zoho today (tracked as COM-176). Complete from the app when you can.
+
+## Related
+
+- [A visit in the app](/handbook/on-site/a-visit-in-the-app)
+- [Add parts and labour](/handbook/on-site/add-parts-and-labour)
+- [How invoicing works](/handbook/invoicing/how-invoicing-works)
