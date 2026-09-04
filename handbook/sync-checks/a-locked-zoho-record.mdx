@@ -1,0 +1,43 @@
+---
+title: "A locked Zoho record is a one-way door"
+description: "While a Zoho record is locked, a change made here is skipped, flagged for a person, and counted in the next review email; it is not sent later when the lock lifts"
+kind: explanation
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="zoho-crm, supabase-backend" />
+
+While a record is locked in Zoho, changes still flow down to our side, but a change made here is not sent up: the push is skipped, an event says why, the event is flagged for a person, and the next review email counts it. The change is not sent later when the lock lifts.
+
+## What was done
+
+Test <Linear issue="COM-155" />, run in production on 4 September 2026 with an account made in Zoho for the test: **Probe COM-155 Account** (Zoho record 5665332000031470055, our row d6d9cb1a-d349-4f3f-bf1b-4c8dffd50740). Accounts, customers, properties and equipment have Zoho record locking switched on, by rule and by hand; assigned checklists, work orders and leads do not.
+
+1. Made in Zoho at 17:48:38 UTC; here at 17:50:29.
+2. Locked in Zoho at 17:51:07 through Zoho's record-lock action (reason **Probe COM-155 lock test**). Zoho then showed the record as locked and not editable.
+3. Renamed on our side to **Probe COM-155 Account (pg edit while locked)** at 17:51:32.
+4. Unlocked in Zoho at 18:00:30, the flag closed with a note at 18:00:51, and the account deleted in Zoho at 18:01.
+
+## What was seen
+
+| Step | When | What |
+|---|---|---|
+| Edit on our side | 17:51:32.3 | the row changed and a push was queued |
+| Push refused | 17:51:33.7 | the push was skipped with the reason "record locked in the CRM", and the event was flagged for a person |
+| Review email | 18:00:06 | the quarter-hour wake mailed "[ops] 43 events await a person", one more than the 17:50 count; the refusal is in it as one line of the breakdown by operation, not by record |
+| Unlocked in Zoho | 18:00:30 | Zoho still said **Probe COM-155 Account** while our side said **Probe COM-155 Account (pg edit while locked)**; nothing was queued to send it, so the two sides stayed apart |
+| Deleted in Zoho | 18:01:10.6 | the row here went inactive, as an account does, 11 s after the delete and 0.2 s after Zoho's notice |
+
+## What to know
+
+- **It is not silent, but it is not loud either.** The refusal is one flagged event, and the review email that goes out every fifteen minutes counts it with every other open flag ("N events await a person") and names it by operation. Nothing lists which records are locked, and nothing mails at the moment of refusal.
+- **The change does not catch up.** Once refused, the push is archived. Unlocking the record in Zoho does not re-send it; the next push of that row, whenever something else on it changes, carries it. Until then the two sides disagree on that field, and the nightly reconcile is the only thing that would notice (not exercised here).
+- **Decision:** acceptable for now, on the record. A lock is the office's call, the flag reaches a person within fifteen minutes, and closing it is [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag). Ten earlier refusals, all leads on 31 August, sit in review the same way.
+
+## Related
+
+- [How record locks sync](/handbook/sync-checks/record-locks)
+- [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag)
+- [Sync rules by module](/reference/sync-rules-by-module)

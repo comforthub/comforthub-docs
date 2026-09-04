@@ -1,0 +1,44 @@
+---
+title: "How time off requests sync"
+description: "A time off request and its days flow both ways in seconds, and a delete in Zoho removes the request with its days"
+kind: explanation
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="zoho-crm, supabase-backend, the-7am-app" />
+
+A time off request travels with its days. Our side owns the day count, the notes, the status and the submitted time; Zoho owns the review time and the review message; a delete in Zoho removes the request and its days here.
+
+## What was done
+
+Test <Linear issue="COM-149" />, run in production on 4 September 2026 with a request made in Zoho for the test: **Probe COM-149 Time Off** (Zoho record 5665332000031485044, our row 4022066c-96c0-416d-b5e4-66f6ce6396a3), one day on 15 September, on the probe technician's app user.
+
+1. Made in Zoho at 13:58:59 UTC.
+2. Review message set in Zoho to **Probe COM-149 zoho edit** and a second day, 16 September, added, at 14:00:01.
+3. Notes set on our side to **Probe COM-149 pg edit** and a third day, 17 September, added, at 14:01:49.
+4. Deleted in Zoho at 17:50:50.
+
+## What was seen
+
+| Step | In Zoho | On our side | Gap |
+|---|---|---|---|
+| Made in Zoho | 13:58:59 | 13:59:07.7 | 9 s, of which 0.5 s ours; the day arrived with it |
+| Edited in Zoho | 14:00:01 | 14:00:19.7 | 19 s, of which 1 s ours; the second day arrived with it |
+| Edited on our side | 14:01:51.9, 14:01:54.0 and 14:01:55.6, three pushes | 14:01:49 | in Zoho within 7 s, all three days with it |
+| Deleted in Zoho | 17:50:50 | 17:53:32.8, request and three days removed | 2¾ min, of which 0.2 s ours |
+
+The pushes came back as one notice at 14:02:07, applied once and not pushed again. Each day in Zoho carries the id of its row here, which is how a re-send finds the same day instead of making a second one.
+
+## What to know
+
+- A request typed into Zoho must name an app user in its **Supabase User Id** field, or it cannot be created here.
+- The status is a state machine on our side (pending, approved, rejected, cancelled). A status typed in Zoho is not applied here; review through the review time and message, which Zoho does own, or in the app. See [Approve timesheets and time off](/handbook/hours/approve-timesheets-and-time-off).
+- An edit on our side re-sends the whole request with all its days, so a one-field change shows as several pushes a couple of seconds apart.
+
+## Related
+
+- [How timesheets work](/handbook/hours/how-timesheets-work)
+- [Sync rules by module](/reference/sync-rules-by-module)
+- [How sync works](/handbook/running/how-sync-works)

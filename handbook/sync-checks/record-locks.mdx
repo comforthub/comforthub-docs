@@ -1,0 +1,43 @@
+---
+title: "How record locks sync"
+description: "A record lock made in Zoho lands here in seconds, its status flows both ways, and a delete in Zoho removes the row"
+kind: explanation
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="zoho-crm, supabase-backend" />
+
+A record lock is the business's own record of a customer, account, property, equipment or lead being locked, and why. It flows both ways: Zoho owns the type, the reason, the summaries and the dates; the status (locked or resolved) is shared; a delete in Zoho removes the row here.
+
+## What was done
+
+Test <Linear issue="COM-152" />, run in production on 4 September 2026 with a lock made in Zoho for the test: **Probe COM-152 Lock** (Zoho record 5665332000031460021, our row a0290520-6a1c-4a58-b30b-93647e3e5913), type Account, reason Dormant Account, on the probe account of <Linear issue="COM-136" />.
+
+1. Made in Zoho at 13:59:02 UTC.
+2. Locked summary changed in Zoho to **Probe COM-152 v2 (zoho edit)** just before 14:00.
+3. Status set on our side to resolved at 14:01:31.
+4. Deleted in Zoho at 17:50:50.
+
+## What was seen
+
+| Step | In Zoho | On our side | Gap |
+|---|---|---|---|
+| Made in Zoho | 13:59:02 | 13:59:14.9 | 13 s, of which 0.6 s ours |
+| Edited in Zoho | just before 14:00 | 14:00:27.6 | Zoho held the notice; our side applied it in 5.8 s, the slowest apply of the day |
+| Edited on our side | 14:01:31.5, Zoho showed **Resolved** | 14:01:31 | pushed in under a second |
+| Deleted in Zoho | 17:50:50 | 17:53:36.9, row removed | 2¾ min, of which 0.1 s ours |
+
+The push came back as one notice at 14:01:47, applied once and not pushed again. The account the lock named was untouched by the delete.
+
+## What to know
+
+- The reason list is fixed on both sides. Zoho's picklist has two stray entries, Option 1 and Option 2, that our side does not accept; a lock given one of those in Zoho would be refused here. Not exercised in this test.
+- This module is a note about a lock. It is not what locks the record in Zoho; that is Zoho's own record locking, see [A locked Zoho record is a one-way door](/handbook/sync-checks/a-locked-zoho-record).
+
+## Related
+
+- [A locked Zoho record is a one-way door](/handbook/sync-checks/a-locked-zoho-record)
+- [Sync rules by module](/reference/sync-rules-by-module)
+- [How sync works](/handbook/running/how-sync-works)

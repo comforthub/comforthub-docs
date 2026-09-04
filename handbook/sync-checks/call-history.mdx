@@ -1,0 +1,43 @@
+---
+title: "How call history syncs"
+description: "A call typed into Zoho lands here as a queued call, its direction flows both ways, and a delete in Zoho removes the row"
+kind: explanation
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="zoho-crm, supabase-backend, twilio" />
+
+Calls are made by the phone system: every Twilio call leg becomes a row here and a record in Zoho, in about a second. Typed into Zoho by hand, a call lands here too, and its direction flows both ways.
+
+## What was done
+
+Test <Linear issue="COM-151" />, run in production on 4 September 2026 with a call typed into Zoho for the test: **Probe COM-151 Call** (Zoho record 5665332000031455023, our row d421b303-5fab-4822-b173-e732c716eca8), inbound, 17:00 to 17:05 UTC, department Other matters.
+
+1. Made in Zoho at 17:43:57 UTC.
+2. Call type changed in Zoho to **Outbound** at 17:46:59.
+3. Direction changed on our side back to inbound at 17:49:49.
+4. Deleted in Zoho at 17:54:58.
+
+## What was seen
+
+| Step | In Zoho | On our side | Gap |
+|---|---|---|---|
+| Made in Zoho | 17:43:57 | 17:45:31.3, row created | 94 s, of which 1.6 s ours |
+| Edited in Zoho | 17:46:59 | 17:48:52.4, direction outbound | 113 s, of which 0.7 s ours |
+| Edited on our side | 17:49:50.6, Zoho showed **Inbound** | 17:49:48.8 | pushed in 1.8 s |
+| Deleted in Zoho | 17:54:58 | 17:55:25.5, row removed | 27 s, of which 0.1 s ours |
+
+The push came back as one notice at 17:51:52, applied once and not pushed again. The five real Twilio calls of the day (13:11 to 17:16) were each in Zoho within 4 seconds of landing here, and Zoho's echo of each came back 18 to 85 seconds later as one apply.
+
+## What to know
+
+- A call typed into Zoho is a thin row here: direction and start and end times, a made-up call id, the primary phone line, and a status of **queued** that nothing will ever move on. Only the direction and the two times are mirrored; the department, the result and the transcript fields are Zoho's alone. Nothing in the phone flow reads such a row, so it is harmless, but it is not a call.
+- Zoho was slow that afternoon: 94 to 113 seconds to send word of a create or an edit, against 25 to 130 seconds seen on other modules the same day. Our side took under 2 seconds each time.
+
+## Related
+
+- [How the phone works](/handbook/phone/how-the-phone-works)
+- [Twilio](/systems/twilio)
+- [Sync rules by module](/reference/sync-rules-by-module)

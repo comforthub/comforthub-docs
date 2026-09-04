@@ -146,6 +146,20 @@
               "handbook/running/what-replaces-the-audit-log",
               "handbook/running/email-safety"
             ]
+          },
+          {
+            "group": "Sync checks, module by module",
+            "pages": [
+              "handbook/sync-checks/checklist-templates",
+              "handbook/sync-checks/assigned-checklists",
+              "handbook/sync-checks/checklist-submissions",
+              "handbook/sync-checks/timesheets",
+              "handbook/sync-checks/time-off-requests",
+              "handbook/sync-checks/payroll",
+              "handbook/sync-checks/call-history",
+              "handbook/sync-checks/record-locks",
+              "handbook/sync-checks/a-locked-zoho-record"
+            ]
           }
         ]
       },

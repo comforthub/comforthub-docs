@@ -1,0 +1,43 @@
+---
+title: "How checklist templates sync"
+description: "Zoho is the only author of a checklist template; our side mirrors it and its questions, and never writes back"
+kind: explanation
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="zoho-crm, supabase-backend" />
+
+A checklist template flows one way, from Zoho to our side, with its questions. An edit made on our side stays on our side.
+
+## What was done
+
+Test <Linear issue="COM-145" />, run in production on 4 September 2026 with a template made for the test: **Probe COM-145 Template** (Zoho record 5665332000031445040, our row bc229460-4251-4fb5-8d12-d34368d5af23), category Maintenance, equipment type Furnace, two questions.
+
+1. Made in Zoho at 13:58:24 UTC.
+2. Renamed in Zoho to **Probe COM-145 Template v2**, questions re-saved, at 13:59:57.
+3. Renamed on our side to **Probe COM-145 Template (pg edit, must not push)**.
+4. A checklist submission was made from it and deleted (the test on the page after this one), then the template was deleted in Zoho at 17:54:58.
+
+## What was seen
+
+| Step | In Zoho | On our side | Gap |
+|---|---|---|---|
+| Made in Zoho | 13:58:24 | 13:58:28.9 | 5 s: Zoho held the notice 4 s, our side applied it in 0.9 s |
+| Edited in Zoho | 13:59:57 | 14:00:16.5 | 19 s, of which 0.9 s ours |
+| Edited on our side | still **v2** three and a half hours later | renamed | nothing flows up |
+| Deleted in Zoho | 17:54:58 | 17:55:22.7, template and both steps removed | 25 s, of which 0.1 s ours |
+
+Both questions arrived as steps of the template with their order, whether they are required, their unit and their expected range: **Supply air temperature** (required, 110 to 150 F) and **Static pressure** (optional, 0.2 to 0.8 inches of water).
+
+## What to know
+
+- **Nothing flows up, by design.** Our side has no way to send a template to Zoho, so a name typed here never reaches the CRM and nothing warns about it. Author templates in Zoho only; see [Author a checklist template](/handbook/catalog-and-staff/author-a-checklist-template).
+- **A template with submissions cannot be deleted.** By written rule, a delete in Zoho of a template that still has a checklist submission on our side is refused, the template row stays, and a human-review flag is raised, because the submission keeps the template it was answered against. Delete the submissions in Zoho first, then the template. The test followed that order, so the refusal itself was not exercised.
+
+## Related
+
+- [How checklist submissions sync](/handbook/sync-checks/checklist-submissions)
+- [Sync rules by module](/reference/sync-rules-by-module)
+- [How sync works](/handbook/running/how-sync-works)
