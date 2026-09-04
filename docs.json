@@ -100,6 +100,8 @@
               "handbook/parts/how-ordering-parts-works",
               "handbook/parts/order-stock",
               "handbook/parts/raise-a-purchase-order",
+              "handbook/parts/delete-a-purchase-order",
+              "handbook/parts/how-purchase-order-numbers-work",
               "handbook/parts/record-a-return"
             ]
           },

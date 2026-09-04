@@ -1,0 +1,50 @@
+---
+title: "Delete a purchase order and release its number"
+description: "Hand back a number you did not use, and remove a saved purchase order from the engine and Zoho together"
+kind: how-to
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="the-7am-app, supabase-backend, zoho-crm" />
+
+A purchase order number is handed out the moment you open a new sheet. If you cancel without saving, the number goes back. If you delete a saved purchase order, it leaves the engine, and Zoho's copy is deleted a few seconds later.
+
+## Before you start
+
+- You are signed in as a technician or higher. An apprentice cannot raise or delete a purchase order; see [Roles and what they can do](/handbook/app/roles-and-what-they-can-do).
+- The engine only takes a number back when it is the newest one handed out. If a colleague took a number after you, yours stays used and the series keeps a gap. A gap is harmless.
+
+## Steps
+
+<Steps>
+  <Step title="Cancel a sheet you did not save">
+    Open **Purchase orders**, tap **New**, and the number appears. Tap **Cancel**. The app hands the number back to the engine, and the next sheet anyone opens gets that same number.
+  </Step>
+  <Step title="Delete a saved purchase order">
+    Open the purchase order and tap **Delete**. The engine removes it and queues a delete for Zoho; the sync worker picks that up within a minute.
+  </Step>
+  <Step title="Check the number">
+    If the deleted purchase order carried the newest number, that number can go back too. Whether the app hands it back after a delete is unverified; the engine accepts it.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- The purchase order is gone from the work order's **Purchase orders** section and from Zoho.
+- Tested 4 September 2026 from the engine side, signed in as the probe technician: PO1057 was handed out, a purchase order with it was saved on the probe work order WO465, Zoho had its copy 4 seconds later, the delete reached Zoho 4 seconds after the row went, the number went back, and the next sheet was handed PO1057 again. The counter ended where it started.
+- The scan file is not removed by the engine when the row goes. Whether the app deletes it is unverified; no scan was attached on 4 September.
+
+## If it did not work
+
+- The number did not go back: it was no longer the newest one. Nothing to fix; the series keeps a gap.
+- Zoho's copy is still there after two minutes: see [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync).
+- The test behind this page is <Linear issue="COM-84" />.
+
+## Related
+
+- [How ordering parts works](/handbook/parts/how-ordering-parts-works)
+- [How purchase order numbers work](/handbook/parts/how-purchase-order-numbers-work)
+- [Raise a purchase order at the counter](/handbook/parts/raise-a-purchase-order)
+- [Zoho CRM](/systems/zoho-crm)
