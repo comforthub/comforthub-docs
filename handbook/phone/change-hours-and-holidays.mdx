@@ -2,9 +2,52 @@
 title: "Change opening hours and holidays"
 description: "Control when the line answers, queues, or goes to voicemail"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
-<NotWrittenYet issue="COM-98" />
+<Touches systems="twilio, supabase-backend, the-7am-app" />
+
+Three switches decide whether a caller reaches a queue or hears the closed greeting: the closed switch for the whole line, the holiday list, and each department's weekly hours. The phone reads them fresh every 30 seconds, so a change is live within half a minute.
+
+## Before you start
+
+- You are a super admin.
+- You know which department the change is for. Sales and other matters keep office hours (Monday to Friday, 8 am to 5 pm Toronto time); support is marked always open and ignores hours and holidays.
+- Times are Toronto time, whatever the caller's own clock says.
+
+## Steps
+
+<Steps>
+  <Step title="Close the whole line right now">
+    Turn on the closed switch in the phone settings. Every caller to the main line hears "Our office is currently closed" and is asked to leave a message. A technician's personal line still rings its owner. Turn the switch off again when you are back; nothing else resets it.
+  </Step>
+  <Step title="Add a holiday">
+    Add the date with a label, for every department or for one. On that day the menu still plays, and a caller who picks a department on holiday hears the closed greeting and voicemail. A department with no holiday that day answers as usual. The next 20 statutory days to the end of 2027 are already loaded. A holiday can be read from the app but is added in the engine.
+  </Step>
+  <Step title="Change a department's weekly hours">
+    Each department has an opening and a closing time per weekday in the phone settings. Outside those times the caller who picks that department hears the closed greeting and voicemail.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+Tested 4 September 2026 (<Linear issue="COM-98" />) by replaying the calls Twilio would send, from a made-up caller named "Probe simulator":
+
+- Closed switch on: a call to the main line was answered with the closed greeting and the voicemail prompt in under 1 second. The voicemail was on our side 1 second after the caller finished, and the call was in Zoho's call history 1 second after it began.
+- Holiday on "other matters" for that day: pressing 3 gave the closed greeting and voicemail. In the same minute, pressing 1 for sales, which keeps the same hours but had no holiday, went to the sales queue.
+- Each change was picked up on the next call after 30 seconds.
+- The weekly hours were not changed during that test, so the hours check itself was not re-timed that day.
+
+## If it did not work
+
+- Wait 30 seconds and call again; the phone caches its settings for that long.
+- Check the closed switch is off. It stays on until someone turns it off.
+- A holiday for one department does not close the others.
+
+## Related
+
+- [How the phone works](/handbook/phone/how-the-phone-works)
+- [Handle voicemail and callbacks](/handbook/phone/handle-voicemail-and-callbacks)
+- [Twilio](/systems/twilio)

@@ -120,9 +120,12 @@
               "handbook/phone/how-the-phone-works",
               "handbook/phone/set-up-a-phone-agent",
               "handbook/phone/change-hours-and-holidays",
+              "handbook/phone/reach-an-agent-by-extension",
               "handbook/phone/handle-voicemail-and-callbacks",
               "handbook/phone/text-a-customer",
-              "handbook/phone/transfer-and-record-calls"
+              "handbook/phone/how-card-numbers-stay-out-of-texts-and-transcripts",
+              "handbook/phone/transfer-and-record-calls",
+              "handbook/phone/how-a-twilio-error-reaches-the-owner"
             ]
           },
           {

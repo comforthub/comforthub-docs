@@ -1,0 +1,44 @@
+---
+title: "How card numbers stay out of texts and transcripts"
+description: "The engine masks a card number the moment it is written, and an hourly scan emails the owner if one ever slips through"
+kind: explanation
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="twilio, supabase-backend, resend" />
+
+A customer will sometimes text a card number or read one out to voicemail. The engine never keeps it. Every text in or out, every voicemail transcript, every call transcript and summary is masked on the way in, so what the app shows, what the push notification carries and what Zoho receives is already clean.
+
+## What a masked message looks like
+
+| Written by the customer | Kept by the engine |
+|---|---|
+| my visa card number is 4242 4242 4242 4242 | my visa card number is `[CARD ****4242]` |
+| expiry 12/28 | expiry `[EXP]` |
+| cvv 123 | cvv `[CVV]` |
+
+The last four digits are kept so the office can still say "the card ending 4242". A number is treated as a card only when it passes the checks a real card passes, so a phone number or an invoice number is left alone.
+
+## The hourly scan
+
+Every hour, at 45 minutes past, the engine re-reads every stored text, transcript and summary. If a card number is found, the owner gets an email titled "[ops] a card number is stored in …" naming the row, with the fix to run, once per row until it is cleaned. The card itself is never in the email.
+
+On 4 September 2026 the scan found 0 rows across all seven places it looks, and that email has never been sent.
+
+## What was observed
+
+Tested 4 September 2026 (<Linear issue="COM-108" />) with a made-up caller named "Probe simulator" and the test card 4242 4242 4242 4242:
+
+- An inbound text carrying the card, an expiry and a security code was stored masked, as in the table above, and the "new text" push to the three agents carried the masked wording.
+- A voicemail transcript reading the same card out loud was stored masked.
+- The scan run straight afterwards found nothing to report.
+
+Not tested: a card typed into an outbound text from the app. The same masking runs on that write, but nobody typed one that day. The alert email was not exercised either, because nothing was stored for it to find.
+
+## Related
+
+- [Text a customer](/handbook/phone/text-a-customer)
+- [Handle voicemail and callbacks](/handbook/phone/handle-voicemail-and-callbacks)
+- [Emails we send](/reference/emails-we-send)

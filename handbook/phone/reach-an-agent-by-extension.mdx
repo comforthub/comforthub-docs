@@ -1,0 +1,52 @@
+---
+title: "Reach an agent by extension or personal line"
+description: "How a caller rings one person instead of a queue, and where the call goes if nobody answers"
+kind: how-to
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="twilio, supabase-backend, the-7am-app" />
+
+A caller can ring one agent two ways: press star on the main menu and dial an extension, or call the agent's own number. Either way the agent's app rings for 25 seconds, and an unanswered call becomes a voicemail.
+
+## Before you start
+
+- The agent has an office extension on their staff record in Zoho. The engine copies it to the app; the owner is 700 and Jackson is 303.
+- The agent is an active phone agent and signed in to the app; see [Set up a phone agent](/handbook/phone/set-up-a-phone-agent).
+- For a personal line: a second number on the account, with that agent as its owner. On 4 September 2026 the business had one number and no personal lines.
+
+## Steps
+
+<Steps>
+  <Step title="Dial an extension from the menu">
+    The caller presses star during the greeting, hears "Please enter the extension, followed by the pound key", and types the extension. The agent's app rings. An unknown extension hears "Sorry, that extension is not in service" and lands back on the menu; after three tries the line says goodbye and hangs up.
+  </Step>
+  <Step title="Call a personal line">
+    A number that has an owner rings only that owner, even when the closed switch is on. The menu does not play and the queues are not offered.
+  </Step>
+  <Step title="Nobody answers">
+    After 25 seconds the caller hears the voicemail prompt. A message left on a personal line is filed under that line, not the main one.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+Tested 4 September 2026 (<Linear issue="COM-101" />) by replaying the calls Twilio would send, from a made-up caller named "Probe simulator":
+
+- Star on the menu gave the extension prompt. Extension 303 rang Jackson's app identity and 700 rang the owner's; 999 got "not in service" and went back to the menu.
+- A temporary personal number was created with the probe technician as owner. A call to it rang only that technician while the closed switch was on; after "no answer" it went to the voicemail prompt, and the message was filed under that number 1 second later. The number was removed afterwards.
+- Every call was in Zoho's call history between 1 and 4 seconds after it began.
+- Not tested: a real phone ringing. That needs a signed-in device; the replay only shows which agent was rung.
+
+## Good to know
+
+- Two people with the same extension ring nobody; the caller hears "not in service". Fix the duplicate in Zoho.
+- A call to a personal line is not recorded and the caller is not told it might be.
+
+## Related
+
+- [How the phone works](/handbook/phone/how-the-phone-works)
+- [Handle voicemail and callbacks](/handbook/phone/handle-voicemail-and-callbacks)
+- [Set up a phone agent](/handbook/phone/set-up-a-phone-agent)
