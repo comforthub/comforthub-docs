@@ -26,6 +26,12 @@ A $5.00 line invoiced at $5.65: Ontario HST is always applied. A job with only w
 
 A discount or due date changed on the Zoho invoice reaches our side and QuickBooks within seconds. A discount changed on our side reaches both too. The amount itself is Zoho's: it is computed from the lines and never typed.
 
+Seen 4 September 2026 on the probe invoice: a due date changed here was in Zoho 5 seconds later; the processing-fee switch flipped in Zoho was here 28 seconds later, all but a second of it Zoho holding the notice. The **Status** field in Zoho did not take an edit: Delivered was back to Sent within half a minute, and why is unverified. Only Void means the same thing on both sides, so use [Void an invoice](/handbook/invoicing/void-an-invoice) and leave the status alone otherwise.
+
+## Delete
+
+Deleting an invoice in Zoho changes nothing here or in QuickBooks. A human-review flag is raised within seconds, the invoice keeps its number, amount and payments on our side, and Zoho no longer has it or its PDFs. Zoho also unlinks the invoice's Payments, silently. See [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
+
 ## Void
 
 Setting the Zoho invoice to Void voids it in QuickBooks within seconds and files a VOID PDF. See [Void an invoice](/handbook/invoicing/void-an-invoice).

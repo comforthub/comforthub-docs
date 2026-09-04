@@ -58,6 +58,14 @@ Two things to know about work orders, seen the same day: a line item changed on 
 
 A technician made in Zoho with an email address gets an app login and an invite email from our side within a second of arriving, and a phone agent made in Zoho has to name an existing app user or it cannot be created here. Seen 4 September 2026.
 
+Tested 4 September 2026 on the four money modules, using the day's probe invoice INV008348, its two payments, and a subscription and a subscription payment typed into Zoho on the probe account. An invoice is never typed into Zoho; it is made here and was in Zoho 6 seconds later, and a payment recorded in QuickBooks was a Zoho Payment 3 to 4 seconds after it landed here. The subscription and the subscription payment typed into Zoho were here 8 and 4 seconds later. Every edit made on our side was in Zoho within 2 to 7 seconds; Zoho took 22 to 53 seconds to send word of an edit and 3 to 4 seconds for a delete, and our side acted within a second of the notice. Deleting the payment, the invoice and the subscription payment in Zoho changed nothing here: each raised a human-review flag 4 seconds after the delete, and each row still stands with its QuickBooks record while Zoho no longer has it. Deleting the subscription in Zoho left the row here, marked inactive, 3 seconds later.
+
+Three things to know about the money modules, seen the same day:
+
+- **A payment or a subscription edited in Zoho is silently undone.** Our side owns every mirrored field on those two (amount, method, plan, monthly amount, protection, active), so a value typed in Zoho is not applied here and is overwritten the next time our side pushes. Nothing flags it. The one field Zoho owns on a subscription payment, which subscription it belongs to, does reach us.
+- **A subscription payment typed into Zoho looks paid here.** It gets a paid-on time and a made-up Stripe reference, and nothing tells Stripe or QuickBooks. The real path is Stripe; do not type one in.
+- **The invoice status in Zoho did not take an edit.** Delivered, typed on the probe invoice, was back to Sent within half a minute; why is unverified. Zoho offers Created, Delivered and Void, our side accepts Draft, Sent and Void, so only Void means the same thing on both sides. Deleting an invoice in Zoho also unlinks its Zoho Payments, and Zoho sends no word of that.
+
 ## Three rules that apply to every module
 
 - **A locked record in Zoho is a one-way door.** A change made here is skipped and noted, and nothing alarms. Unlocking is the office's call.

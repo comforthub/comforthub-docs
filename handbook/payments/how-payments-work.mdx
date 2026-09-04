@@ -32,6 +32,10 @@ Seen 4 September 2026 on a fresh probe customer, invoice INV008348 for $5.65, pa
 
 On our side the invoice went Partial with $3.65 owing after the first payment and Paid after the second, each with its receipt PDF stored, and the receipt email left 21 seconds after the second payment. No receipt after the first, on purpose. The payment method in Zoho is the one chosen in QuickBooks (Cash, Cheque, Credit Card or e-Transfer); a payment recorded with any other method is labelled Credit Card and flagged for a person.
 
+## Edits and deletes in Zoho
+
+Our side owns the amount and the method on a payment. A method changed here was in Zoho within 3 seconds (seen 4 September 2026); a method typed in Zoho is not applied here and is overwritten at the next push, and nothing flags it. Deleting a Payment in Zoho changes nothing here or in QuickBooks: a human-review flag is raised within seconds and the payment stands. See [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
+
 ## The pay page
 
 The pay link in the invoice email opens the invoice with its lines, total and PDF. Paying there records the payment in QuickBooks, and QuickBooks tells us as above.
