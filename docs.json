@@ -142,6 +142,7 @@
               "handbook/running/fix-a-record-that-did-not-sync",
               "handbook/running/redrive-a-dead-letter",
               "handbook/running/resolve-a-human-review-flag",
+              "handbook/running/what-replaces-the-audit-log",
               "handbook/running/email-safety"
             ]
           }

@@ -2,9 +2,48 @@
 title: "The Supabase backend"
 description: "The database, the sync, the workers and the ten functions that run the automation"
 kind: reference
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+Supabase is the engine. It holds the database every other system reads, runs the sync with Zoho in both directions, and runs the workers that talk to QuickBooks, Twilio, Stripe, Resend and the app. The app, the pay page and the website talk only to it.
 
-<NotWrittenYet issue="COM-157" />
+## The parts
+
+| Part | What it does |
+|---|---|
+| The database | One row per customer, account, lead, property, piece of equipment, work order, invoice, payment and so on, plus a crosswalk that remembers which Zoho record each row mirrors |
+| The webhook door | One address Zoho, QuickBooks, Stripe and Twilio post to. Each notification is written down first, then queued |
+| The sync worker | Drains the inbound queue (Zoho's notifications) and the outbound queue (our changes to push to Zoho). Woken by the door and, as a backstop, once a minute |
+| The action worker | Runs the follow-ups a change triggers: the QuickBooks customer, the property imagery, the technician invite, the emails. Same wake pattern |
+| Scheduled jobs | The once-a-minute wakes, the alert watches, the nightly sweeps; see [Scheduled jobs](/reference/scheduled-jobs) |
+| The ledger | Every attempt at every outside system is one line, with its outcome. Alerts and the human-review list read from it |
+
+## What it did when measured
+
+One test record was pushed through each of five modules on 4 September 2026. Our side of every step:
+
+| Step | Time on our side |
+|---|---|
+| Apply a Zoho create, edit or delete once the notification arrived | 0.1 to 2.4 s |
+| Push an edit made here to Zoho | 1.0 to 2.1 s |
+| Push an edit made here to QuickBooks (customer only) | 0.8 s |
+| Apply Zoho's echo of our own push | applied once, pushed nothing back |
+
+A delete in Zoho left the row in place and marked inactive, and tombstoned its crosswalk link, in all five modules. Deleting the account did not touch its property or equipment.
+
+## When Zoho refuses the login refresh
+
+The engine holds one Zoho login token, shared by every worker and refreshed about once an hour. Zoho refuses a refresh when too many arrive in a row, and scripts run by hand against Zoho use the same allowance.
+
+Seen on 4 September 2026: five audit scripts run in two minutes used the allowance up at 13:01 UTC. The worker's next refresh at 13:03 was refused, and every refresh for the next 6 minutes with it (36 refusals). The five notifications waiting in the queue were retried with a growing pause between tries; the refresh went through at 13:12 and every one of them applied within the same second. Nothing was lost and nothing was dead-lettered, but the customer created at 13:03 was not on our side until 13:12. Two things to know:
+
+- A message gets 10 tries, with pauses that grow to about 5 minutes, so the queue rides out a refusal spell of roughly 15 to 25 minutes on its own. Longer than that and the message becomes a dead letter; see [Redrive a dead letter](/handbook/running/redrive-a-dead-letter).
+- Each refused refresh raises its own human-review flag, so a spell like this leaves a few dozen flags that all say the same thing. Resolve them together; see [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
+
+Do not run more than one Zoho script in a short spell while the sync is busy.
+
+## Related
+
+- [How sync works](/handbook/running/how-sync-works)
+- [Zoho CRM](/systems/zoho-crm)
+- [How alerts work](/handbook/running/how-alerts-work)
+- [Environments and secrets](/systems/environments-and-secrets)

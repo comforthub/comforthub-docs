@@ -21,6 +21,17 @@ Seen on 3 September 2026, two payments on a $5.65 invoice:
 
 Each step landed within 13 seconds of the payment.
 
+## The Zoho half, watched once more
+
+Seen 4 September 2026 on a fresh probe customer, invoice INV008348 for $5.65, paid $2.00 then $3.65 in QuickBooks:
+
+| After | In Zoho | How long |
+|---|---|---|
+| $2.00 | a Payment named "INV008348 Payment", $2, Cash, linked to the invoice and the account; the invoice PDF and a paid copy attached to the invoice | 8 seconds |
+| $3.65 | a second Payment, $3.65; the invoice's **Payment Status** Paid; the work order's **Billing Status** Paid | 9 seconds for the Payment, 15 for the work order |
+
+On our side the invoice went Partial with $3.65 owing after the first payment and Paid after the second, each with its receipt PDF stored, and the receipt email left 21 seconds after the second payment. No receipt after the first, on purpose. The payment method in Zoho is the one chosen in QuickBooks (Cash, Cheque, Credit Card or e-Transfer); a payment recorded with any other method is labelled Credit Card and flagged for a person.
+
 ## The pay page
 
 The pay link in the invoice email opens the invoice with its lines, total and PDF. Paying there records the payment in QuickBooks, and QuickBooks tells us as above.

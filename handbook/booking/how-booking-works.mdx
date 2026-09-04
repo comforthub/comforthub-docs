@@ -27,6 +27,10 @@ Every line is billed to the customer or to warranty (and, for plan customers, to
 
 - Any line billed to the customer: **Draft**, to be invoiced on completion.
 - Only warranty lines: **Non-Billable**. No invoice will ever be made.
+- Only plan lines: **Non-Billable** too. A line counts as a plan line when the work order names the customer's subscription (or the customer has exactly one live plan), the plan includes that kind of visit, and the line is the matching maintenance product: Routine Furnace Maintenance for a heating visit, Routine Condenser Maintenance for a cooling visit, Routine Tankless Maintenance for a tankless visit. Any other line on a plan customer's job bills as usual.
+- A plan job is also written onto the customer's subscription in Zoho as a visit (**Subscription Visits**: the service, Scheduled, and the work order). When the job completes, the visit turns Completed with the date.
+
+Tested 4 September 2026: a warranty-only job and a plan-only job (one Routine Furnace Maintenance line on an All-Season customer) were both **Non-Billable** on our side the second they arrived, and Zoho showed it 5 seconds later. The plan job's visit was on the subscription in Zoho one second after the job arrived. That visit appeared twice (the same service, same job) because the job and its line arrived in the same second and were logged by two hands at once; the next logging pass on that job folds them into one. Known, reported for filing.
 
 ## Emails and pushes
 

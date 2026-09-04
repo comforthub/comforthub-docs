@@ -1,10 +1,86 @@
 ---
 title: "Statuses"
-description: "Every status a work order, appointment, invoice, quote, timesheet or request can have, and what it means"
+description: "Every status a work order, appointment, invoice, lead, subscription, timesheet, time off request or checklist can have, and what it means"
 kind: reference
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+The status you see in Zoho is the same one our side holds, spelled the way Zoho shows it. Each table says who sets the value and what it makes happen.
 
-<NotWrittenYet issue="COM-52" />
+## Work order
+
+| Status | Set by | Means |
+|---|---|---|
+| New | the office | booked, no visit yet |
+| Scheduled | the office, or the dispatch widget | it has at least one appointment |
+| Completed | the technician's **Complete** tap, or the office in Zoho | the work is done; billing starts |
+| Cancelled | the office | the job is off; a live invoice is voided |
+
+## Work order billing status
+
+| Billing status | Set by | Means |
+|---|---|---|
+| Not yet invoiced | the engine, at birth | no decision yet |
+| Draft | the engine, when a line is billed to the customer | an invoice will be made on completion |
+| Non-Billable | the engine, when every line is warranty or plan | no invoice will ever be made |
+| Invoiced | the engine, when the invoice reaches QuickBooks | the customer owes it |
+| Paid | the engine, when QuickBooks reports the last payment | nothing owed |
+| Cancelled | the engine, when the job is cancelled | closed with nothing to bill |
+
+Seen 4 September 2026: Draft the second a job arrived, Invoiced 11 seconds after the technician completed it, Paid 21 seconds after the last payment was recorded in QuickBooks. Two older values, "No charge (subscription)" and "No charge (warranty)", are still accepted for records that carry them but are no longer written.
+
+## Appointment
+
+| Status | Set by | Means |
+|---|---|---|
+| Scheduled | the office | the visit is booked; the customer is told if **Notify Client** is on |
+| In progress | the technician | the technician has started the visit |
+| Completed | the technician's **Complete** tap | the visit is done, with the time of the tap |
+| Cancelled | the office | the visit is off |
+
+## Invoice
+
+An invoice carries two statuses. **Status** says where the document is; **Payment Status** says what is owed.
+
+| Status | Means |
+|---|---|
+| Draft | made by the engine; our side keeps Draft after sending |
+| Sent | Zoho's own mark once the invoice email has gone; seen on Zoho only |
+| Void | cancelled; the QuickBooks copy is voided too |
+
+| Payment status | Set by | Means |
+|---|---|---|
+| Due | the engine, at creation | the whole amount is owed |
+| Partial | the engine, after a payment smaller than the balance | some is owed |
+| Paid | the engine, after the balance reaches zero | nothing owed; the receipt goes out |
+| Void | the engine, when the invoice is voided | nothing owed, nothing collectible |
+| New, In progress, Overdue | older values | accepted, not written today |
+
+## Lead
+
+New, Contacted, Qualified, Scheduled, Quote sent, Quote accepted, No response, Lost, and Converted. Only **Converted** does anything: it makes the customer. See [Convert a lead](/handbook/new-customers/convert-a-lead).
+
+## Subscription
+
+Active, Trialing, Past due, Paused, Unpaid, Incomplete, Incomplete expired, Canceled. Active, Trialing and Past due are the three that make a plan visit free; the rest bill as usual.
+
+## Timesheet and time off
+
+| Record | Statuses |
+|---|---|
+| Timesheet | Draft, Submitted, Approved, Rejected. Rejected can be edited and submitted again. |
+| Time off request | Pending, Approved, Rejected, Cancelled. Only Pending can be cancelled by the requester. |
+
+## Checklist and task
+
+| Record | Statuses |
+|---|---|
+| Assigned checklist | Pending, In progress, Completed. The last Completed time on a job is what Zoho shows as the work order's Completed At. |
+| Task | Pending, In progress, Completed |
+| Callback request | Pending, Attempted, Done, Canceled, Needs attention |
+
+## Related
+
+- [Complete a work order](/handbook/on-site/complete-a-work-order)
+- [How invoicing works](/handbook/invoicing/how-invoicing-works)
+- [How payments work](/handbook/payments/how-payments-work)
+- [Names](/reference/names)

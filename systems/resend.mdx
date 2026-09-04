@@ -1,10 +1,47 @@
 ---
 title: "Resend"
-description: "Transactional email: the templates, the sender addresses, and the safety guard"
+description: "The one door every email leaves through: the sender addresses, the safety guard, and the ledger"
 kind: reference
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+Resend is the service that delivers our email. The engine builds each message, checks the address, records it in a ledger, and hands it to Resend. Nothing in the business sends customer email any other way.
 
-<NotWrittenYet issue="COM-161" />
+## What it sends
+
+Every message on [Emails we send](/reference/emails-we-send): booking confirmations and moved-appointment notices, invoices, receipts, quotes, app logins, and the operator alerts. Each is a template the engine fills in; there is nothing to edit in Resend itself.
+
+## Sender addresses
+
+| From | Used for |
+|---|---|
+| Comfort Hub, support address | appointment emails, quotes |
+| Comfort Hub, billing address | invoices and receipts |
+| Comfort Hub Ops, ops address | operator alerts |
+
+All three are on the comforthub.ca domain, which is verified in Resend so mail is signed and lands in inboxes. Replies to a customer email go to the address it came from.
+
+## The safety guard
+
+Before any message leaves, the address is checked against a short list kept in the engine's code:
+
+- The owner's own address, and any address on the test alias domain, is delivered to as written.
+- Any other address is redirected to the owner, with "[TEST → the address it was meant for]" at the front of the subject.
+
+Today that means no customer can receive an email from the engine. Widening the list is a deliberate, owner-only change. See [Email safety](/handbook/running/email-safety).
+
+## The ledger
+
+Every send is one row in a table on our side, written before the message leaves and completed with Resend's message id after. One live row per email per record, so a booking is never confirmed twice; a resend has to be asked for on purpose. The row is the proof a message went: it holds the recipient, the subject, the time, and the id Resend gave it.
+
+Seen 4 September 2026: a booking confirmation, a moved-appointment notice, an invoice and a receipt each left within a second of the event that owed them, and each has its Resend id in the ledger.
+
+## Limits worth knowing
+
+- The key the engine holds can only send. Reading a sent message back out of Resend needs a wider key, which the engine does not have on purpose.
+- Two alerts fired in the same second once collided on Resend's duplicate check and one logged as failed. Known.
+
+## Related
+
+- [Emails we send](/reference/emails-we-send)
+- [Email safety](/handbook/running/email-safety)
+- [How booking works](/handbook/booking/how-booking-works)

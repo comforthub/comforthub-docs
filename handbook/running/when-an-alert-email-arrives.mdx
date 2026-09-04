@@ -39,6 +39,8 @@ An alert names one kind of trouble and, where it can, the record involved. The j
 
 - The next run of that watch sends nothing.
 - Seen 3 September 2026: two invoice refusals on one probe job raised one dead-letter email and one human-review email at 05:30 UTC, and the 05:45 run repeated neither.
+- Seen 4 September 2026, each provoked once on purpose and each landing once: five wake-up posts sent to a route that does not exist ("6 wake-up posts did not arrive", the sixth was a real one), three timed jobs made to divide by zero ("3 scheduled jobs failing"), a queued action nobody owns ("1 queued action no drain owns"), the payroll threshold widened to 200 days ("the payroll calendar runs out in 111 days"), a probe payment deleted in Zoho ("a CRM delete of a payment was ignored", 4 minutes after the delete), and the sync worker's wake-up paused for 23 minutes with one message waiting ("1 queue stalled, oldest 21m", on the 13:30 UTC run). The 13:15 run found the same wake-up trouble and sent nothing.
+- A watch keyed on the newest failure sends again when a new failure joins the old ones: the wake-failure email went out a second time nine minutes later as "7 wake-up posts did not arrive" when one more real post timed out. That is by design; read the newest line, not the count.
 
 ## If the same alert keeps coming
 

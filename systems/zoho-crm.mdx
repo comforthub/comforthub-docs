@@ -2,9 +2,43 @@
 title: "Zoho CRM"
 description: "The office's system of record: modules, widgets, and what it owns"
 kind: reference
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+Zoho is where the office works. Every customer, account, lead, property and piece of equipment is typed or converted there, and the engine keeps a copy of 27 modules in Supabase. Which side wins for each kind of record is on [Who is the source of truth](/systems/who-is-the-source-of-truth).
 
-<NotWrittenYet issue="COM-127" />
+## What Zoho tells us, and how fast
+
+Zoho sends the engine a notification for every create, edit and delete in a watched module. The engine then reads the record back from Zoho and applies it. Measured on 4 September 2026 with one test record in each of five modules:
+
+| Module | Create in Zoho, seen here | Edit in Zoho, seen here | Delete in Zoho, row inactive here |
+|---|---|---|---|
+| Contacts (customers) | 27 s to Zoho's notification, then stalled 9 min (see below) | 40 s | 96 s |
+| Accounts | 128 s | 23 s | 110 s |
+| Leads | 122 s | 23 s | 52 s |
+| Properties | 106 s | 20 s | 68 s |
+| Assets | 103 s | 19 s | 42 s |
+
+Nearly all of each number is Zoho holding its notification. From the moment Zoho's notification reaches our door to the change being on our side took 0.1 to 2.4 seconds every time. Zoho's delay was 19 to 128 seconds on this day; on 3 September it was 1 second most of the time, with one 40-second to 2½-minute spell. Nothing on our side shortens it.
+
+## What Zoho owns
+
+| Zoho does | Meaning for us |
+|---|---|
+| Holds the record locks | A locked record is skipped by every push from our side; unlocking is the office's call |
+| Keeps deleted records in its recycle bin | A restore from the bin arrives here as a create and links back to the same row |
+| Sends the notifications above | Each one carries the module, the operation and the record id; nothing else |
+| Hosts the widgets | The dispatch and sales calendars read and write Zoho fields only; see [CRM widgets](/systems/crm-widgets) |
+| Issues the engine's login | One shared token, refreshed about once an hour; see [The Supabase backend](/systems/supabase-backend) for what happens when Zoho refuses a refresh |
+
+Zoho does not hold quotes, stock lists, tasks, notes, app users or the emails we send. Those live only in Supabase; see [Names](/reference/names).
+
+## Fields Zoho has that we do not carry
+
+Each mirrored module has a short list of fields the engine ignores on purpose: name halves that a computed full name already covers, the record-lock block, coordinates the imagery step writes itself, and the QuickBooks id the customer step owns. A weekly check compares Zoho's field list with the mirror and fails the moment a new field appears that is neither carried nor on the ignore list. As of 4 September 2026, Contacts, Accounts, Leads, Properties and Assets are held to that check; the other modules are reported, not failed, until their walk.
+
+## Related
+
+- [How sync works](/handbook/running/how-sync-works)
+- [Sync rules by module](/reference/sync-rules-by-module)
+- [The Supabase backend](/systems/supabase-backend)
+- [Who is the source of truth](/systems/who-is-the-source-of-truth)

@@ -1,10 +1,52 @@
 ---
 title: "Draw a service territory"
-description: "Add or change the map areas that properties fall into"
+description: "Add a territory in Zoho, have a developer draw its map area, and watch properties fall into it"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-27" />
+<Touches systems="zoho-crm, supabase-backend" />
+
+A territory is two things: a record in Zoho with a name, a code and an active flag, and a map area that lives only on our side. You create the record; a developer draws the area. From then on every new property whose address falls inside the area gets that territory on both sides.
+
+## Before you start
+
+- Zoho open, on **Service Territories**.
+- A short code for the territory in the same shape as the others (for example TERR-EAST-003).
+- The rough map area agreed, so the developer knows what to draw.
+
+## Steps
+
+<Steps>
+  <Step title="Create the record">
+    In **Service Territories**, click **Create**. Fill in **Name** and **Major Service Area** (the code), tick **Is Active**, and save.
+  </Step>
+  <Step title="Ask for the map area">
+    Zoho has no map. Ask a developer to draw the area on our side; that is a database change with the territory's code. Until it is drawn, the territory exists but no property falls into it.
+  </Step>
+  <Step title="Check a property">
+    Add or convert a customer whose address sits inside the area. Open the property in Zoho: **Major Service Area** shows the new territory.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+Tested 4 September 2026 with a probe territory whose area was drawn over Cornwall:
+
+- The record was on our side 2 seconds after the sync picked it up, with name, code and active flag.
+- A new property inside the area had its map position, its Street View picture and the territory within 4 seconds of being created, and Zoho showed the territory on the property 2 seconds after that.
+- Switching **Is Active** off on our side reached Zoho in 2 seconds, and switching it back on took 2 seconds too. The active flag on all eight live territories reads the same in both places.
+
+## Good to know
+
+- The **Allowed Time Slots** ticked in Zoho do not reach our side. The arrival windows a territory offers are set by a developer today.
+- Zoho's **Supabase Territory Id** stays empty on a territory you create in Zoho. That is expected; the link is kept on our side.
+- A property only gets its territory when its address can be placed on the map. An address the map does not know keeps no territory and no picture; fix the address and the property is tried again.
+- Two overlapping areas: the property goes to the one whose code sorts first.
+
+## Related
+
+- [What lives where](/handbook/catalog-and-staff/what-lives-where)
+- [How a lead becomes a customer](/handbook/new-customers/how-a-lead-becomes-a-customer)
+- [Names](/reference/names)

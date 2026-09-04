@@ -22,8 +22,9 @@ Each runs on its own clock, looks for one kind of trouble, and emails the operat
 | Dead-letter watch | every 15 minutes | a message that died in a queue |
 | Human-review watch | every 15 minutes | an event waiting for a person |
 | Delete-refused watch | every 15 minutes | a Zoho delete the rules refused |
-| Queue-health watch | every 15 minutes | a queue growing faster than it drains |
-| Wake-failure watch | every 15 minutes | a wake-up call that did not reach its worker |
+| Queue-health watch | every 15 minutes | a message on a live queue that nobody has picked up for 15 minutes |
+| Wake-failure watch | every 15 minutes | five or more wake-up calls in 15 minutes that did not reach their function |
+| Cron-failure watch | no timer of its own; runs whenever any other watch wakes the alert function | three or more different timed jobs failing in 15 minutes |
 | Orphan-action watch | 20 past the hour | a queued action no worker owns |
 | Sweep watch | 25 past the hour | a nightly drift sweep that has not run |
 | Cancelled-but-collectible watch | 35 past the hour | a cancelled job whose invoice is still owed in QuickBooks |
@@ -61,7 +62,13 @@ Each runs on its own clock, looks for one kind of trouble, and emails the operat
 
 ## The nightly drift sweep
 
-The sweep itself runs from GitHub, not from this list. It compares every synced record on both sides and opens a finding for each difference. See [How sync works](/handbook/running/how-sync-works).
+The sweep itself runs from GitHub, not from this list. It compares every synced record on both sides and opens a finding for each difference, and closes a finding the next time the two sides agree. See [How sync works](/handbook/running/how-sync-works).
+
+- Scheduled at 2:20 am (6:20 UTC). GitHub runs scheduled jobs late when it is busy: the last four nightly runs started at 7:40, 7:19, 7:15 and 7:19 am, about five hours after the hour they were asked for. The sweep watch tolerates 48 hours, so the delay does not page.
+- One run takes about a minute. On 4 September 2026 a run by hand started at 9:12 am and had written its findings by 9:13, and the same run is what the sweep watch reads.
+- The reconciler, which copies Zoho's value over ours for an open finding, has no schedule. A person runs it from GitHub, and it prints what it would write without writing unless told otherwise. On 4 September 2026 a dry run listed 57 planned writes across 55 appointments and 2 technicians and wrote nothing.
+
+The cron-failure watch above has no timer of its own on purpose: if the timed jobs are failing, a timer is the wrong thing to rely on. It rides on every other wake instead, which means it is quiet when every other watch is quiet too.
 
 ## Related
 

@@ -9,10 +9,12 @@ Every module below is mirrored between Zoho and Supabase. Almost all flow both w
 | What a delete does | Meaning |
 |---|---|
 | **deactivate** | The row stays and is marked inactive. Nothing else is touched. |
-
-Tested 2 September 2026 on a lead, a contact and a property: each was inactive on our side within 6 seconds of the delete in Zoho, and the records linked to it were not changed. A deactivated customer keeps its QuickBooks customer.
 | **delete** | The row is removed, along with only the child rows it owns. |
 | **refuse and flag** | Nothing is written. A human-review flag is raised because this record moved money. The two systems now disagree until a person rules. |
+
+Tested 2 September 2026 on a lead, a contact and a property: each was inactive on our side within 6 seconds of the delete in Zoho, and the records linked to it were not changed. A deactivated customer keeps its QuickBooks customer.
+
+Tested again 4 September 2026 on one record in each of Contacts, Accounts, Leads, Properties and Assets: the row stayed, was marked inactive, and its link to the Zoho record was tombstoned, 42 to 110 seconds after the delete in Zoho. All but the last 0.1 to 0.3 seconds of that was Zoho holding the notification. Deleting the account did not touch its property or equipment.
 
 | Module | Flows up from Supabase? | On delete in Zoho |
 |---|---|---|
@@ -44,10 +46,23 @@ Tested 2 September 2026 on a lead, a contact and a property: each was inactive o
 | Payments | yes | **refuse and flag** |
 | Subscription payments | yes | **refuse and flag** |
 
-## Two rules that apply to every module
+Tested 4 September 2026 on a product, a stock material, a supplier and a purchase order, each made in Zoho for the test. Our side acted on every create, edit and delete within two seconds of Zoho sending word of it; Zoho itself took between 24 seconds and two minutes to send word of a create or an edit that day, and between 7 and 49 seconds for a delete. Every edit made on our side was in Zoho within five seconds. On delete, the product, the stock material and the supplier stayed and went inactive, the product's QuickBooks item went inactive with it, the supplier kept its branch, and the purchase order was removed.
+
+One thing to know about purchase orders made in Zoho: our side gives the order its number, but Zoho only sees that number the next time the order is edited on our side. Until then the number field in Zoho is blank. Observed 4 September 2026, twice.
+
+A purchase order made in Zoho on a supplier that has no branches yet gives that supplier a branch named **Default branch** on our side, and the branch stays when the order is deleted. Observed 4 September 2026.
+
+Tested 4 September 2026 on a territory, a technician, a phone agent, a work order with two line items, and an appointment, each made in Zoho for the test. Every edit made in Zoho reached our side 25 seconds to 1½ minutes later, all of it Zoho holding the notice; every edit made on our side was in Zoho within 2 seconds. On delete, the territory, the technician and the phone agent stayed and went inactive, 55 seconds to 2½ minutes after the delete in Zoho. The appointment was removed 2¼ minutes after its delete, and the work order it pointed at kept both of its line items. The work order delete changed nothing on our side: 1¾ minutes after the delete in Zoho a human-review flag was raised, and the work order and both lines are still here while Zoho no longer has them. Closing that flag is [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
+
+Two things to know about work orders, seen the same day: a line item changed on either side re-sends the whole work order with all its lines, in 2 to 3 seconds; and a work order made in Zoho gets a draft billing status from our side within 3 seconds of arriving, which Zoho shows as **Draft**.
+
+A technician made in Zoho with an email address gets an app login and an invite email from our side within a second of arriving, and a phone agent made in Zoho has to name an existing app user or it cannot be created here. Seen 4 September 2026.
+
+## Three rules that apply to every module
 
 - **A locked record in Zoho is a one-way door.** A change made here is skipped and noted, and nothing alarms. Unlocking is the office's call.
-- **A change never bounces.** When the sync writes a record, it marks the write as its own so the other side does not push it straight back.
+- **A change never bounces.** When the sync writes a record, it marks the write as its own so the other side does not push it straight back. Seen again 4 September 2026 in five modules: each of our pushes came back from Zoho as one apply and no second push.
+- **Zoho's notification is the slow part.** Our side applies a change in 0.1 to 2.4 seconds and pushes one in 1 to 2 seconds. Zoho took 19 to 128 seconds to send its notification on 4 September 2026. The one thing that stalls our side is a refused login refresh; see [The Supabase backend](/systems/supabase-backend).
 
 ## Related
 

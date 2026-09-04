@@ -1,10 +1,63 @@
 ---
 title: "Resolve a human-review flag"
-description: "Decide what happens when the two systems disagree about money"
+description: "List the events waiting for a person, fix the cause, and close each flag with a note"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
-<NotWrittenYet issue="COM-160" />
+<Touches systems="supabase-backend, zoho-crm, quickbooks" />
+
+When the engine stops on something rather than guess, it flags the event for a person and the human-review email counts it. The flag stays counted until you close it, and closing it is two calls to the ops function: one to see the list, one to close a flag with a note saying why.
+
+## Before you start
+
+- The alert email "[ops] N events await a person" open, or the wish to check the list anyway.
+- The cron secret for the engine. It lives in the secrets vault under the edge-functions folder; never paste it into a page or a chat.
+- The engine's functions address: `https://vqockjhsosyewnrikqxs.supabase.co/functions/v1`.
+
+## Steps
+
+<Steps>
+  <Step title="List the open flags">
+    Call `GET /ops/review` with the cron secret in the `x-cron-token` header. The answer lists every flag a person has not closed, newest first: when it happened, which integration and operation, the record in words where the engine knows them ("Invoice INV008200 for Harish Sharma"), the error class and detail, and whether the flag is open or already taken.
+
+    ```
+    curl -H "x-cron-token: <the cron secret>" \
+      https://vqockjhsosyewnrikqxs.supabase.co/functions/v1/ops/review
+    ```
+  </Step>
+  <Step title="Fix the cause in the system that owns it">
+    A flag is a fact about the past; closing it does not retry anything. Put the record right first, in Zoho, QuickBooks or the engine, following [When an alert email arrives](/handbook/running/when-an-alert-email-arrives).
+  </Step>
+  <Step title="Close the flag with a note">
+    Call `POST /ops/review/<event id>` with a JSON body. The note is required and is the only record of why a person closed it. The status is optional: it defaults to **resolved**; **ignored** says the flag was noise; **in_review** says you have taken it but are not done, which keeps it on the list and out of the email count.
+
+    ```
+    curl -X POST -H "x-cron-token: <the cron secret>" \
+      -H "content-type: application/json" \
+      -d '{"status": "resolved", "note": "COM-160: probe payment, deleted on purpose"}' \
+      https://vqockjhsosyewnrikqxs.supabase.co/functions/v1/ops/review/<event id>
+    ```
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- The close call answers with the event id, its new status, the time and your note.
+- The list call no longer shows it (an in-review flag still shows, marked as taken).
+- The next human-review email, if any, counts one fewer. The email is sent only when the list changes, so a quiet inbox is the normal outcome.
+- Seen 4 September 2026 on the local engine: a flagged event was listed, closed with a note, gone from the list, then moved to in review and listed again. The production route ships with <Linear issue="COM-160" />; until it is live, the update is done by hand in the SQL editor with the statement the alert email carries.
+
+## If it did not work
+
+- **401**: the cron secret is wrong or missing.
+- **400**: the note is empty, the status is not one of the three, or the id is not an event id.
+- **404**: that id is not a flagged event. Only events the engine flagged can be given a status; the flag itself is never cleared, so the fact that a person was wanted stays on record.
+
+## Related
+
+- [How alerts work](/handbook/running/how-alerts-work)
+- [When an alert email arrives](/handbook/running/when-an-alert-email-arrives)
+- [Alerts](/reference/alerts)

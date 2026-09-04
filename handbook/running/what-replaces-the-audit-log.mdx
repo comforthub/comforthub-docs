@@ -1,0 +1,53 @@
+---
+title: "What replaces the audit log"
+description: "The three logs the engine keeps today, the one thing none of them covers, and the decision"
+kind: explanation
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="supabase-backend, zoho-crm" />
+
+Zoho's audit log answered "who changed what, when, from where" for the CRM. The engine keeps three logs that between them answer most of that for integrations and for the app, and none of them for edits people make in Zoho. The decision, recorded here, is one place to read the three, plus a monthly copy of Zoho's own log for the part nothing here can see. This is a decision page: nothing described under "The decision" is built yet (<Linear issue="COM-163" />).
+
+## The shape of it
+
+Counted on 4 September 2026 in the production engine.
+
+| Log | What it answers | Who | Where from | Rows | Oldest | Kept for |
+|---|---|---|---|---|---|---|
+| Integration events | every crossing between the engine and Zoho, QuickBooks, Stripe, Twilio, Resend and the rest: what was sent or received, whether it worked, the error, and whether a person was wanted | the integration, never a person | the function and the correlation id of the request | 14,034 across 11 integrations and 131 operations | 18 August 2026 | 13 months |
+| The app activity log | what people did in the app: created, updated, deleted, completed, assigned, submitted, approved, cancelled, scheduled, shared, rejected, sent | the app user | the app | 936 | 12 January 2026 | not pruned |
+| The dead-letter queues | the messages that failed every retry, with the reason | nobody | the queue and the worker | 16 sync, 11 action, 8 webhook, archived | 18 August 2026 | 90 days after archiving |
+
+Each dead letter also writes an integration event and sends one email, so the queues are the raw message and the events table is the story. See [How alerts work](/handbook/running/how-alerts-work).
+
+## What is missing
+
+- **CRM edits by people.** When someone changes a field in Zoho, the engine sees the change only if the field is synced, and then it records "a change arrived", not who made it. A change to a field that is not synced leaves no trace here at all.
+- **One place.** The three logs have different shapes and live in different tables. Answering "what happened to this invoice" today means three queries, joined by hand on the record id.
+- **Zoho's log has a horizon.** Zoho keeps its audit log for a limited time and shows it only inside Zoho. Once the horizon passes, the CRM side of the story is gone.
+
+## The decision
+
+1. **One audit view in the engine.** A read-only view that unions the three logs into one shape: when, who (a person, an integration or a worker), what happened, which record, where it came from, and the raw row for the curious. The view reads the existing tables; it copies nothing and adds no new writes. The retention of each source stays as it is.
+2. **A monthly export of Zoho's audit log**, filed with the month's books. Zoho's log is the only record of who edited what in the CRM; exporting it before the horizon passes is the whole point. The export is a person's job on the first of the month until it is automated.
+3. **No new audit table for CRM edits.** Mirroring every Zoho field change into the engine would mean subscribing to every module and field, synced or not, and storing changes the engine never acts on. The export covers it at a fraction of the cost.
+
+## Why it works this way
+
+- The events table already carries the correlation id that ties a request to everything it caused, so the view can show a whole chain, not a line.
+- The app log already names the person. Nothing else does, and nothing needs to.
+- A view is reversible. If the shape is wrong, it is one file to change and no data to migrate.
+
+## What can go wrong
+
+- The view is only as complete as its sources. A change that no source records is invisible in the view too; the export is the backstop for the CRM.
+- If the monthly export is skipped, the CRM history for that month is lost when Zoho's horizon passes. Put it on the calendar.
+
+## Related
+
+- [How alerts work](/handbook/running/how-alerts-work)
+- [How sync works](/handbook/running/how-sync-works)
+- [Redrive a dead letter](/handbook/running/redrive-a-dead-letter)
