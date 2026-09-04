@@ -66,7 +66,8 @@ The sweep itself runs from GitHub, not from this list. It compares every synced 
 
 - Scheduled at 2:20 am (6:20 UTC). GitHub runs scheduled jobs late when it is busy: the last four nightly runs started at 7:40, 7:19, 7:15 and 7:19 am, about five hours after the hour they were asked for. The sweep watch tolerates 48 hours, so the delay does not page.
 - One run takes about a minute. On 4 September 2026 a run by hand started at 9:12 am and had written its findings by 9:13, and the same run is what the sweep watch reads.
-- The reconciler, which copies Zoho's value over ours for an open finding, has no schedule. A person runs it from GitHub, and it prints what it would write without writing unless told otherwise. On 4 September 2026 a dry run listed 57 planned writes across 55 appointments and 2 technicians and wrote nothing.
+- The reconciler, which copies Zoho's value over ours for an open finding, has no schedule. A person runs it from GitHub, and it prints what it would write without writing unless told otherwise. On 4 September 2026 a dry run at 17:48 UTC listed 58 planned writes, all on fields Zoho owns, and wrote nothing; the links it measured were listed separately as never written.
+- The nightly run goes red when the open findings exceed 160. The findings are still written; the red is the gauge. How to run both by hand is on [Run the sweep and the reconciler](/handbook/running/run-the-sweep-and-the-reconciler).
 
 The cron-failure watch above has no timer of its own on purpose: if the timed jobs are failing, a timer is the wrong thing to rely on. It rides on every other wake instead, which means it is quiet when every other watch is quiet too.
 

@@ -4,6 +4,8 @@ description: "Every alert email, what fires it, and what to do"
 kind: reference
 ---
 
+import { Linear } from "/snippets/linear.mdx";
+
 Every alert is an email to the operator with a subject that starts with **[ops]**. Each watch runs on its own clock (see [Scheduled jobs](/reference/scheduled-jobs)), and a finding is emailed once: the same trouble does not page again until it clears and comes back. What to do when one arrives is on [When an alert email arrives](/handbook/running/when-an-alert-email-arrives).
 
 | Alert | Subject looks like | Fires when | Seen |
@@ -13,16 +15,16 @@ Every alert is an email to the operator with a subject that starts with **[ops]*
 | Dead letter, from the worker | [ops] (system) (operation) died: (reason in words) | the worker itself gives up on a message; one email per dead letter, sent at once | 4 Sep 2026 |
 | Human review | [ops] 38 events await a person | an integration event is flagged for a person to look at; sent again only when the count changes | 4 Sep 2026 |
 | Queue health | [ops] 1 queue stalled, oldest 16m | a message on a live queue has waited more than 15 minutes for a worker | 4 Sep 2026 |
-| Wake failure | [ops] 6 wake-up posts did not arrive | five or more wake-up posts failed in 15 minutes; one lost post is normal and stays quiet | 4 Sep 2026 |
+| Wake failure | [ops] 6 wake-up posts did not arrive | five or more wake-up posts failed in 15 minutes; one lost post is normal and stays quiet. The alert function's own wake takes longer than the 5 seconds the poster waits, so each alert run adds one to this count (<Linear issue="COM-202" />) | 4 Sep 2026 |
 | Cron failure | [ops] 3 scheduled jobs failing | three or more different timed jobs failed in 15 minutes; one job failing once is that job, not the machinery | 4 Sep 2026 |
 | Orphan action | [ops] 1 queued action no drain owns | a queued action name no worker owns; it is put back on the queue each minute and would sit there forever | 4 Sep 2026 |
-| Delete refused or ignored | [ops] a CRM delete of a payment was ignored | a Zoho delete the sync rules refused (something still references the row) or ignored (the row is money); one email per record | 4 Sep 2026 |
-| Sweep stale | [ops] the reconciliation sweep has not run in 22 hours | the nightly drift sweep has recorded nothing for 48 hours | 25 Aug 2026 |
+| Delete refused or ignored | [ops] 2 CRM deletes were ignored (1 invoice, 1 subscription payment) | a Zoho delete the sync rules refused (something still references the row) or ignored (the row is money); one digest per run with every record in the body, and "a CRM delete of a payment was ignored" when there is only one | 4 Sep 2026 |
+| Sweep stale | [ops] the reconciliation sweep has not run in 4 hours | the nightly drift sweep has recorded nothing for 48 hours (seen with the threshold tightened to 1 hour for the test) | 4 Sep 2026 |
 | Sweep watch blind | [ops] the sweep staleness watch has gone blind | the sweep watch itself cannot read the sweep log | not yet |
 | Cancelled but collectible | [ops] INV… is still collectible and its work order is cancelled | a cancelled job still has money owed in QuickBooks | not yet |
-| Cancelled after payment | [ops] INV… was PAID and its work order is cancelled | a job was cancelled after its invoice was paid | not yet |
+| Cancelled after payment | [ops] INV008348 was PAID and its work order is cancelled | a job was cancelled after its invoice was paid; the automatic void refuses a paid invoice, so this is a refund decision | 4 Sep 2026 |
 | Card number stored | [ops] a card number is stored in sms | a card number reached a text or a transcript | not yet |
-| Imagery missing | [ops] 2 properties have no street-view image | a property with an address has waited a day for its image | 26 Aug 2026 |
+| Imagery missing | [ops] 1 property has no street-view image | a property with an address has waited a day for its image | 4 Sep 2026 |
 | Invoice amounts | [ops] 3 invoices disagree across Postgres, QuickBooks and Zoho | the nightly amounts check finds an invoice whose total differs by more than two cents between our side, QuickBooks and Zoho, or is missing in QuickBooks | 3 Sep 2026 |
 | Payroll runway | [ops] the payroll calendar runs out in 111 days | fewer than 60 days of pay periods are loaded (seen with the threshold widened to 200 days for the test) | 4 Sep 2026 |
 | Timesheets off calendar | [ops] 2 timesheets sit outside the payroll calendar | a timesheet's dates match no pay period | 26 Aug 2026 |
@@ -35,7 +37,7 @@ Two checks watch invoice totals. The nightly amounts check (early morning) compa
 
 Watched 4 September 2026 on a probe invoice of $5.65: with all three sides agreeing, the sweep recorded nothing for it. The total on our side was changed to $6.65 on purpose; the next sweep, 90 seconds later, opened one finding naming the invoice, the field, our value and Zoho's. The total was put back; the sweep after that closed the finding as "not re-seen". The morning alert email was not watched that day because it had already run and runs at most once in 20 hours.
 
-Three real invoices (INV008137, INV008200, INV008224) disagree with Zoho and are the owner's to settle. Their findings are opened by the morning check and then closed again by the sweep the same morning, because the sweep measures Zoho differently and does not see them; so the alert arrives as new each day and nothing stays open. Known, reported for filing. The two cancelled-job alerts have only been seen on the local engine (the stack test), never in production. The card-number alert has never fired.
+Three real invoices (INV008137, INV008200, INV008224) disagree with Zoho and are the owner's to settle. Their findings are opened by the morning check and then closed again by the sweep the same morning, because the sweep measures Zoho differently and does not see them; so the alert arrives as new each day and nothing stays open. Known, reported for filing. The cancelled-but-collectible alert has only been seen on the local engine (the stack test), never in production; the cancelled-after-payment one landed in production on 4 September 2026 when a paid probe job was cancelled in Zoho (the cancel reached us 1 minute 53 seconds later, the void was refused as settled the same second, and the email went out on the next wake). The card-number alert has never fired.
 
 ## Related
 

@@ -1,0 +1,60 @@
+---
+title: "Run the sweep and the reconciler"
+description: "Read the nightly drift findings, run the sweep by hand, and see what the reconciler would write before letting it write"
+kind: how-to
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="zoho-crm, supabase-backend" />
+
+The sweep compares every synced record on both sides and keeps a list of findings: one row per difference, opened when first seen and closed when the two sides agree again. The reconciler reads the open findings and copies Zoho's value over ours for the fields Zoho owns. It prints what it would write and writes nothing unless a person says so.
+
+## Before you start
+
+- Access to the backend repo's Actions page on GitHub. Both jobs run there, never from a laptop.
+- The SQL editor for the engine, to read the findings.
+- Nothing else touching the same records: a sweep that runs while a bulk job is half done records the half as drift.
+
+## Steps
+
+<Steps>
+  <Step title="Read the findings">
+    In the SQL editor, list the open findings grouped by kind and module. Each row names the record on both sides and, for a field difference, the field with our value and Zoho's. The kinds are: a field differs; the record exists only here; the record exists only in Zoho; the crosswalk points at a record that is gone; a deleted record came back; a link points somewhere else.
+  </Step>
+  <Step title="Run the sweep by hand if you cannot wait for the night">
+    On the Actions page, open the **sweep** workflow and click **Run workflow**. Leave the ceiling at its default. It takes about a minute. The job goes red when the open findings exceed the ceiling (160); the findings are still written in full, the red is the gauge telling you the pile is too big.
+  </Step>
+  <Step title="Run the reconciler dry">
+    Open the **reconcile** workflow, click **Run workflow**, leave the mode on **dry-run**. It prints, per module, how many records it would write and which fields, then "dry run, nothing written". Fields it measured but will never write are listed separately with the reason: a link, or a field we own. Read this list before anything else.
+  </Step>
+  <Step title="Decide, then write only if you mean it">
+    The write mode is the owner's decision, not a routine. It copies Zoho's value over ours for every planned field, marks the crosswalk as synced and closes the finding. Run it with a module name in the **entity** box to limit the blast, and a **max** below the planned count to have it refuse rather than surprise you.
+  </Step>
+  <Step title="Confirm the finding closed">
+    After the record is fixed, on either side, the next sweep closes its finding with the resolution "not re-seen by sweep". Nothing is deleted; a closed finding keeps its history.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+Seen 4 September 2026 in production, on a probe territory that exists on both sides:
+
+- Our copy of its name was changed on purpose at 17:44 UTC, in a way the sync does not push. A sweep run by hand at 17:45 opened one finding 52 seconds after it started, naming the territory, the field, our value and Zoho's.
+- A dry run of the reconciler at 17:48 listed "territory: 1 records, name" among its planned writes, and wrote nothing. The same run listed the 45 open findings on emails as measured only, because the differing field is a link, and 21 checklist links and 3 technician lists on appointments for the same reason. Before <Linear issue="COM-177" /> was fixed that morning, the 13:12 dry run had counted those links as writes.
+- Our name was put back at 17:48. The next sweep, started at 17:49, closed the finding at 17:49:45 as "auto-closed: not re-seen by sweep". The Zoho record was never touched and no push was queued at any point.
+- The nightly run is scheduled for 06:20 UTC and GitHub starts it late when busy: on 4 September it started at 11:19 UTC. The sweep watch tolerates 48 hours, so the delay does not page; see [Alerts](/reference/alerts).
+
+## If it did not work
+
+- **The sweep job is red with "GATE" in its log.** The open findings exceed the ceiling. On 4 September 2026 at 17:46 UTC the count was 170 against a ceiling of 160, and 183 by 17:50, because probe records from that day's tests were still being created and deleted. The findings were written; clean up the probes and the nightly run goes green on its own.
+- **The reconciler says "skipped: no Zoho record returned".** The record is gone from Zoho since the sweep saw it; the next sweep reclassifies the finding.
+- **A module is "measured only".** Invoices, payments, subscriptions and subscription payments are never reconciled from Zoho; money is settled by hand. See [Sync rules by module](/reference/sync-rules-by-module).
+- **The finding is a link mismatch.** The reconciler never repoints a link. Fix the link in Zoho; the next sweep closes it.
+
+## Related
+
+- [How sync works](/handbook/running/how-sync-works)
+- [Scheduled jobs](/reference/scheduled-jobs)
+- [Sync rules by module](/reference/sync-rules-by-module)

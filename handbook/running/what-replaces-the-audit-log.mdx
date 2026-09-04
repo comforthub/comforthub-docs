@@ -1,6 +1,6 @@
 ---
 title: "What replaces the audit log"
-description: "The three logs the engine keeps today, the one thing none of them covers, and the decision"
+description: "The four records the engine already keeps, what we will not build, and how to answer who changed what and when"
 kind: explanation
 ---
 
@@ -9,45 +9,56 @@ import { Linear } from "/snippets/linear.mdx";
 
 <Touches systems="supabase-backend, zoho-crm" />
 
-Zoho's audit log answered "who changed what, when, from where" for the CRM. The engine keeps three logs that between them answer most of that for integrations and for the app, and none of them for edits people make in Zoho. The decision, recorded here, is one place to read the three, plus a monthly copy of Zoho's own log for the part nothing here can see. This is a decision page: nothing described under "The decision" is built yet (<Linear issue="COM-163" />).
+Zoho's audit log answered one question: who changed what, when, from where. Nothing is being built to replace it. The engine already keeps four records that between them answer that question for everything the engine does, and Zoho keeps its own log for the edits people make in the CRM. This page is the decision (<Linear issue="COM-163" />), written 4 September 2026 against the production engine.
 
-## The shape of it
+## What we keep
 
-Counted on 4 September 2026 in the production engine.
+| Record | What it answers | Who is named | Size on 4 September 2026 | Kept for |
+|---|---|---|---|---|
+| The integration ledger | Every crossing between the engine and Zoho, QuickBooks, Stripe, Twilio and the mailer: what was sent or received, whether it worked, the error, and whether a person was wanted | the integration and the worker, never a person | 14,896 lines, oldest 18 August 2026 | 13 months, pruned nightly |
+| The webhook log | Every notification that arrived at the door, verbatim, before anything was done with it: which system, which record, which operation, when it was received and when it was processed | the sending system | 5,717 notifications | not pruned |
+| The sent-mail ledger | Every email the engine sent or refused to send: kind, recipient, subject, the provider's id, and the delivery outcome | the recipient | 150 messages, oldest 19 August 2026 | not pruned |
+| The app activity log | What people did in the app: created, completed, assigned, submitted, approved, cancelled, shared | the app user | 943 entries | not pruned |
 
-| Log | What it answers | Who | Where from | Rows | Oldest | Kept for |
-|---|---|---|---|---|---|---|
-| Integration events | every crossing between the engine and Zoho, QuickBooks, Stripe, Twilio, Resend and the rest: what was sent or received, whether it worked, the error, and whether a person was wanted | the integration, never a person | the function and the correlation id of the request | 14,034 across 11 integrations and 131 operations | 18 August 2026 | 13 months |
-| The app activity log | what people did in the app: created, updated, deleted, completed, assigned, submitted, approved, cancelled, scheduled, shared, rejected, sent | the app user | the app | 936 | 12 January 2026 | not pruned |
-| The dead-letter queues | the messages that failed every retry, with the reason | nobody | the queue and the worker | 16 sync, 11 action, 8 webhook, archived | 18 August 2026 | 90 days after archiving |
+Two more places hold the story when something went wrong:
 
-Each dead letter also writes an integration event and sends one email, so the queues are the raw message and the events table is the story. See [How alerts work](/handbook/running/how-alerts-work).
+- **Sentry** holds every crash and refusal from every function, grouped so one cause is one issue, with the trace that led there. A dead letter is one grouped issue. On 4 September 2026 the backend project held one unresolved issue.
+- **The review route** on the ops function lists every event a person still owes a look, and closes each one with a required note. That note is the audit trail for the decision a person made; see [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
 
-## What is missing
+The thread through all of them is the correlation id: one id per request or queue message, carried into every ledger line, every email and every Sentry event it caused. Given one id, the whole chain is one query.
 
-- **CRM edits by people.** When someone changes a field in Zoho, the engine sees the change only if the field is synced, and then it records "a change arrived", not who made it. A change to a field that is not synced leaves no trace here at all.
-- **One place.** The three logs have different shapes and live in different tables. Answering "what happened to this invoice" today means three queries, joined by hand on the record id.
-- **Zoho's log has a horizon.** Zoho keeps its audit log for a limited time and shows it only inside Zoho. Once the horizon passes, the CRM side of the story is gone.
+## What we do not build
 
-## The decision
+- **No audit table for CRM edits.** Mirroring every Zoho field change into the engine would mean subscribing to every module and every field, synced or not, and storing changes the engine never acts on. Zoho already keeps that log; export it before its horizon passes rather than copy it live.
+- **No second copy of any of the four records.** They are the source. A view that joins them can come later if a real question needs it; nothing so far has.
+- **No screen.** The questions below are answered with a query in the SQL editor, from the query each alert email carries. A screen is a project for when the questions repeat.
 
-1. **One audit view in the engine.** A read-only view that unions the three logs into one shape: when, who (a person, an integration or a worker), what happened, which record, where it came from, and the raw row for the curious. The view reads the existing tables; it copies nothing and adds no new writes. The retention of each source stays as it is.
-2. **A monthly export of Zoho's audit log**, filed with the month's books. Zoho's log is the only record of who edited what in the CRM; exporting it before the horizon passes is the whole point. The export is a person's job on the first of the month until it is automated.
-3. **No new audit table for CRM edits.** Mirroring every Zoho field change into the engine would mean subscribing to every module and field, synced or not, and storing changes the engine never acts on. The export covers it at a fraction of the cost.
+## How to answer "who changed what, and when"
+
+| The question | Where the answer is |
+|---|---|
+| Did someone edit this in Zoho, and who | Zoho's own audit log, inside Zoho. The engine only sees the change if the field is synced, and then records that a change arrived, not who made it |
+| When did that Zoho change reach us | The webhook log: the notification for the record, with its received and processed times |
+| What did the engine do about it | The integration ledger, filtered by the record id or the correlation id from the webhook log |
+| Did the engine send an email about it, and did it arrive | The sent-mail ledger, filtered by the record id; the delivery outcome comes back from the mailer |
+| Who did it in the app | The app activity log, which names the user |
+| Why did it fail | Sentry, by the correlation id; the issue holds the stack and the trace |
+| Who decided to close the flag, and why | The review note on the event, set through the review route |
 
 ## Why it works this way
 
-- The events table already carries the correlation id that ties a request to everything it caused, so the view can show a whole chain, not a line.
-- The app log already names the person. Nothing else does, and nothing needs to.
-- A view is reversible. If the shape is wrong, it is one file to change and no data to migrate.
+- The four records already exist and are already written on every path; the decision costs nothing and removes nothing.
+- The app log is the only place a person's name is recorded, and it is the only place one is needed. Everything else is done by a system, and the system is named.
+- Zoho's log covers the one thing the engine cannot see. Copying it would be expensive; reading it in Zoho is free.
 
 ## What can go wrong
 
-- The view is only as complete as its sources. A change that no source records is invisible in the view too; the export is the backstop for the CRM.
-- If the monthly export is skipped, the CRM history for that month is lost when Zoho's horizon passes. Put it on the calendar.
+- Zoho's log has a horizon. Once it passes, the CRM side of a story is gone. Export it before then if a question is likely to outlive it.
+- The integration ledger is pruned at 13 months. A question older than that has only the webhook log and the sent-mail ledger to go on.
+- A change that no record captures is invisible everywhere. The known one is a field edited in Zoho that is not synced: it leaves no trace on our side at all.
 
 ## Related
 
 - [How alerts work](/handbook/running/how-alerts-work)
-- [How sync works](/handbook/running/how-sync-works)
-- [Redrive a dead letter](/handbook/running/redrive-a-dead-letter)
+- [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag)
+- [The Supabase backend](/systems/supabase-backend)

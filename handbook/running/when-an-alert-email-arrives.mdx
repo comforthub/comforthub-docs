@@ -5,6 +5,7 @@ kind: how-to
 ---
 
 import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
 <Touches systems="supabase-backend, zoho-crm, quickbooks" />
 
@@ -41,6 +42,8 @@ An alert names one kind of trouble and, where it can, the record involved. The j
 - Seen 3 September 2026: two invoice refusals on one probe job raised one dead-letter email and one human-review email at 05:30 UTC, and the 05:45 run repeated neither.
 - Seen 4 September 2026, each provoked once on purpose and each landing once: five wake-up posts sent to a route that does not exist ("6 wake-up posts did not arrive", the sixth was a real one), three timed jobs made to divide by zero ("3 scheduled jobs failing"), a queued action nobody owns ("1 queued action no drain owns"), the payroll threshold widened to 200 days ("the payroll calendar runs out in 111 days"), a probe payment deleted in Zoho ("a CRM delete of a payment was ignored", 4 minutes after the delete), and the sync worker's wake-up paused for 23 minutes with one message waiting ("1 queue stalled, oldest 21m", on the 13:30 UTC run). The 13:15 run found the same wake-up trouble and sent nothing.
 - A watch keyed on the newest failure sends again when a new failure joins the old ones: the wake-failure email went out a second time nine minutes later as "7 wake-up posts did not arrive" when one more real post timed out. That is by design; read the newest line, not the count.
+- The same six were provoked again at 17:44 UTC the same day and every one landed on the 17:45 wake, within 30 seconds: "1 queued action no drain owns", "5 wake-up posts did not arrive", "3 scheduled jobs failing", "43 events await a person" (one flag raised on purpose), "the reconciliation sweep has not run in 4 hours" (threshold tightened to 1 hour) and "the payroll calendar runs out in 111 days" (threshold widened to 150 days). The next wake, at 17:50, added "1 property has no street-view image" for a probe property left a day without one, and "42 events await a person" once the probe flag was closed. At 17:51 a paid probe job cancelled in Zoho brought "INV008348 was PAID and its work order is cancelled". Every probe was removed afterwards and no queue was left holding anything.
+- The wake-failure count climbs by one on every alert run, because the alert function's own wake takes longer than the 5 seconds the poster waits (<Linear issue="COM-202" />). "8 wake-up posts did not arrive" after five probe posts is that, not three more lost wakes.
 
 ## If the same alert keeps coming
 

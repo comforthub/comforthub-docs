@@ -48,7 +48,8 @@ When the engine stops on something rather than guess, it flags the event for a p
 - The close call answers with the event id, its new status, the time and your note.
 - The list call no longer shows it (an in-review flag still shows, marked as taken).
 - The next human-review email, if any, counts one fewer. The email is sent only when the list changes, so a quiet inbox is the normal outcome.
-- Seen 4 September 2026 on the local engine: a flagged event was listed, closed with a note, gone from the list, then moved to in review and listed again. The production route ships with <Linear issue="COM-160" />; until it is live, the update is done by hand in the SQL editor with the statement the alert email carries.
+- Seen 4 September 2026 in production, by hand: one flag was raised on purpose at 17:44 UTC; the 17:45 wake sent "43 events await a person"; the flag was closed at 17:46 with the SQL statement the email carries, note and time stamped; the 17:50 wake sent "42 events await a person" and nothing in between. Closing it took one statement and the count moved on the next wake.
+- Seen the same day on the local engine: the route listed a flagged event, closed it with a note, dropped it from the list, then moved it to in review and listed it again. The production route ships in pull request 596 (<Linear issue="COM-160" />); until it is live, the update is the SQL statement above.
 
 ## If it did not work
 

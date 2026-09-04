@@ -140,6 +140,7 @@
               "handbook/running/how-alerts-work",
               "handbook/running/when-an-alert-email-arrives",
               "handbook/running/fix-a-record-that-did-not-sync",
+              "handbook/running/run-the-sweep-and-the-reconciler",
               "handbook/running/redrive-a-dead-letter",
               "handbook/running/resolve-a-human-review-flag",
               "handbook/running/what-replaces-the-audit-log",
