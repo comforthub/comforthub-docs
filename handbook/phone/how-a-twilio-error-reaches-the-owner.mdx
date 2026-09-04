@@ -27,6 +27,12 @@ Tested 4 September 2026 (<Linear issue="COM-110" />):
 - A replayed error event (code 11200) was stored 0.6 seconds after it was posted, and the push to the owner left 0.4 seconds later: 10 devices, all accepted by Apple.
 - The list already held 11 real events from Twilio before that day, the latest from 12 August 2026, so the forwarding from Twilio has been live.
 
+Run again at 5:46 pm Toronto time the same day, one trigger at a time:
+
+- A webhook with a wrong signature, and one with no signature at all, were both refused with "forbidden" in about 1.2 seconds and logged as a signature mismatch. Nothing was stored and nobody was paged: a forged webhook is not a Twilio error until Twilio itself reports the failed fetch.
+- A status callback saying a call had failed was accepted; the call was stored as failed 0.1 seconds later and copied to the CRM's call history like any other call. Nobody was paged: a failed call is a call outcome, not an error event.
+- A replayed error event (code 11200, level error, the message naming the failed fetch) was stored 0.1 seconds after posting; the push "Twilio error 11200" to the one super admin left 0.4 seconds later and reached 10 devices, all accepted by Apple. The probe rows were removed afterwards.
+
 Not tested: that Twilio's forwarding is still pointed at the engine today. That is set in the Twilio console and cannot be read from here; the August events are the last proof.
 
 ## If the push stops arriving

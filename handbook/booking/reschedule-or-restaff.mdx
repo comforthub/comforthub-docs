@@ -21,7 +21,7 @@ Both are done on the appointment in Zoho. A move sends the customer a new notice
     Change **Scheduled Date** and, if needed, **Arrival Time Slot**. Save.
   </Step>
   <Step title="Restaff it">
-    Change the technician in **Assigned Technicians**, and change one other field on the record with it (the widget does this for you). A technician change alone does not reach our side today; see below.
+    Change the technician in **Assigned Technicians** and save. Nothing else on the record needs to change.
   </Step>
 </Steps>
 
@@ -30,11 +30,11 @@ Both are done on the appointment in Zoho. A move sends the customer a new notice
 - Tested 3 September 2026: the new date was on our side in 2 seconds and "Your Comfort Hub appointment has moved to …" went out 1 second later. No second confirmation was sent.
 - Tested again 4 September 2026 on a probe appointment moved from the 10th to the 11th: the moment the change reached our side, the "has moved to September 11, 2026" email left within half a second and the technician's phone got an **Appointment Rescheduled** push ("… is now 2026-09-11") in the same half second, delivered to all ten of his devices. The original confirmation stayed as the one confirmation; nothing was sent twice. Zoho itself took about 90 seconds to tell us about the change that day, so allow a minute or two before you look.
 - The "Update your calendar" link in the moved email opens the same calendar entry as the first one, so adding it again replaces the old date instead of making a second entry.
-- The new technician's phone gets a push, and the old one no longer sees the stop. Needs a technician with the app.
+- Tested 4 September 2026 on probe appointment SA-1128, moved from one probe technician to another by changing only **Assigned Technicians** in Zoho: our side had the new technician 4 seconds after the save, the new technician's phone was sent an **Appointment Assigned to You** push in the same second, and the old technician's Home no longer listed the stop while the new one's did (checked with each technician's own app login). Both probe technicians had the app; a technician without it gets no push and has no Home to check.
 
 ## If it did not work
 
-- **The technician did not change on our side.** Only the technician was changed. Change any other field on the appointment and save again. Known, being fixed.
+- **The technician did not change on our side.** Zoho can take up to 3 minutes to tell us about a change. Wait, then reload. If it still shows the old technician, change any other field on the appointment and save again, and report it.
 
 ## Related
 

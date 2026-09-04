@@ -2,9 +2,46 @@
 title: "Take a payment"
 description: "Get a customer paid through the pay page"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
-<NotWrittenYet issue="COM-68" />
+<Touches systems="supabase-backend, quickbooks" />
+
+The invoice email carries a pay link. The customer opens it, sees the invoice, and pays by card or bank transfer inside Helcim's payment window. Our side marks the invoice Paid the moment Helcim approves the card.
+
+## Before you start
+
+- An invoice that has been sent, with a balance owing. The customer needs the pay link from the invoice email.
+- Nothing to open on our side. The page does the work.
+
+## Steps
+
+<Steps>
+  <Step title="Open the pay link">
+    The page shows the invoice number, the amount due, the billing address, the items, the tax and the balance.
+  </Step>
+  <Step title="Click Pay now">
+    Helcim's payment window opens over the invoice. Pick **Credit card** or **ACH payment**, enter or choose a card, and click **Pay**.
+  </Step>
+  <Step title="Read the result">
+    A green **Paid** badge and "You're all set" mean Helcim approved the payment and our side recorded it. A declined card shows an error and the invoice stays Due.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- Tested 4 September 2026 with a test card on Helcim's demo account, on a test invoice for $1.13: Helcim approved the card, and three seconds later the invoice read Paid with $0.00 due, the paid time was stamped, and a payment record with Helcim's transaction number was stored. The success screen showed Paid.
+- The pay link is never guessable: it is a random slug minted on our side, not a Helcim id.
+
+## What does not happen yet
+
+- Paying on the pay page changes only the invoice. Nothing tells QuickBooks, the work order stays Invoiced, and no receipt email is sent, although the success screen promises one. Only a payment recorded in QuickBooks does those three things today. Whether Helcim's own QuickBooks connection closes that loop on the live account is unverified. Tracked as <Linear issue="COM-207" />.
+- A test card works only on Helcim's demo account; on the live account it is declined. A live payment moves real money, so the whole chain from card to receipt has not been watched end to end.
+
+## Related
+
+- [How payments work](/handbook/payments/how-payments-work)
+- [Record a payment in QuickBooks](/handbook/payments/record-a-payment-in-quickbooks)
+- [QuickBooks](/systems/quickbooks)

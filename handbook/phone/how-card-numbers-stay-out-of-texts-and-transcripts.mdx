@@ -25,7 +25,7 @@ The last four digits are kept so the office can still say "the card ending 4242"
 
 Every hour, at 45 minutes past, the engine re-reads every stored text, transcript and summary. If a card number is found, the owner gets an email titled "[ops] a card number is stored in …" naming the row, with the fix to run, once per row until it is cleaned. The card itself is never in the email.
 
-On 4 September 2026 the scan found 0 rows across all seven places it looks, and that email has never been sent.
+On 4 September 2026 the scan found 0 rows across all seven places it looks. Later that day a card was planted in a probe transcript line on purpose, and the email arrived once; see below.
 
 ## What was observed
 
@@ -35,7 +35,12 @@ Tested 4 September 2026 (<Linear issue="COM-108" />) with a made-up caller named
 - A voicemail transcript reading the same card out loud was stored masked.
 - The scan run straight afterwards found nothing to report.
 
-Not tested: a card typed into an outbound text from the app. The same masking runs on that write, but nobody typed one that day. The alert email was not exercised either, because nothing was stored for it to find.
+Later the same day, at 5:46 pm Toronto time:
+
+- An outbound text carrying the same card, an expiry and a security code was queued from the outbox to the owner's verified number. The stored copy read `my visa is [CARD ****4242], expiry [EXP], cvv [CVV]`, and Twilio's own record of the message, read back by its id, carried the same masked wording (with Twilio's trial-account prefix in front). The text left in 1.7 seconds and was delivered in 4.9 seconds.
+- A raw card was then written into one probe transcript line with the masking switched off for that single write, which is the only way to get one past it. The scan, woken by hand, emailed the owner "[ops] a card number is stored in" the transcript-lines column 2.6 seconds after the wake, once, with the row id and the fix to run. The card itself was not in the email. The planted line was deleted and the scan found 0 rows again.
+
+Not tested: a card typed into an outbound text from the app screen itself. The text above was queued straight into the outbox, which is the same write the app makes.
 
 ## Related
 
