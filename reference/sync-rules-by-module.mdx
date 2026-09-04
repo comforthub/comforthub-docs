@@ -4,6 +4,8 @@ description: "For each Zoho module: which way it flows, and what a delete in Zoh
 kind: reference
 ---
 
+import { Linear } from "/snippets/linear.mdx";
+
 Every module below is mirrored between Zoho and Supabase. Almost all flow both ways. The interesting column is the last one: what happens here when someone deletes the record in Zoho.
 
 | What a delete does | Meaning |
@@ -65,6 +67,14 @@ Three things to know about the money modules, seen the same day:
 - **A payment or a subscription edited in Zoho is silently undone.** Our side owns every mirrored field on those two (amount, method, plan, monthly amount, protection, active), so a value typed in Zoho is not applied here and is overwritten the next time our side pushes. Nothing flags it. The one field Zoho owns on a subscription payment, which subscription it belongs to, does reach us.
 - **A subscription payment typed into Zoho looks paid here.** It gets a paid-on time and a made-up Stripe reference, and nothing tells Stripe or QuickBooks. The real path is Stripe; do not type one in.
 - **The invoice status in Zoho did not take an edit.** Delivered, typed on the probe invoice, was back to Sent within half a minute; why is unverified. Zoho offers Created, Delivered and Void, our side accepts Draft, Sent and Void, so only Void means the same thing on both sides. Deleting an invoice in Zoho also unlinks its Zoho Payments, and Zoho sends no word of that.
+
+Tested 4 September 2026 in the evening, after that day's three sync fixes went live, on a probe territory, stock material, purchase order and customer, a replayed phone call, a timesheet, a time-off request, a checklist submission and a booking confirmation email. Zoho was quick that evening: every create, edit and delete made in Zoho was here 3 to 8 seconds later, and every edit made on our side was in Zoho within 1 to 3 seconds.
+
+- **A territory's arrival windows are Zoho's.** Two **Allowed Time Slots** ticked in Zoho were the two windows set here 4 seconds later; clearing one cleared it here in 6 seconds; the other three stayed off throughout. Our side never pushes the windows back. Until that day the ticks did not reach us at all (<Linear issue="COM-194" />).
+- **The last-updated time moves.** On the stock material, the purchase order, the customer and the territory, an edit made in Zoho and an edit made on our side each moved the row's last-updated time: eight edits, eight moves. Until that day the time stayed at the moment the row first arrived, which could hide a changed row from the nightly sweep (<Linear issue="COM-191" />).
+- **A call names its customer.** A call from a number that belongs to a customer had that customer in **Contact** on its Call History record in Zoho 1 second after the call ended. The customer is worked out here from the number; Zoho only reads it (<Linear issue="COM-169" />).
+- **A timesheet, a time-off request and a checklist submission name their technician.** Each record pushed from our side had the right person in **Technician** in Zoho 1 to 3 seconds after being saved here. The app records the login; our side turns that into the technician. A technician whose Zoho record has been deleted cannot be named, so the test used a probe technician that still had one (<Linear issue="COM-172" />).
+- **An email names the account.** The Email Tracking record for a booking confirmation showed the customer's **Account** in Zoho 1 second after the mail went out (<Linear issue="COM-170" />).
 
 ## Three rules that apply to every module
 

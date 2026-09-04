@@ -5,6 +5,7 @@ kind: how-to
 ---
 
 import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
 <Touches systems="zoho-crm, supabase-backend" />
 
@@ -40,8 +41,8 @@ Tested 4 September 2026 with a probe territory whose area was drawn over Cornwal
 
 ## Good to know
 
-- The **Allowed Time Slots** ticked in Zoho do not reach our side. The arrival windows a territory offers are set by a developer today.
-- Zoho's **Supabase Territory Id** stays empty on a territory you create in Zoho. That is expected; the link is kept on our side.
+- The **Allowed Time Slots** you tick in Zoho are the arrival windows the territory offers here. Zoho owns them: a tick or a clear made in Zoho reached our side in 4 to 5 seconds on 4 September 2026, and nothing on our side changes them. Before that day the ticks did not reach us at all (<Linear issue="COM-194" />).
+- Zoho's **Supabase Territory Id** stays empty on a territory you create in Zoho until our side first pushes an edit back; then it fills in. Either way the link is kept on our side.
 - A property only gets its territory when its address can be placed on the map. An address the map does not know keeps no territory and no picture; fix the address and the property is tried again.
 - Two overlapping areas: the property goes to the one whose code sorts first.
 
