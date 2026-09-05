@@ -48,10 +48,10 @@ Each runs on its own clock, looks for one kind of trouble, and emails the operat
 | Job | When | What it does |
 |---|---|---|
 | Open-appointment push | every hour | Looks for appointments still open an hour past their window. Each one gets a technician one push the first hour it is overdue, then one a day at 8:00 am until it is completed, not one every hour (seen 3 and 4 September 2026: a push at 11:00 am, then the next at 8:00 am the day after and nothing at the twenty hours between) |
-| Auto-submit overdue timesheets | 1:00 am | Submits any timesheet still open after its deadline |
-| Timesheet reminder, morning | 9:00 am | Push to anyone whose timesheet is due |
+| Auto-submit overdue timesheets | 1:00 am | On the submit-by day, submits every timesheet for that period still open, with whatever hours it holds. Seen 4 September 2026 (recorded on the bug COM-206): a period 18 sheet submitted with 85 hours |
+| Timesheet reminder, morning | 9:00 am | The day before submit-by: "Timesheet Reminder" push to everyone whose sheet for that period is a draft or does not exist. Seen 4 September 2026 in a rolled-back rehearsal: four technicians addressed for a stand-in period due the next day |
 | Tasks due soon | 9:00 am | Push for tasks due today |
-| Timesheet reminder, evening | 7:00 pm | Second push to anyone whose timesheet is still open |
+| Timesheet reminder, evening | 7:00 pm | The same day, same people: "Urgent: Timesheet Due Now", marked time-sensitive. Running either reminder twice by hand sends twice; the timer is the only guard |
 
 ## Digests
 

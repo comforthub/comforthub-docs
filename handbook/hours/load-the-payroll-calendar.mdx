@@ -2,9 +2,47 @@
 title: "Load the year's payroll calendar"
 description: "Turn ADP's schedule PDF into the pay periods everything else reads"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
-<NotWrittenYet issue="COM-86" />
+<Touches systems="zoho-crm, supabase-backend" />
+
+## Before you start
+
+- The ADP "Payroll Projection Summary" PDF for the year (one page, about 54 KB).
+- Zoho, with rights to edit the **Payroll** module.
+
+## Steps
+
+<Steps>
+  <Step title="Create or open the Payroll record for the year">
+    One record per year, named "Payroll Schedule 2026" once the parse has run.
+  </Step>
+  <Step title="Attach the PDF">
+    Upload it to the **ADP Schedule** field and save. The upload is what starts the parse; there is no separate button. Uploading a corrected PDF later runs it again, and the newest upload wins.
+  </Step>
+  <Step title="Wait a few seconds and reload">
+    The record fills in on its own.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- **Processing Status** reads Completed and **Processing Summary** says how many periods and holidays were read and that every check passed. Seen 4 September 2026 at 8:36 pm Ottawa: "Schedule: 27/27", "Holidays: 10/10 recognized", written 1.7 seconds after the parse was started.
+- The **Schedule** table lists the 27 pay periods with period end, submit-by, processing and pay dates; the **Holidays** table lists the year's holidays with a statutory yes or no.
+- The engine holds the same calendar: 27 pay periods and the 8 statutory holidays for 2026 were rewritten at the same second, with the same dates as before. Worked holidays (the two marked statutory "No") stay in Zoho only.
+- Failed reads say what they saw. A record with no PDF is marked Failed with the text "No PDF found on the ADP Schedule field" followed by what the field held, so an empty field can be told apart from a read that lost the file (<Linear issue="COM-86" />).
+
+## If it did not work
+
+- **Processing Status** reads Failed: read the summary. A PDF the parser could not read, or a schedule whose totals do not add up, is named there. Fix the PDF and upload again.
+- The status never changes: the parse died on the queue. See [When an alert email arrives](/handbook/running/when-an-alert-email-arrives); the dead-letter alert names the record, and [Redrive a dead letter](/handbook/running/redrive-a-dead-letter) runs it again once the record is fixed. Seen 4 September 2026: dead letter 42 for the 2026 record, redriven, parsed clean.
+
+## Related
+
+- [How timesheets work](/handbook/hours/how-timesheets-work)
+- [Know when the pay calendar runs out](/handbook/hours/know-when-the-pay-calendar-runs-out)
+- [Zoho CRM](/systems/zoho-crm)
+- [Glossary](/reference/glossary)

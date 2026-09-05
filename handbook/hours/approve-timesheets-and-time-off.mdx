@@ -1,10 +1,48 @@
 ---
 title: "Approve timesheets and time off"
-description: "Review what people submitted, in the app or in Zoho"
+description: "Review what people submitted, in Zoho, and see the verdict reach the app"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
-<NotWrittenYet issue="COM-90" />
+<Touches systems="zoho-crm, supabase-backend, the-7am-app" />
+
+## Before you start
+
+- Zoho, with rights to edit the **Timesheets** and **Time Off Requests** modules.
+- The timesheet must be Submitted. A draft never reaches Zoho.
+
+## Steps
+
+<Steps>
+  <Step title="Open the timesheet in Zoho">
+    Find it under **Timesheets**. The name is the period, for example "Period 18 2026"; the **Technician** field says whose it is and the fourteen day rows show the hours.
+  </Step>
+  <Step title="Approve or reject">
+    Change **Status** to **Approved**, or to **Rejected** and type the reason into **Rejection Reason**. Save. You do not need to fill in **Approved At**; the engine stamps its own approval time.
+  </Step>
+  <Step title="Do the same for time off">
+    Under **Time Off Requests**, set **Status** to **Approved** or **Rejected**. A message for the technician goes in **Reviewed Message**.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- The technician's Hours screen shows the new status. Seen 4 September 2026, read as the technician a minute after the change: period 18 Approved with its approval time, period 17 Rejected with the reason typed in Zoho.
+- The technician gets a push within seconds: "Timesheet Approved", or "Timesheet Rejected" followed by "Reason:" and your text; "Time Off Approved" for time off. Seen 4 September 2026 at 8:45 pm Ottawa: the approval reached the app 3 seconds after the Zoho save, the rejection 3 seconds, the time off approval 2 seconds, and each push was sent within a further half second.
+- Nothing echoes back to Zoho: the record you saved keeps your change and its modified time.
+
+## If it did not work
+
+- The Hours screen still says Submitted after a minute: check the engine's failed events and dead letters for the sheet; see [When an alert email arrives](/handbook/running/when-an-alert-email-arrives). Before 5 September 2026 this was the normal outcome (<Linear issue="COM-205" />); it is fixed.
+- The status changed but no push arrived: the technician may have that notification switched off in the app.
+
+## Related
+
+- [How timesheets work](/handbook/hours/how-timesheets-work)
+- [Zoho CRM](/systems/zoho-crm)
+- [Statuses](/reference/statuses)
+- [Notifications we send](/reference/notifications-we-send)
+- <Linear issue="COM-91" />
