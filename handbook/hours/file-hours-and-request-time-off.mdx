@@ -1,10 +1,84 @@
 ---
 title: "File hours and request time off"
-description: "What a technician does each pay period"
+description: "What a technician does each pay period, and what the app fills in for you"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
-<NotWrittenYet issue="COM-94" />
+<Touches systems="the-7am-app, supabase-backend" />
+
+Two screens in the app, both under **You** in the Search hub. **Hours** is your timesheet for the pay period you are in. **Time off** is where you ask for days away. Neither needs the office to set anything up first.
+
+## Before you start
+
+- Signed in as a technician. **Hours is empty for an owner**, and says so: owners approve hours, they do not file them.
+- The pay calendar loaded for the year. Everything on both screens is derived from it, so with no calendar loaded the screens go quiet rather than wrong. See [Know when the pay calendar runs out](/handbook/hours/know-when-the-pay-calendar-runs-out).
+
+## File your hours
+
+<Steps>
+  <Step title="Open Hours">
+    It opens on the pay period you are in: two weeks, Monday to Sunday, with the submit-by date at the top.
+  </Step>
+  <Step title="Put your hours against the days">
+    One number per day. The total at the top adds itself up as you go. You do not compute it and you cannot type it.
+  </Step>
+  <Step title="Submit before the submit-by date">
+    Once submitted the sheet is no longer a draft and you cannot edit it. If you need a change after that, ask the office to reject it back to you.
+  </Step>
+</Steps>
+
+**Statutory holidays are already filled in.** The app writes 8 hours against each one by itself, the first time the timesheet is opened. Do not add them again. For 2026 that is New Year's Day, Good Friday, Victoria Day, Canada Day, Labour Day, Thanksgiving and Christmas Day.
+
+<Note>
+If you forget, the office does not chase you forever. A sheet still in draft after the deadline is submitted automatically overnight. That is not a telling-off, and the sheet reaches the same place it would have.
+</Note>
+
+## Request time off
+
+<Steps>
+  <Step title="Open Time off and pick a range">
+    A first day and a last day. You do not pick individual days.
+  </Step>
+  <Step title="Read the count before you send it">
+    The screen tells you how many days it is actually asking for, and reminds you that weekends and statutory holidays do not count.
+  </Step>
+  <Step title="Submit it">
+    It goes to the office as pending. You can cancel it yourself while it is still pending.
+  </Step>
+</Steps>
+
+**Weekends and holidays are dropped, not just discounted.** Ask for the Friday to the Tuesday over a long weekend and the request is three days, and the Saturday, Sunday and the holiday itself are not part of it at all. Nobody has to unpick them later.
+
+If a range has no working days in it, the app will not let you send it and tells you why.
+
+<Warning>
+**Boxing Day 2026 is not in the calendar that is loaded.** The 2026 pay calendar stops on 27 December, and Boxing Day is observed on Monday 28 December. Until the 2027 calendar is loaded, that day has no automatic 8 hours and cannot be requested off, because no pay period covers it. Loading the next year before the end of December fixes it. Known problem: <Linear issue="COM-231" />.
+</Warning>
+
+## How you know it worked
+
+- Your timesheet's total matches the days you entered, plus 8 for each holiday in the period.
+- A submitted sheet reads as submitted and its overtime figure is frozen at that moment. It does not move again.
+- A time-off request appears for the office with exactly the working days it asked for.
+
+## If it did not work
+
+- **"This timesheet is no longer a draft."** Somebody, or the overnight job, submitted it before you tapped. The sheet is already where you wanted it; nothing was lost.
+- **A range you know is fine reads as no working days.** The calendar has probably not arrived yet on this phone. Give it a moment and reopen the screen.
+- **A duplicate request is refused.** A pending request already covers those dates. Find it in the list and cancel that one first.
+
+## How this was checked
+
+Read against the engine on 5 September 2026. The seven 2026 holidays the app's pay calendar carries were listed and matched against the eight the payroll source holds, which is how the Boxing Day gap above was found. The rule that weekends and holidays are excluded from a request was read from the app's own working-day calculation, not inferred from a sample.
+
+Not checked on a real phone: filing hours with no signal.
+
+## Related
+
+- [How timesheets work](/handbook/hours/how-timesheets-work)
+- [Approve timesheets and time off](/handbook/hours/approve-timesheets-and-time-off)
+- [Know when the pay calendar runs out](/handbook/hours/know-when-the-pay-calendar-runs-out)
+- [The app tour](/handbook/app/the-app-tour)

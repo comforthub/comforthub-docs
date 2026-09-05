@@ -1,0 +1,73 @@
+---
+title: "Team messages and group chats"
+description: "Start a group with teammates, name it, add and remove people, and what Delete really does"
+kind: how-to
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="the-7am-app, supabase-backend" />
+
+**Messages** holds two different things in one list. Texts go to customers over the phone line. Group chats go to teammates inside the app and never touch the phone system at all: no line, no carrier, no delivery receipt. The compose screen tells you which one you are writing before you type.
+
+## Before you start
+
+- The teammates you want have a phone number on their profile. This is the one thing that will stop you, and it is not obvious, because a group chat never uses the number. A teammate without one is missing from the picker entirely, and the empty state reads as though nobody else works here. Known problem: <Linear issue="COM-225" />.
+
+## Start a group
+
+<Steps>
+  <Step title="Compose">
+    Tap the compose button at the bottom of **Messages**. The line under the **To:** field reads **Text Message · SMS**.
+  </Step>
+  <Step title="Add the first teammate">
+    Type their name, or tap the **⊕** beside the field to browse. The picker opens on customers; the filter at the top right switches it to **Team**.
+  </Step>
+  <Step title="Add the second">
+    On the second name the line under the field changes to **Group Message · Team**. That is the moment it stops being a text. Watch for it.
+  </Step>
+  <Step title="Write and send">
+    Everyone in the group is pushed straight away.
+  </Step>
+</Steps>
+
+## Name it, and change who is in it
+
+Tap the **ⓘ** in the top right of the chat.
+
+- **The name** is the field at the top. Leave it empty and the conversation is named after the people in it. There is no save button: it saves when you press return, or when you close the panel.
+- **Add people** is at the bottom of the member list.
+- **Remove someone**, or **leave** yourself, by swiping their row. Both ask before they act.
+
+<Note>
+**A group cannot go below two people.** With only two left, the remove and leave controls disappear rather than offering an action that would be refused.
+</Note>
+
+## Hiding a conversation, and leaving one
+
+Swipe a conversation in the list and the button says **Delete**, but it does not delete anything for anyone else. It hides the conversation from **your** list. The confirmation says so plainly, and it is worth reading: your team keeps the conversation, and it comes back if somebody messages it again.
+
+**Leaving is the different one.** Leaving takes you out of the group for good: you stop receiving its messages, and it does not come back on its own. Somebody has to add you again.
+
+So: hide when you are done reading it, leave when you should not be in it.
+
+## How you know it worked
+
+- The compose line reads **Group Message · Team** before you send.
+- Everyone else in the group is notified. There is no delivery tick, because there is no carrier to report one.
+- Renaming shows up on the conversation in the list, not only inside it.
+- Composing to the same people again after somebody has joined or left starts a **fresh** conversation rather than reopening the old one. The old one keeps its name and its members.
+
+## How this was checked
+
+Walked on a simulator on 5 September 2026 with two test accounts, and every step read back against the engine (<Linear issue="COM-109" />). A group was created and a message sent; both were written within a third of a second of each other and one notification went to both members. The group was renamed, a member removed, the same member added back, the conversation hidden, reopened from its notification link, and then left. Hiding set a flag against one person only and left both other members untouched. Leaving removed only that membership and left the conversation standing.
+
+Not checked: sending a photo or an audio message, which need a real phone's camera and microphone.
+
+## Related
+
+- [The app tour](/handbook/app/the-app-tour)
+- [Tasks and notes](/handbook/app/tasks-and-notes)
+- [Roles and what they can do](/handbook/app/roles-and-what-they-can-do)
+- [Notifications we send](/reference/notifications-we-send)
