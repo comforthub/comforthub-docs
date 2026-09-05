@@ -9,7 +9,7 @@ import { Linear } from "/snippets/linear.mdx";
 
 <Touches systems="twilio, supabase-backend, resend" />
 
-A customer will sometimes text a card number or read one out to voicemail. The engine never keeps it. Every text in or out, every voicemail transcript, every call transcript and summary is masked on the way in, so what the app shows, what the push notification carries and what Zoho receives is already clean.
+A customer will sometimes text a card number or read one out to voicemail. The engine never keeps it. Every text in or out, every voicemail transcript, every line of a call transcript is masked on the way in, so what the app shows, what the push notification carries and what Zoho receives is already clean.
 
 ## What a masked message looks like
 
@@ -23,9 +23,9 @@ The last four digits are kept so the office can still say "the card ending 4242"
 
 ## The hourly scan
 
-Every hour, at 45 minutes past, the engine re-reads every stored text, transcript and summary. If a card number is found, the owner gets an email titled "[ops] a card number is stored in …" naming the row, with the fix to run, once per row until it is cleaned. The card itself is never in the email.
+Every hour, at 45 minutes past, the engine re-reads every stored text, voicemail transcript and call transcript line. If a card number is found, the owner gets an email titled "[ops] a card number is stored in …" naming the row, with the fix to run, once per row until it is cleaned. The card itself is never in the email.
 
-On 4 September 2026 the scan found 0 rows across all seven places it looks. Later that day a card was planted in a probe transcript line on purpose, and the email arrived once; see below.
+On 4 September 2026 the scan found 0 rows across all seven places it looked at the time. Since the Zoom-era call tables were retired on 5 September 2026 it looks in three: texts, voicemail transcripts and call transcript lines. Later that day a card was planted in a probe transcript line on purpose, and the email arrived once; see below.
 
 ## What was observed
 
