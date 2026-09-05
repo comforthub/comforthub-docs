@@ -2,9 +2,70 @@
 title: "Answer a checklist"
 description: "Fill in a form on site, including with no signal"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
-<NotWrittenYet issue="COM-44" />
+<Touches systems="the-7am-app, supabase-backend, zoho-crm" />
+
+Checklists are the forms attached to an appointment. On a maintenance visit they are the readings you take off the equipment. You fill them in from the work order, one question at a time.
+
+## Before you start
+
+- The job open in the app, on the work order.
+- The office has attached a checklist to the appointment. If none is attached there is no ring to open, and nobody can add one from the app.
+- Your meters, and the equipment's rating plate. Most questions want a number and will only take one that makes sense for that reading.
+
+## Steps
+
+1. On the work order, tap the ring at the top. It shows how far along you are, like **0% · 8 steps left**.
+2. Tap **Forms**, then the checklist's name.
+3. Tap a question. It opens in place with a box for the value and its unit beside it.
+4. Type the reading and move on. Tap the next question, or tap away from the list.
+5. Repeat until every question is answered.
+
+Each question has an **ⓘ** beside it. Tap it for a plain explanation of what the reading is. On a furnace, the temperature rise one tells you it is supply minus return on high fire.
+
+<Warning>
+**A reading outside the expected range is thrown away without telling you.** Type 241 volts into a question that expects 108 to 132 and it vanishes when you move on. No message, and the counter does not go up.
+
+That matters most exactly when the reading is the finding. If a number really is out of spec, it will not go in the form. Write it in the completion note instead, and tell the office. Known problem: <Linear issue="COM-220" />.
+</Warning>
+
+## Change or remove an answer
+
+Tap the question again and type over the value.
+
+To clear it, empty the box. Press and hold the value, choose **Select All**, then delete. There is no clear button.
+
+Clearing an answer on a finished checklist puts it **back to in progress** and removes the completion time. Fill the question in again and it completes once more.
+
+## With no signal
+
+Answers you give with no signal are held on the phone and a bar shows how many are waiting. When you get signal back, tap **Retry** and they send.
+
+This has not been checked on a real phone yet, only reasoned from the app's behaviour. If you rely on it, confirm the bar empties before you leave site.
+
+## How you know it worked
+
+- The ring on the work order climbs, and the header counts up, like **3 of 8 answered**.
+- The first answer moves the checklist to **in progress**. The last one **completes** it and stamps the time.
+- The office sees a checklist submission against the job in the CRM, linked to the form and the appointment, with the time you finished it.
+
+<Note>
+The CRM record carries the **completion**, not the numbers. Your readings live in the app only. If the office needs a value, they read it in the app or you tell them. This is deliberate today, not a fault: <Linear issue="COM-223" />.
+</Note>
+
+## How this was checked
+
+Walked on a simulator on 5 September 2026 against a furnace maintenance form of eight readings. All eight went in, the checklist moved through in progress to completed, and the completion time matched the last answer to the second. The submission appeared in the CRM against the right form and the right appointment. Clearing one reading put it back to in progress and withdrew the completion time; re-entering it completed the form again.
+
+Not checked: the no-signal path, which needs a real phone.
+
+## Related
+
+- [A visit in the app](/handbook/on-site/a-visit-in-the-app)
+- [Complete a work order](/handbook/on-site/complete-a-work-order)
+- [Record equipment](/handbook/on-site/record-equipment)
+- [The 7am app](/systems/the-7am-app)
