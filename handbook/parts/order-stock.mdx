@@ -1,10 +1,51 @@
 ---
 title: "Order stock from a supplier"
-description: "Turn a stock list into one order per supplier"
+description: "Turn a stock list into one order per supplier, and have the supplier emailed the purchase order"
 kind: how-to
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
-<NotWrittenYet issue="COM-79" />
+<Touches systems="the-7am-app, supabase-backend, resend" />
+
+You pick the materials you are short of on a stock list, the app builds one stocking order per supplier, files the purchase order PDF, and the engine emails the PDF to the supplier with you as the reply-to. The order is stamped sent the moment the email leaves.
+
+## Before you start
+
+- You are signed in as a technician or higher.
+- The supplier has a branch with an email address. The order goes to the branch's address; a supplier with no email gets no order and the engine flags it for a person instead.
+- The supplier's address is on our allowlist or alias domain. Anything else is redirected to the operator with "[TEST → …]" in the subject and the order is not stamped sent. See [Email safety](/handbook/running/email-safety).
+
+## Steps
+
+<Steps>
+  <Step title="Build the stock list">
+    Open **Stock lists**, add the materials you need and the quantity of each. The list is yours; share it if a colleague should see it.
+  </Step>
+  <Step title="Order">
+    Tap **Order**. The app groups the lines by supplier and asks the engine for a purchase order number for each order. The number is on the sheet before you save, so you can quote it at the counter.
+  </Step>
+  <Step title="Save">
+    The app renders the purchase order PDF, files it, and saves the order. Nothing more to do: the email is the engine's job.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- The order shows in **Stocking orders** with its purchase order number and a sent time. The supplier has an email titled "Purchase order PO… from Comfort Hub", from the orders address, with the PDF attached as the purchase order number and your login email as the reply-to.
+- Tested 4 September 2026 (<Linear issue="COM-80" />), signed in as the probe technician, against a probe supplier made in Zoho with a branch carrying a probe alias address. A stock list of two materials became order PO1058. The email left 0.9 seconds after the order was saved and the order was stamped sent 1.0 second after; the ledger holds one row for it, and the send record names the technician's login as the reply-to. Resend accepted the message. The inbox itself was not opened: the engine's key can only send, so arrival in the alias mailbox is unverified.
+- The two orders from 13 August 2026 that were filed before this existed, PO1005 and PO1008, were left unsent on purpose. Only orders saved from now on are emailed.
+
+## If it did not work
+
+- No sent time after a minute: check [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag). A supplier with no email, or an address outside the allowlist, leaves a flag instead of a stamp.
+- The order shows but the PDF is missing: the email waits for the PDF and is sent when it is filed. If it never comes, the app did not finish saving; save the order again.
+- The supplier says the reply went nowhere: the reply-to is the login of whoever saved the order. An order saved by a login that has since been removed carries no reply-to.
+
+## Related
+
+- [How ordering parts works](/handbook/parts/how-ordering-parts-works)
+- [How purchase order numbers work](/handbook/parts/how-purchase-order-numbers-work)
+- [Emails we send](/reference/emails-we-send)
+- [Resend](/systems/resend)

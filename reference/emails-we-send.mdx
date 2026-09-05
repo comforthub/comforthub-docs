@@ -13,6 +13,7 @@ Every customer email goes through one sender that checks the address first: only
 | Invoice | Invoice INV… from Comfort Hub | customer | invoice reaches QuickBooks | invoice PDF; pay link | 4 Sep 2026 |
 | Receipt | Payment received for INV… | customer | invoice fully paid | receipt PDF | 4 Sep 2026 |
 | Quote | Your Comfort Hub quote for WO… | customer | technician sends a quote | none; approve button, good for 30 days | 3 Sep 2026 |
+| Stocking order | Purchase order PO… from Comfort Hub | supplier branch email; reply-to is the technician who saved it | a stocking order is saved with its PDF | purchase order PDF named after the number | 4 Sep 2026 |
 | App login invite | Your Comfort Hub app login | technician | a technician in Zoho gets an email | none; one-time set-password button | 3 Sep 2026 |
 | Dead-letter alert | [ops] a message died in … | operator | a message dies in a queue | none | 3 Sep 2026 |
 
@@ -27,6 +28,7 @@ The two appointment emails carry a signed link that downloads a calendar file fo
 | Booking confirmation | under a second after the appointment reached our side (Zoho itself took about 100 seconds to pass it on) |
 | Appointment moved | under a second after the new date reached our side |
 | Invoice | 15 seconds after the technician's completion |
+| Stocking order | 0.9 seconds after the order was saved; stamped sent 1.0 second after |
 | Receipt | 21 seconds after the last payment was recorded in QuickBooks; no receipt after the first, partial payment, on purpose |
 
 Not sent today: an appointment reminder the day before, and invoice reminders.
@@ -35,4 +37,5 @@ Not sent today: an appointment reminder the day before, and invoice reminders.
 
 - [How booking works](/handbook/booking/how-booking-works)
 - [How invoicing works](/handbook/invoicing/how-invoicing-works)
+- [Order stock from a supplier](/handbook/parts/order-stock)
 - [Resend](/systems/resend)
