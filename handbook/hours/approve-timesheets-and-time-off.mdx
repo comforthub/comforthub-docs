@@ -1,6 +1,6 @@
 ---
 title: "Approve timesheets and time off"
-description: "Review what people submitted, in Zoho, and see the verdict reach the app"
+description: "Review what people submitted, in the app or in Zoho, and see the verdict reach the technician"
 kind: how-to
 ---
 
@@ -11,10 +11,24 @@ import { Linear } from "/snippets/linear.mdx";
 
 ## Before you start
 
-- Zoho, with rights to edit the **Timesheets** and **Time Off Requests** modules.
-- The timesheet must be Submitted. A draft never reaches Zoho.
+- The app signed in as an admin or higher, or Zoho with rights to edit the **Timesheets** and **Time Off Requests** modules. Either place works; the verdict reaches the other within seconds.
+- The timesheet must be Submitted. A draft never reaches Zoho and does not appear in the app's approvals queue.
 
-## Steps
+## Steps in the app
+
+<Steps>
+  <Step title="Open the approvals queue">
+    **Approvals** lists every submitted timesheet and every pending time off request, oldest first.
+  </Step>
+  <Step title="Approve or reject">
+    Tap **⋯** on the row, then **Approve**, or **Reject** and type the reason. The reject button stays off until there is a reason: it is the only thing the technician is told about the decision, and it stays on the sheet so they can read it again later.
+  </Step>
+  <Step title="Let the technician fix a rejected sheet">
+    Nothing more to do on your side. A rejected timesheet opens for its technician again: they change the days, and submit it a second time. It comes back to your queue as Submitted. An approved sheet, and a sheet still waiting, stay locked to them.
+  </Step>
+</Steps>
+
+## Steps in Zoho
 
 <Steps>
   <Step title="Open the timesheet in Zoho">
@@ -33,11 +47,14 @@ import { Linear } from "/snippets/linear.mdx";
 - The technician's Hours screen shows the new status. Seen 4 September 2026, read as the technician a minute after the change: period 18 Approved with its approval time, period 17 Rejected with the reason typed in Zoho.
 - The technician gets a push within seconds: "Timesheet Approved", or "Timesheet Rejected" followed by "Reason:" and your text; "Time Off Approved" for time off. Seen 4 September 2026 at 8:45 pm Ottawa: the approval reached the app 3 seconds after the Zoho save, the rejection 3 seconds, the time off approval 2 seconds, and each push was sent within a further half second.
 - Nothing echoes back to Zoho: the record you saved keeps your change and its modified time.
+- A decision made in the app reaches Zoho the same way: the Zoho timesheet shows the new **Status**, and **Approved At** or **Rejection Reason** carries what you entered. On a rejected sheet the reason is also on the sheet in the app, under the status, for the technician to read.
 
 ## If it did not work
 
 - The Hours screen still says Submitted after a minute: check the engine's failed events and dead letters for the sheet; see [When an alert email arrives](/handbook/running/when-an-alert-email-arrives). Before 5 September 2026 this was the normal outcome (<Linear issue="COM-205" />); it is fixed.
 - The status changed but no push arrived: the technician may have that notification switched off in the app.
+- The technician got the rejection push but the sheet in the app shows no reason, or Zoho shows **Rejection Reason** empty after a rejection made in the app: before 5 September 2026 the reason lived only in the push, because the engine let Zoho's empty field overwrite it a few seconds after the decision (<Linear issue="COM-221" />). Approval times went the same way. Fixed the same day; a decision made before that has no reason on record, and only the technician's notification, if they kept it, has it.
+- The technician cannot change or resubmit a rejected sheet, and the app reports a save that changed nothing: before 5 September 2026 a rejected sheet was locked to its technician the way an approved one is (<Linear issue="COM-222" />). Fixed the same day. A sheet rejected before that opens for them as soon as the fix is live; nothing needs redoing.
 
 ## Related
 
