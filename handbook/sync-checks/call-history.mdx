@@ -33,6 +33,8 @@ The push came back as one notice at 17:51:52, applied once and not pushed again.
 
 ## What to know
 
+- **The call log was reset on 5 September 2026.** Every call record on both sides (999 in Zoho, 999 here, plus recordings, transcript segments, voicemails and callback requests) was deleted so the log starts fresh with Twilio only. The two Zoom-era fields on the Zoho module, the Zoom call id and the old Supabase call id, were deleted the same day; the Supabase call reference is the key the sync uses. The two Zoom call-log tables were exported by the owner and are retired in the migration that follows.
+
 - A call typed into Zoho is a thin row here: direction and start and end times, a made-up call id, the primary phone line, and a status of **queued** that nothing will ever move on. Only the direction and the two times are mirrored; the department, the result and the transcript fields are Zoho's alone. Nothing in the phone flow reads such a row, so it is harmless, but it is not a call.
 - Zoho was slow that afternoon: 94 to 113 seconds to send word of a create or an edit, against 25 to 130 seconds seen on other modules the same day. Our side took under 2 seconds each time.
 
