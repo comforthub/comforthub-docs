@@ -5,6 +5,7 @@ kind: explanation
 ---
 
 import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
 <Touches systems="supabase-backend, quickbooks, zoho-crm, resend, pay-page" />
 
@@ -22,11 +23,23 @@ The moment a billable job's appointment is completed, the engine builds the invo
 
 A $5.00 line invoiced at $5.65: Ontario HST is always applied. A job with only warranty lines is marked Non-Billable and never invoiced.
 
+Seen again 4 September 2026 in the evening on probe job WO-1209, a maintenance visit with a finished checklist: the invoice was built 0.9 seconds after completion, the certificate 3 seconds after, QuickBooks had the invoice at 8 seconds, Zoho at 11 seconds, and the email left at 15 seconds with the invoice PDF and the certificate attached.
+
+## The work order's discount and processing fee
+
+A **Discount** and **Enable Processing Fee** set on the Zoho work order before the job is completed are carried onto the invoice, so the invoice matches the total the office quoted. Seen 4 September 2026 on WO-1209: a $10.00 line with a $2.00 discount and the fee switch on became invoice INV008350 for $9.04 ($8.00 after the discount, plus $1.04 HST). The Zoho invoice read Discount $2 and Enable Processing Fee Yes, and the QuickBooks invoice carried a $2.00 discount line. The discount typed in Zoho was on our copy of the work order 2.5 seconds later. Before that day neither field reached the invoice (<Linear issue="COM-185" />).
+
 ## Edits
 
 A discount or due date changed on the Zoho invoice reaches our side and QuickBooks within seconds. A discount changed on our side reaches both too. The amount itself is Zoho's: it is computed from the lines and never typed.
 
-Seen 4 September 2026 on the probe invoice: a due date changed here was in Zoho 5 seconds later; the processing-fee switch flipped in Zoho was here 28 seconds later, all but a second of it Zoho holding the notice. The **Status** field in Zoho did not take an edit: Delivered was back to Sent within half a minute, and why is unverified. Only Void means the same thing on both sides, so use [Void an invoice](/handbook/invoicing/void-an-invoice) and leave the status alone otherwise.
+Seen 4 September 2026 on the probe invoice: a due date changed here was in Zoho 5 seconds later; the processing-fee switch flipped in Zoho was here 28 seconds later, all but a second of it Zoho holding the notice.
+
+**Status** means the same thing on both sides since 4 September 2026: Zoho's Created, Delivered and Void are our Draft, Sent and Void. A status typed in Zoho sticks. Seen that evening on INV008350: Created typed in Zoho read Draft here 3 seconds later, and Delivered read Sent 3 seconds later. Earlier that day, Delivered had bounced back to Sent within half a minute, because the two lists disagreed (<Linear issue="COM-195" />). Void still goes through [Void an invoice](/handbook/invoicing/void-an-invoice).
+
+## Issued and paid times
+
+Both times are kept as instants on one clock. Until 4 September 2026 the issued time was UTC and the paid time was Toronto wall-clock in the same row, so INV008348 read paid at 09:33 and issued at 13:29, four hours before it was issued. After the fix the same row reads issued 13:29:17 UTC and paid 13:33:08 UTC, 3 minutes 51 seconds apart, and INV008350's payment recorded in QuickBooks at 23:56:13 UTC reads exactly that here, 9 minutes 23 seconds after the invoice was issued (<Linear issue="COM-199" />). The app shows both in the device's time zone.
 
 ## Delete
 
@@ -39,7 +52,8 @@ Setting the Zoho invoice to Void voids it in QuickBooks within seconds and files
 ## Two things to know
 
 - The unpaid PDF is not attached to the Zoho invoice; the paid one is, once the customer pays.
-- A maintenance or commissioning job also produces a certificate; see [Certificates](/handbook/invoicing/certificates).
+- A maintenance or commissioning job also produces a certificate, and the invoice email carries it; see [Certificates](/handbook/invoicing/certificates).
+- The Zoho invoice names its **Account Name** and its **Work Order**. Seen 4 September 2026 on INV008350: both were filled the moment the Zoho invoice was made (<Linear issue="COM-171" />).
 
 ## Related
 

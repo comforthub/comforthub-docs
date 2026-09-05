@@ -4,17 +4,22 @@ description: "Which jobs produce a certificate, where it is stored, and who gets
 kind: reference
 ---
 
+import { Linear } from "/snippets/linear.mdx";
+
 A certificate is a PDF the engine writes when a maintenance or commissioning job is completed. It lists the equipment and the readings the technician took.
 
 | Job type | Certificate | Where it goes | Tested |
 |---|---|---|---|
-| Maintenance | Certificate of Maintenance | stored on the work order; attached to the Zoho work order | 3 Sep 2026, 9 s after completion |
-| Commissioning | Certificate of Commissioning | same | not yet |
+| Maintenance | Certificate of Maintenance | stored on the work order; attached to the Zoho work order; attached to the invoice email | 3 Sep 2026, 9 s after completion; 4 Sep 2026, 3 s after completion and in the email 15 s after |
+| Commissioning | Certificate of Commissioning | same | 3 Sep 2026, filed 6 s after completion; not yet seen in an email |
 | Service, installation, warranty | none | | |
 
-The certificate is not sent with the invoice email today; that email carries the invoice PDF only. Readings come from the completed checklist; a checklist completed without readings gives a certificate with none.
+Since 4 September 2026 the invoice email carries the certificate as a second attachment, next to the invoice PDF. Seen that evening on probe job WO-1209: the email left 15 seconds after completion with INV008350.pdf and Certificate-of-Maintenance-Probe-COM-185-Billing-2026-09-04.pdf, one file per maintenance or commissioning visit of the job, named after the certificate kind, the job and the visit date. Before that day the email carried the invoice PDF only (<Linear issue="COM-180" />).
+
+Readings come from the completed checklist; a checklist completed without readings gives a certificate with none.
 
 ## Related
 
 - [How invoicing works](/handbook/invoicing/how-invoicing-works)
 - [Answer a checklist](/handbook/on-site/answer-a-checklist)
+- [Emails we send](/reference/emails-we-send)
