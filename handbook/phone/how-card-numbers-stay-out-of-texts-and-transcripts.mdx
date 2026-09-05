@@ -42,6 +42,14 @@ Later the same day, at 5:46 pm Toronto time:
 
 Not tested: a card typed into an outbound text from the app screen itself. The text above was queued straight into the outbox, which is the same write the app makes.
 
+## When a text is deleted
+
+The Messages list shows, for each conversation, the newest text and when it arrived. Until 5 September 2026 that line was written only when a text arrived, never when one was removed. So when the probe's clean-up deleted the masked card text above, the list kept saying "3:10 PM, my visa card number is [CARD ****4242]…" and showed the conversation as unread, while opening it showed only the two morning texts. Nothing was lost to the masking: the text had been kept, masked, and the push had gone out; the list was simply describing a text that had since been deleted (<Linear issue="COM-210" />).
+
+Now, when a text is deleted, the conversation's line is rebuilt from the texts that remain: the newest remaining text becomes the preview, its time becomes the conversation's time, and the conversation is unread only if an incoming text is still there. Delete the last text and the line goes blank. The list and the thread can no longer disagree.
+
+Deleting a text is not something the app offers; it happens when a probe is cleaned up or when a developer removes a row by hand.
+
 ## Related
 
 - [Text a customer](/handbook/phone/text-a-customer)

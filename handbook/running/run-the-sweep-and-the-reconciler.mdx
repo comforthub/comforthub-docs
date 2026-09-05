@@ -52,6 +52,7 @@ Seen 4 September 2026 in production, on a probe territory that exists on both si
 - **The reconciler says "skipped: no Zoho record returned".** The record is gone from Zoho since the sweep saw it; the next sweep reclassifies the finding.
 - **A module is "measured only".** Invoices, payments, subscriptions and subscription payments are never reconciled from Zoho; money is settled by hand. See [Sync rules by module](/reference/sync-rules-by-module).
 - **The finding is a link mismatch.** The reconciler never repoints a link. Fix the link in Zoho; the next sweep closes it.
+- **A module shows 0 records on both sides.** The sweep did measure it; there was nothing to measure. Purchase orders on 5 September 2026: the nightly run at 03:08 UTC and a dry run by hand at 06:32 UTC both read 0 purchase orders here and 0 in Zoho, because the nine that ever existed were test records, removed on 28 August and 4 September. A module the sweep leaves out is listed under "excluded" in the run's log, with the reason; a zero pair under "observations" is an empty module, not a skipped one.
 
 ## Related
 

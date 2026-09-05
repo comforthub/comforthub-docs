@@ -31,7 +31,7 @@ Seen 4 September 2026 on the probe customer "Probe COM Walker", with Stripe's ev
 |---|---|---|---|
 | New subscription, All-Season, $29.99 a month | Subscription Active with the plan, the amount, the covered visits and the term start | Subscription "Probe COM Walker – All-Season": Active, Plan, Monthly Amount, Covered Services, Term Start and End | 2.8 s here, 2.9 s in Zoho |
 | Plan changed to Heating Only, $19.99 | Plan and amount follow | Plan and Monthly Amount follow | 3.0 s here, 3.2 s in Zoho |
-| Invoice paid, $19.99 | A subscription payment for the invoice; the roll-up reads Months Paid 1, Paid This Term 19.99 | Subscription Payment "2026-09 · $19.99", Paid, with the payment date; the Subscription's Months Paid, Paid This Term and Last Payment Date | payment 1.8 s here, 3.0 s in Zoho; the roll-up 4.7 s |
+| Invoice paid, $19.99 | A subscription payment for the invoice; the roll-up reads Months Paid 1, Paid This Term 19.99 | Subscription Payment, Paid, with the payment date (since 5 September made by the sync push alone, named "Payment in_…" and carrying the amount, the period and the Stripe invoice id as well; see below); the Subscription's Months Paid, Paid This Term and Last Payment Date | payment 1.8 s here, 3.0 s in Zoho; the roll-up 4.7 s |
 | Invoice payment failed | Recorded and left alone: no payment row, no status change | Nothing yet | under 0.1 s |
 | Subscription Past Due (the update Stripe sends after the failed payment) | Status Past Due | Status Past Due | 3.5 s here, 3.6 s in Zoho |
 | Subscription cancelled | Status Canceled, cancelled-on date set | Status Canceled | 3.0 s here, 3.1 s in Zoho |
@@ -63,9 +63,13 @@ Stripe is the only way a subscription payment is made. A Subscription Payment ty
 
 The same evening, a value typed in Zoho on a field this side owns was refused rather than lost: a payment's method changed to e-Transfer in Zoho raised a flag naming the field 2 seconds later and read Cash again 3 seconds after the edit. Subscriptions and subscription payments follow the same rule (<Linear issue="COM-197" />).
 
-## Known problem: a payment lands twice in Zoho
+## One writer for the subscription payment
 
-One paid invoice can become two Subscription Payments in Zoho (<Linear issue="COM-208" />). The Stripe apply and the sync push both create the Zoho record when they run in the same second. Seen twice on 4 September 2026; once it also made a second payment row here, and Months Paid read 2 for one payment. Until it is fixed, look at the Zoho Subscription Payments list after a payment and delete the copy that has no **Status**.
+Until 5 September 2026 one paid invoice could become two Subscription Payments in Zoho (<Linear issue="COM-208" />). The Stripe step wrote the Zoho record itself, keyed on the Stripe invoice id, while the payment row's own sync push created it again, keyed on our payment id. Neither knew about the other, so whichever ran second made a copy: one with a Status and a payment date but no amount, one with an amount and a period but no Status. Twice on 4 September the copy's echo also made a second payment row here, and Months Paid read 2 for one payment.
+
+Since 5 September the Stripe step writes only our payment row. The sync push alone makes the Zoho Subscription Payment, named "Payment in_…" after the Stripe invoice, with Amount, Period Start, Period End, Payment Date, Status Paid and the Stripe invoice id all on the one record. Months Paid on the Subscription counts our payment rows, so one payment reads 1. The Status is always Paid because only a paid invoice makes a payment; a failed one is recorded and makes no row.
+
+A Zoho Subscription Payment with no Status or no Amount is a leftover from before that day. Delete it in Zoho; nothing here refers to it.
 
 ## How to test it
 
