@@ -8,3 +8,9 @@ tag: "TODO"
 import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
 
 <NotWrittenYet issue="COM-46" />
+
+## Equipment made when an install completes
+
+You do not add the furnace or condenser an install puts in by hand. When the work order is completed, each line whose product converts to an asset becomes a piece of equipment on the customer, whether the job was booked from the dispatch widget (which makes it at booking time) or typed straight into Zoho.
+
+Tested 4 September 2026 on a probe install typed into Zoho with one furnace line: completed at 23:43:54 UTC, the furnace was on our side in the same instant, in Zoho Assets 3 seconds later with its brand, type, account and property, and on the work order's **Work Order Assets** list 5 seconds later. It had no serial yet; the serial and photos are what you record on site.

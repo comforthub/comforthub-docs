@@ -2,9 +2,37 @@
 title: "Stripe"
 description: "Subscriptions only: plans, monthly billing, and the events we listen to"
 kind: reference
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+Stripe bills plan customers by the month and is the source of truth for a subscription's plan, amount and status. Nothing else is sold through it: invoices for jobs are paid on the pay page or in QuickBooks.
 
-<NotWrittenYet issue="COM-75" />
+## What Stripe owns
+
+| Thing | Where it lives | Who changes it |
+|---|---|---|
+| The customer's card and the monthly charge | Stripe | The customer, or the office in the Stripe dashboard |
+| The plan and its price | A Stripe product and price | The office in Stripe |
+| The subscription's status (Active, Past Due, Paused, Canceled) | Stripe | Stripe, on payment or cancellation |
+
+Our side and Zoho hold copies. The engine's plan table maps each Stripe product to a plan name (All-Season, Heating Only, Cooling Only, Tankless) and the visits it includes. A product missing from that table is refused and flagged.
+
+## The events we listen to
+
+| Stripe event | What the engine does |
+|---|---|
+| Subscription created or updated | Creates or updates our subscription and the Zoho Subscription |
+| Subscription deleted | Marks both Canceled |
+| Invoice paid | Adds a subscription payment here and a Subscription Payment in Zoho, then refreshes the Subscription's Months Paid, Paid This Term and Last Payment Date |
+| Invoice payment failed | Recorded only. The subscription update Stripe sends next carries the Past Due status |
+
+Every call is checked against Stripe's signature and against a five-minute clock window, and an event seen before is ignored. Timings as observed are on [Subscriptions](/handbook/payments/subscriptions).
+
+## Keys and mode
+
+The account has one live secret key and the subscription webhook's signing secret, both in the secrets store under the functions path (see [Environments and secrets](/systems/environments-and-secrets)). There is no test-mode key, so Stripe's own side is tested with a real card, and the engine's side with the replay harness described on [Subscriptions](/handbook/payments/subscriptions).
+
+## Related
+
+- [Subscriptions](/handbook/payments/subscriptions)
+- [How payments work](/handbook/payments/how-payments-work)
+- [Who is the source of truth](/systems/who-is-the-source-of-truth)

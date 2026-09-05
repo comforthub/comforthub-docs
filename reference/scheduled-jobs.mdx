@@ -47,7 +47,7 @@ Each runs on its own clock, looks for one kind of trouble, and emails the operat
 
 | Job | When | What it does |
 |---|---|---|
-| Open-appointment push | every hour | Tells a technician about an appointment still open past its window |
+| Open-appointment push | every hour | Looks for appointments still open an hour past their window. Each one gets a technician one push the first hour it is overdue, then one a day at 8:00 am until it is completed, not one every hour (seen 3 and 4 September 2026: a push at 11:00 am, then the next at 8:00 am the day after and nothing at the twenty hours between) |
 | Auto-submit overdue timesheets | 1:00 am | Submits any timesheet still open after its deadline |
 | Timesheet reminder, morning | 9:00 am | Push to anyone whose timesheet is due |
 | Tasks due soon | 9:00 am | Push for tasks due today |

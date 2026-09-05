@@ -30,18 +30,25 @@ Every line is billed to the customer or to warranty (and, for plan customers, to
 - Only plan lines: **Non-Billable** too. A line counts as a plan line when the work order names the customer's subscription (or the customer has exactly one live plan), the plan includes that kind of visit, and the line is the matching maintenance product: Routine Furnace Maintenance for a heating visit, Routine Condenser Maintenance for a cooling visit, Routine Tankless Maintenance for a tankless visit. Any other line on a plan customer's job bills as usual.
 - A plan job is also written onto the customer's subscription in Zoho as a visit (**Subscription Visits**: the service, Scheduled, and the work order). When the job completes, the visit turns Completed with the date.
 
-Tested 4 September 2026: a warranty-only job and a plan-only job (one Routine Furnace Maintenance line on an All-Season customer) were both **Non-Billable** on our side the second they arrived, and Zoho showed it 5 seconds later. The plan job's visit was on the subscription in Zoho one second after the job arrived. That visit appeared twice (the same service, same job) because the job and its line arrived in the same second and were logged by two hands at once; the next logging pass on that job folds them into one. Known, reported for filing.
+Tested 4 September 2026: a warranty-only job and a plan-only job (one Routine Furnace Maintenance line on an All-Season customer) were both **Non-Billable** on our side the second they arrived, and Zoho showed it 5 seconds later. The plan job's visit was on the subscription in Zoho one second after the job arrived. That morning the visit appeared twice (the same service, same job) because the job and its line arrived in the same second and were logged by two hands at once. Fixed the same day: the two hands now take turns. Tested again at 23:38 UTC with a plan-only job typed into Zoho naming the customer's All-Season subscription: the job was on our side in 3 seconds and its subscription showed exactly one Heating visit, Scheduled, 4 seconds after the job was typed. Deleting the job's line later took that visit off the subscription 2 seconds after the line went.
+
+## Booking from the app on a call
+
+A service or maintenance visit booked from the app during a phone call is written on our side first: the work order, its lines and the appointment are our rows, and the engine creates their copies in Zoho. The technician chosen in the app goes with it.
+
+Tested 4 September 2026 at 23:40 UTC on the probe customer, one technician chosen: the app had its answer in 9.2 seconds, with the Zoho ids of both the work order (WO468) and the appointment (SA-1130). The appointment was in Zoho 1.8 seconds after our row, with the technician in **Assigned Technicians**, the property, the date and the window "10:00-12:00 PM". **Service Territory** stayed empty, because that customer's property (12 Sandhill Road, Kanata) has no service area: the territory is filled from the property only when the property has one.
 
 ## Emails and pushes
 
 - With **Notify Client** on, the customer gets "Your Comfort Hub appointment on …" within 2 seconds, with an add-to-calendar link.
 - Moving the appointment sends "has moved to …" and sends no second confirmation.
 - The technician's phone gets a push for a new, moved or cancelled appointment. That needs the technician to have the app; see [Add a technician](/handbook/catalog-and-staff/add-a-technician).
+- An appointment left open an hour past its window gets its technician an **Appointment Not Completed** push ("… is still open. Please complete or update it."), which opens the work order in the app. Tested 4 September 2026: the push left within a quarter of a second of the hourly check, and a second check the same day sent nothing. It repeats once a day at 8:00 am until the appointment is completed, not every hour; see [Scheduled jobs](/reference/scheduled-jobs).
 
 ## Two things to know
 
 - **Line descriptions.** What you type on a line is replaced by the catalog item's description on both sides. Known, being fixed.
-- **A work order typed straight into Zoho makes no equipment** for a furnace or condenser on its lines. Only the dispatch widget does that today (COM-181). Book installs from the widget.
+- **An install typed straight into Zoho gets its equipment when the job completes.** The dispatch widget still makes equipment at booking time; a work order made any other way makes it the moment the job is marked complete, one piece for each line whose product converts to an asset, and the piece is added to the work order's own asset list in Zoho. Tested 4 September 2026 on a probe install with one furnace line (DR96TN0804CNA) typed into Zoho: completed on our side at 23:43:54 UTC, the furnace existed here in the same instant, was in Zoho Assets 3 seconds later (brand, type, account and property filled) and on the work order's **Work Order Assets** list 5 seconds later. A job that already has equipment gets none added.
 - **Changing only the technician, equipment or checklist** on a saved appointment does not reach our side until some other field on the record changes too. The widget saves the date and window with every change, so it is fine there. Known, being fixed.
 
 ## Related

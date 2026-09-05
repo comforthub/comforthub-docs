@@ -35,6 +35,14 @@ You book from the customer's account in Zoho with the dispatch calendar widget. 
 - Tested 3 September 2026 with the same records the widget writes: the work order and its line were on our side in 2 seconds, with the line matched to the catalog item, and the appointment in 2 seconds with the technician, the window, the territory and the property.
 - If you asked for an email, the customer has "Your Comfort Hub appointment on …" within a few seconds.
 
+## Booking from the app instead
+
+A phone agent can book a service or maintenance visit from the app while on the call. The app writes the job on our side and the engine makes the Zoho copies; the technician picked in the app is on the Zoho appointment. Tested 4 September 2026 at 23:40 UTC: the app had its answer in 9.2 seconds, and the appointment (SA-1130) was in Zoho with its technician in **Assigned Technicians** 1.8 seconds after it was written here. The territory is set only when the customer's property has a service area; that probe customer's did not, so it stayed empty.
+
+## An install typed into Zoho
+
+A work order typed straight into Zoho (no widget) makes its equipment when the job is completed: one piece for each line whose product converts to an asset, in Zoho Assets and on the work order's asset list within 5 seconds. Tested 4 September 2026; see [How booking works](/handbook/booking/how-booking-works).
+
 ## Changing lines afterwards
 
 Edit the lines on the work order in Zoho. Quantity and price changes reach our side in 3 seconds and the billing decision runs again. A line added on our side by the technician reaches Zoho in 2 seconds.

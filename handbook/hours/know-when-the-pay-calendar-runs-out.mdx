@@ -1,0 +1,49 @@
+---
+title: "Know when the pay calendar runs out"
+description: "Read the runway alert, check how many days of pay periods are left, and load the next year in time"
+kind: how-to
+---
+
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
+
+<Touches systems="supabase-backend" />
+
+Every timesheet reminder and the nightly auto-submit read the pay calendar. When the calendar runs out they do not fail; they go quiet. The runway alert is the one warning you get before that, so treat it as the cue to load the next year.
+
+## Before you start
+
+- The operator inbox (the alert lands there).
+- The engine's tables, if you want to check the calendar yourself.
+
+## Steps
+
+<Steps>
+  <Step title="Read the subject">
+    The mail is "[ops] the payroll calendar runs out in N days". N is the number of days between today (Ottawa time) and the last submit-by date loaded. The body names that date and lists the three jobs that will go silent.
+  </Step>
+  <Step title="Check the calendar yourself">
+    The last pay period loaded ends on a date; its submit-by date is a few days before. Seen 4 September 2026: 27 pay periods loaded, the last one ending 27 December 2026 with a submit-by of 24 December, so 111 days of runway.
+  </Step>
+  <Step title="Load the next year before the alert fires">
+    The alert fires once fewer than 60 days remain, which on this calendar is 25 October 2026. Load the next year's schedule before then; see [Load the year's payroll calendar](/handbook/hours/load-the-payroll-calendar).
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- The check runs every day at 2:55 am Ottawa time and mails only when fewer than 60 days remain. Seen 4 September 2026 with 111 days left: two runs forced by hand with the normal threshold sent nothing.
+- It mails **once per situation, not once a day**. The ledger remembers the threshold, the last submit-by date and whether the calendar is short or already out; the same three together never mail twice. Seen 4 September 2026: the threshold widened to 115 days had mailed once at 19:11 UTC during another test; two more forced runs with the same 115-day threshold at 23:38 UTC both reported the mail as already sent and sent nothing. Three test mails reached the inbox that day in total, one each for thresholds of 200, 150 and 115 days, every one saying "runs out in 111 days".
+- A second mail comes only when the situation changes: when the calendar is actually out (zero days), or after a new year is loaded and the runway shrinks back under 60 days.
+
+## If it did not work
+
+- No mail although the calendar is short: check the ledger row for the runway alert; if one is already marked sent for this calendar end, that is the once-per-situation rule, not a fault. Compare with [When an alert email arrives](/handbook/running/when-an-alert-email-arrives).
+- A mail about timesheets sitting outside the calendar is the same check's other half: a timesheet names a pay period that is not loaded. Seen 4 September 2026: two such timesheets, mailed once on 26 August and suppressed since.
+
+## Related
+
+- [How timesheets work](/handbook/hours/how-timesheets-work)
+- [How alerts work](/handbook/running/how-alerts-work)
+- [Alerts](/reference/alerts)
+- <Linear issue="COM-87" />
