@@ -8,7 +8,7 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="supabase-backend" />
 
-A message that fails all its retries is moved to the queue's dead-letter box and the dead-letter alert tells you. Nothing is lost: the message is a pointer to a record, and once the cause is fixed it can be put back on the queue and run again, from the record's current state.
+A message that fails all its retries, or that the database refuses in a way a retry could never change, is moved to the queue's dead-letter box and the dead-letter alert tells you. Nothing is lost: the message is a pointer to a record, and once the cause is fixed it can be put back on the queue and run again, from the record's current state.
 
 ## Before you start
 
@@ -36,6 +36,15 @@ A message that fails all its retries is moved to the queue's dead-letter box and
 
 - The dead-letter box is empty and the next dead-letter watch stays quiet.
 - Seen 3 September 2026: probe job WO461's invoice died twice (a typed-in part with no QuickBooks item). After the fix shipped, message 39 was redriven at 06:00 UTC and the invoice existed 3 seconds later, in QuickBooks and Zoho within 10 seconds, with the invoice email out at 06:00:04. Message 40, its twin, was deleted.
+
+## Why some letters arrive at once
+
+Two kinds of failure reach the box, and the alert body says which.
+
+- **A refusal the database will repeat.** A value missing that the record needs, a value this side cannot read, a record colliding with one that already exists. Retrying would only get the same answer, so the message dies on its first delivery: one letter, one email and one flag for a person, within a minute of the record arriving. The alert reads "attempt 1 of 10, not retryable".
+- **Trouble that passes.** Zoho or QuickBooks down or refusing to talk, the database briefly unreachable. The message is retried on a widening schedule, ten deliveries spread over ten to thirty minutes, and only then dies. The alert reads "attempt 10 of 10, budget spent".
+
+Until 4 September 2026 both kinds took the long road: two probe leads made in Zoho that afternoon, one without a street and one with the phone and street of an existing lead, were each retried for eighteen minutes and left sixteen flags between them before their letters arrived. The first-delivery rule ships in pull request 619; before it, the rule covered only three kinds of refusal by name.
 
 ## Related
 

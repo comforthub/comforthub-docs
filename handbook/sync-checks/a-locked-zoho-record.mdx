@@ -1,6 +1,6 @@
 ---
 title: "A locked Zoho record is a one-way door"
-description: "While a Zoho record is locked, a change made here is skipped, flagged for a person, and counted in the next review email; it is not sent later when the lock lifts"
+description: "While a Zoho record is locked, a change made here is skipped, flagged for a person, and counted in the next review email; it is sent again when the lock record is resolved"
 kind: explanation
 ---
 
@@ -9,7 +9,7 @@ import { Linear } from "/snippets/linear.mdx";
 
 <Touches systems="zoho-crm, supabase-backend" />
 
-While a record is locked in Zoho, changes still flow down to our side, but a change made here is not sent up: the push is skipped, an event says why, the event is flagged for a person, and the next review email counts it. The change is not sent later when the lock lifts.
+While a record is locked in Zoho, changes still flow down to our side, but a change made here is not sent up: the push is skipped, an event says why, the event is flagged for a person, and the next review email counts it. When the lock record for that record is resolved or removed, the refused change is sent once more.
 
 ## What was done
 
@@ -33,8 +33,9 @@ Test <Linear issue="COM-155" />, run in production on 4 September 2026 with an a
 ## What to know
 
 - **It is not silent, but it is not loud either.** The refusal is one flagged event, and the review email that goes out every fifteen minutes counts it with every other open flag ("N events await a person") and names it by operation. Nothing lists which records are locked, and nothing mails at the moment of refusal.
-- **The change does not catch up.** Once refused, the push is archived. Unlocking the record in Zoho does not re-send it; the next push of that row, whenever something else on it changes, carries it. Until then the two sides disagree on that field, and the nightly reconcile is the only thing that would notice (not exercised here).
-- **Decision:** acceptable for now, on the record. A lock is the office's call, the flag reaches a person within fifteen minutes, and closing it is [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag). Ten earlier refusals, all leads on 31 August, sit in review the same way.
+- **The change catches up when the lock record lifts.** Once refused, the push is archived. When the lock record naming that record (see [How record locks sync](/handbook/sync-checks/record-locks)) is resolved or deleted, every change refused while it was locked is queued once more and sent within the minute, carrying the record's current state; if Zoho still says locked, it is refused and flagged again. This ships in pull request 621 (test COM-215); the test above ran before it, which is why the rename never landed.
+- **A bare unlock is still silent.** Zoho sends no notice for a lock or an unlock of the record itself. A record locked and unlocked with Zoho's own lock action alone, with no lock record made, is not re-sent; the next push of that row, whenever something else on it changes, carries the edit. Until then the two sides disagree on that field, and the nightly reconcile is the only thing that would notice (not exercised here).
+- **The flag stays for a person.** Re-sending does not close it: closing it is [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag). Ten earlier refusals, all leads on 31 August, sit in review the same way.
 
 ## Related
 

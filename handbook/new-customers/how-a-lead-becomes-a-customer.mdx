@@ -5,6 +5,7 @@ kind: explanation
 ---
 
 import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
 <Touches systems="zoho-crm, supabase-backend, quickbooks" />
 
@@ -29,8 +30,21 @@ A lead that already has its customer is left alone. Setting **Status** back to *
 
 ## What the lead shows afterwards
 
-- **Supabase Lead Id** fills in on the lead. That is the only visible change to the lead in Zoho.
+- **Supabase Prospect Id** fills in on the lead. That is the only visible change to the lead in Zoho.
 - The lead does not link to its new Contact in Zoho. The link exists on our side only. If you need to get from a lead to its contact in Zoho, search Contacts by the email.
+- The lead also carries an older field, **Supabase Lead Id**, that stays blank. It was the first copy of the same pointer and cannot be used any more (see below). It is dead metadata until the owner removes it from the Leads layout in Zoho; the engine ignores it.
+
+## A lead born on our side
+
+Not every lead is typed into Zoho. When a phone agent books a visit in the app for a caller nobody has heard of, the lead is created on our side first, and the engine has to create its copy in Zoho before it can convert it. The order is: lead here, lead in Zoho with **Supabase Prospect Id** filled in, then the same conversion as above, then the booking is confirmed to the agent.
+
+On 5 September 2026 that first step failed on the live system, and the booking answered that the customer was not ready. Zoho refused to create the lead because the engine named it by **Supabase Lead Id**, and Zoho only lets a record be named from outside by a field that was set up for it when the field was created; that one was not, and Zoho cannot change a field after the fact. The fix is a new field, **Supabase Prospect Id**, set up the right way, and the engine now uses it for every lead. This is <Linear issue="COM-216" />. Unverified on the live system until the next new caller is booked; when it has been watched, this paragraph will say what was seen.
+
+The same booking showed a second fault, which would have stood even with the field fixed. The engine hands out two jobs a few thousandths of a second apart: create the lead in Zoho, and set the customer up. The second job was picked up first, looked for the lead's Zoho copy, found none, and gave up for good as if the lead were bad, 1.3 seconds before the copy could have existed. The booking then waited its full 25 seconds for a customer that was never coming, and a retry from the app changed nothing, because the lead was already marked converted and nothing asked for the set-up again. This is <Linear issue="COM-217" />.
+
+Now a set-up that finds no Zoho copy yet waits and looks again, a few seconds later and then at growing intervals, up to ten tries; it gives up only when the lead's own Zoho copy has failed for good, and that failure is what you will see recorded. A booking retried from the app also asks for the set-up again when the lead is converted, has no customer, and no set-up for it is queued or under way. Unverified on the live system until the next new caller is booked; when it has been watched, this paragraph will say what was seen.
+
+Until then, a caller who is new and whose booking answers "customer not ready": [Set up a customer by hand](/handbook/new-customers/set-up-a-customer-by-hand), then book again.
 
 ## After the conversion
 

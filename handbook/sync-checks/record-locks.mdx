@@ -35,6 +35,7 @@ The push came back as one notice at 14:01:47, applied once and not pushed again.
 
 - The reason list is fixed on both sides. Zoho's picklist has two stray entries, Option 1 and Option 2, that our side does not accept; a lock given one of those in Zoho would be refused here. Not exercised in this test.
 - This module is a note about a lock. It is not what locks the record in Zoho; that is Zoho's own record locking, see [A locked Zoho record is a one-way door](/handbook/sync-checks/a-locked-zoho-record).
+- The lock names its subject. Zoho's four lookups (contact, account, equipment, property) land here from pull request 621 on; before it every lock on our side named no record, which is why a lifted lock could not re-send the changes refused under it. A lock resolved or deleted here re-sends them once. There is no lead lookup on the module, so a lead lock names nothing.
 
 ## Related
 

@@ -2,9 +2,85 @@
 title: "The app tour"
 description: "The three tabs, the Search hub, and where every screen lives"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
+import { Linear } from "/snippets/linear.mdx";
 
-<NotWrittenYet issue="COM-113" />
+<Touches systems="the-7am-app, supabase-backend" />
+
+The app has three tabs along the bottom: **Home**, **Phone**, and a magnifying glass that opens the **Search hub**. Home is the day. Phone is the line. Everything else in the app lives behind that magnifying glass.
+
+## Home
+
+Home is the technician's day, not a menu. It shows the month, a week strip, and the day laid out by the hour with a card for each stop.
+
+A stop card carries the customer's name and the service type. Tap it and it expands in place to the address, with **Directions** and **Work order**. Tap **Work order** and you are on the job.
+
+The cards change material as the day moves. The stop whose arrival window is happening now sits slightly proud of the others. Later stops sit flat. A finished stop and a no-show drop onto a duller card and the customer's name is struck through. There is no tick and no badge; the card itself tells you where things stand.
+
+The toolbar carries the weather and the reminders tray. Both are also rows in the Search hub, and they open the same screens either way.
+
+## The Search hub
+
+Twenty-two rows in six groups. The hub is the app's table of contents.
+
+| Group | Rows |
+|---|---|
+| On its own at the top | **Agent** |
+| **Day** | **Reminders**, **Route**, **Mail**, **Tasks**, **Weather** |
+| **Phone** | **Phone**, **Voicemail**, **Callbacks** |
+| **People** | **Contacts**, **Messages**, **Notes** |
+| **Operations** | **Assets**, **Stock lists**, **Work orders**, **Purchase orders**, **Suppliers** |
+| **You** | **Hours**, **Time off**, **Approvals**, **History**, **Profile** |
+
+**Agent** opens over the whole screen rather than pushing, because it is a conversation you step into and back out of. It answers from the equipment manuals and keeps your past chats in a drawer.
+
+**Route** is the day on a map, with a panel over it listing the stops in order. The panel stays up while you move the map.
+
+**Weather** is full-bleed scenery for the current conditions and has no title in its bar. The temperature is the heading.
+
+### What the numbers next to a row mean
+
+Only some rows carry a number, and each one counts what is still waiting on you, not the total.
+
+| Row | The number is |
+|---|---|
+| **Mail** | Replies the assistant has drafted and you have not decided on |
+| **Approvals** | Timesheets people have submitted and nobody has approved or rejected |
+| **Messages** | Conversations with something unread |
+
+A row with no number has nothing outstanding, which is not the same as having nothing at all. **Voicemail** shows no number when every message has been listened to, even though the messages are still there. Same for **Callbacks**: a callback that was attempted or cancelled is done with, so it stops counting.
+
+When you are checking one of these numbers against the engine, count the same thing the app counts. Each of these lists uses its own words for its states, and guessing at them gives a wrong answer that looks right.
+
+### Typed search
+
+The search box at the bottom of the hub searches across the app at once and groups what it finds: **Contacts**, **Jobs**, **Equipment**, **Suppliers**, **Messages**, and the four kinds with no offline copy — tasks, notes, voicemails and callbacks.
+
+Type a customer's surname and you get the person, their job with its arrival window, and their equipment, in one list. Type a work order number and you get that job. Type part of a serial and you get the equipment, with the matching digits picked out.
+
+Results appear about a second after you stop typing, so a brief empty screen is the search still thinking, not an answer.
+
+<Warning>
+Search finds what your phone has already loaded. Contacts, jobs, equipment and suppliers are searched from the copy held on the device, and there is no fallback to the office for those. A job you have never opened, or a supplier whose list you have never visited, comes back as **No Results** even though it exists. Open the matching screen once and it becomes searchable. This is a known gap: <Linear issue="COM-219" />.
+</Warning>
+
+## What you cannot do from the app
+
+**Hours** is empty for an owner. It says the owner does not file hours, which is correct: owners approve them, they do not submit them. Technicians see their pay period there instead.
+
+Signing out is in **Profile**. Sign out and the device stops receiving pushes until someone signs back in.
+
+## How this was checked
+
+Walked on a simulator on 5 September 2026, signed in as the owner. All twenty-two rows were opened and each one reached its own screen. The three numbers were checked against the engine and matched. Typed search was run against a customer surname and a work order number and returned the groups above. The cold-copy limit in the warning was measured: the same query returned nothing before the screen had been opened and the right answer after.
+
+Not checked: signing out, and anything a technician-only account sees.
+
+## Related
+
+- [The 7am app](/systems/the-7am-app)
+- [Roles and what they can do](/handbook/app/roles-and-what-they-can-do)
+- [Tasks and notes](/handbook/app/tasks-and-notes)
+- [Notifications we send](/reference/notifications-we-send)

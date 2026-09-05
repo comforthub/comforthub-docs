@@ -7,9 +7,9 @@ kind: how-to
 import { Touches } from "/snippets/touches.mdx";
 import { Linear } from "/snippets/linear.mdx";
 
-<Touches systems="supabase-backend, quickbooks" />
+<Touches systems="pay-page, supabase-backend, quickbooks, zoho-crm, resend" />
 
-The invoice email carries a pay link. The customer opens it, sees the invoice, and pays by card or bank transfer inside Helcim's payment window. Our side marks the invoice Paid the moment Helcim approves the card.
+The invoice email carries a pay link. The customer opens it, sees the invoice, and pays by card or bank transfer inside Helcim's payment window. Our side marks the invoice Paid the moment Helcim approves the card. Helcim then posts the payment into QuickBooks on its own, and the engine finishes the job: receipt email, work order Paid here and in Zoho, payment recorded in Zoho.
 
 ## Before you start
 
@@ -30,18 +30,30 @@ The invoice email carries a pay link. The customer opens it, sees the invoice, a
   </Step>
 </Steps>
 
+## What happens after the card is approved
+
+Helcim's QuickBooks connection is switched on for the live account. Every invoice we create in QuickBooks appears in Helcim within minutes, and a card payment Helcim takes on one of those invoices is posted back into QuickBooks by Helcim, marked with Helcim's own reference. Seen on 11 August 2026: a $226.00 card payment on INV008260 was in QuickBooks ten minutes later, and the engine then stored the receipt, marked the invoice Paid and the work order Paid.
+
+Since 5 September 2026 the engine does not wait to be told. The pay page's own payment record starts a **settle** job the moment the card is approved. The job looks at the QuickBooks invoice every two minutes for the payment Helcim posts, and when it is there it runs the same steps a payment recorded in QuickBooks runs: receipt PDF stored, receipt email sent, work order Paid, payment and paid status in Zoho. When QuickBooks later announces the same payment, the engine recognises it and does nothing a second time, so there is one payment record, one Zoho payment and one receipt.
+
+- If QuickBooks still has no such payment two hours after the card was approved, the job stops and the payment is flagged for a person. See [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
+- A bank-transfer payment is left alone by the job on purpose: Helcim posts it into QuickBooks when it clears, days later, and the QuickBooks announcement settles it then.
+- The engine never posts a payment into QuickBooks itself. If it did, every pay-page payment would appear there twice.
+
 ## How you know it worked
 
 - Tested 4 September 2026 with a test card on Helcim's demo account, on a test invoice for $1.13: Helcim approved the card, and three seconds later the invoice read Paid with $0.00 due, the paid time was stamped, and a payment record with Helcim's transaction number was stored. The success screen showed Paid.
 - The pay link is never guessable: it is a random slug minted on our side, not a Helcim id.
+- For a live payment, within about fifteen minutes of the card being approved: the customer has "Payment received for INV…" with the receipt attached, the work order reads Paid in the app and in Zoho, Zoho has one Payment on the invoice, and QuickBooks shows exactly one payment on the invoice. The settle job is what wrote them; its record on the payment names the QuickBooks payment it used.
 
 ## What does not happen yet
 
-- Paying on the pay page changes only the invoice. Nothing tells QuickBooks, the work order stays Invoiced, and no receipt email is sent, although the success screen promises one. Only a payment recorded in QuickBooks does those three things today. Whether Helcim's own QuickBooks connection closes that loop on the live account is unverified. Tracked as <Linear issue="COM-207" />.
-- A test card works only on Helcim's demo account; on the live account it is declined. A live payment moves real money, so the whole chain from card to receipt has not been watched end to end.
+- A test card works only on Helcim's demo account, and the demo account has no QuickBooks connection, so a demo payment never reaches QuickBooks: the settle job flags it for a person after two hours. On the live account a test card is declined. The whole chain from a live card to the receipt has not been watched end to end since the settle job was built. Tracked as <Linear issue="COM-207" />.
 
 ## Related
 
 - [How payments work](/handbook/payments/how-payments-work)
 - [Record a payment in QuickBooks](/handbook/payments/record-a-payment-in-quickbooks)
+- [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag)
 - [QuickBooks](/systems/quickbooks)
+- [The pay page](/systems/pay-page)
