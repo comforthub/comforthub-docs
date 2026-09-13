@@ -65,7 +65,7 @@ Every condition carries one of two weights. **Urgent** means a person should act
 |---|---|
 | Emails you on every event of the spell, through the urgent rule | Emails you once, when the spell opens, and again only if it comes back |
 | Shows in Sentry as an error | Shows in Sentry as a warning |
-| Uncertain or overdue payments, cancelled work still collectible, a payroll calendar that ran out, a timesheet with no period, a card number in stored text, a critical action late or dead, a timer changed by hand, a check that did not complete | Invoice totals that disagree, a lead with no customer behind it, a plain human-review flag, a property without imagery, a routine action late or dead, housekeeping that did not finish, a nightly GitHub job that did not report, a timer nobody deployed |
+| Uncertain or overdue payments, cancelled work still collectible, a payroll calendar that ran out, a timesheet with no period, a card number in stored text, a critical action late or dead, a timer changed by hand | Invoice totals that disagree, a lead with no customer behind it, a plain human-review flag, a property without imagery, a routine action late or dead, a check that did not complete, housekeeping that did not finish, a nightly GitHub job that did not report, a timer nobody deployed |
 
 ## What reaches your inbox
 
@@ -106,7 +106,7 @@ A review condition emails you once, when it opens, and a digest can hide it. Not
 - **Sentry rate-limits the engine.** The notifier records when it may try again and waits; nothing is dropped, because a notification leaves the queue only after Sentry has confirmed the issue exists. A wait that grows past 2 minutes for an urgent notification, or 15 for a review one, makes the uptime check unhealthy, so you hear about it rather than nothing.
 - **A timer is changed by hand.** The self-check compares every timer with the deployed contract every minute and opens an urgent condition for any that differ. Restore it through a deployment, never by hand.
 - **A check has more than 500 hits.** It reports the first 500 and one capacity condition on top. It cannot declare recovery for anything it did not list, so the capacity condition stays until fewer than 500 remain.
-- **A check fails or times out.** It closes nothing, and the self-check that watches completion opens an urgent condition naming the check.
+- **A check fails or times out.** It closes nothing. The self-check that watches completion looks every 15 minutes and opens a condition naming the check, carrying that check's own weight; a minute that has already caught up by then is not a finding.
 
 ## Related
 
