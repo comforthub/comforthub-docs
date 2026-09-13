@@ -1,6 +1,6 @@
 # Comfort Hub handbook
 
-The handbook for how the business runs and the systems that run it. Built on [Mintlify](https://mintlify.com). Pages are `.mdx` files, the menu is `docs.json`, blank pages to copy are in `templates/`, and the rules for writing here are in `CLAUDE.md`. A page tagged TODO in the menu is not written yet; it names the Linear test that unlocks it.
+The handbook for how the business runs and the systems that run it. Built on [Mintlify](https://mintlify.com). Pages are `.mdx` files, the menu is `docs.json`, blank pages to copy are in `templates/`, and the rules for writing here are in `CLAUDE.md`.
 
 ## Preview locally
 

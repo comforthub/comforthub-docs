@@ -10,7 +10,6 @@ Helcim
 Stripe
 Twilio
 Resend
-Linear
 GitHub
 Google
 Apple
@@ -20,7 +19,6 @@ PDFs
 SMS
 PO
 ID
-TODO
 Complete
 Converted
 Draft
@@ -30,3 +28,5 @@ Street
 View
 7AM
 Search
+Sentry
+Infisical
