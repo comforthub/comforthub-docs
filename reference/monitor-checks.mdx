@@ -1,0 +1,85 @@
+---
+title: "Monitor checks"
+description: "Every check the monitor runs, when it runs, what it looks for, how heavy a finding is, and where to go to fix it"
+kind: reference
+---
+
+The monitor asks each of these questions on its own clock. A problem it finds is a condition: one record, one problem, held open until a later run of the same check finds it gone. Each condition reaches you as one Sentry issue whose title is the text in the **The issue's title reads** column. Times are Ottawa time on a 24-hour clock; the engine keeps them in UTC, so a fixed time moves by an hour when the clocks change. How the pieces fit is on [How the monitor works](/handbook/running/how-the-monitor-works).
+
+## Business checks
+
+These look at business records and open a condition per record.
+
+| Check | Looks for | Runs | Weight | The issue's title reads | Fix |
+|---|---|---|---|---|---|
+| Converted leads | A lead the CRM converted more than 15 minutes ago that still has no customer on our side, or a conversion the CRM made that the mirror never heard about. The check queues the set-up itself; the condition stays open until the customer exists | every 5 minutes | for review | "A converted lead still has no established customer" or "The CRM converted a lead the mirror had not seen" | [Fix a customer that did not set up](/handbook/new-customers/fix-a-customer-that-did-not-set-up) |
+| Cancelled work | A cancelled work order whose invoice is still in QuickBooks and not void | 35 past every hour | urgent when the invoice is still collectible; for review when it was paid or partly paid | "Cancelled work retains a collectible invoice" or "Cancelled work retains a paid or partially paid invoice" | [Void an invoice](/handbook/invoicing/void-an-invoice) |
+| Human review | An open human-review flag on the ledger, and every open drift finding from the sweep | every 15 minutes | urgent when the flag says a money effect is uncertain; for review otherwise | "A recorded financial effect remains uncertain" or "A business discrepancy still requires review" | [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag), [Run the sweep and the reconciler](/handbook/running/run-the-sweep-and-the-reconciler) |
+| Property imagery | A property created more than a day ago that still has no Street View image | 50 past every hour | for review | "Property imagery is still unavailable after twenty-four hours" | [Act on a Sentry email](/handbook/running/act-on-a-sentry-email) |
+| Payroll calendar | Fewer than 60 days of pay periods left, or a timesheet whose period is not on the calendar | 02:55 daily | urgent when the calendar has run out, or an unmatched timesheet has hours, is submitted, or covers today; for review otherwise | "The payroll calendar has insufficient future coverage" or "Timesheets have no matching payroll period" | [Load the payroll calendar](/handbook/hours/load-the-payroll-calendar) |
+| Card numbers in stored text | A card number in a voicemail transcript, a call transcript, or a text message | 45 past every hour | urgent | "Stored communication may contain sensitive payment data" | [How card numbers stay out of texts and transcripts](/handbook/phone/how-card-numbers-stay-out-of-texts-and-transcripts) |
+| Checkout payments | A payment attempt that is blocked or whose follow-up is more than 5 minutes overdue; a settled payment whose delivery is 5 minutes overdue; a credited payment that came back while the invoice still owes money; a merchant whose payment discovery has not finished in 5 minutes | every minute | urgent | "A checkout payment requires reconciliation or its recovery work is overdue", "A previously credited payment was returned and the invoice has an outstanding balance", or "Independent payment discovery has not completed within its deadline" | [How payments work](/handbook/payments/how-payments-work) |
+| Unfinished work | A queued message past its deadline with no completed outcome on the ledger, and every dead letter. A critical action gets 5 minutes, a routine one 15 | every minute | urgent for a critical action, for review for a routine one; a dead letter keeps the weight it was parked with | "*the action's name* remains incomplete after its deadline" or "*the action's name* is blocked before business completion" | [Redrive a dead letter](/handbook/running/redrive-a-dead-letter), [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync) |
+| Deliveries and logins | An email whose outcome is uncertain, blocked, or still unsent after 5 minutes; a text still sending after 70 seconds with no confirmation from Twilio; a vendor login whose refresh is blocked | every minute | urgent for an uncertain outcome, a stuck text, or a blocked login refresh; for review for a blocked or overdue email | "email: sending is blocked", "email: required sending remains overdue", "email: external acceptance is uncertain", "sms: external acceptance is uncertain", or "oauth: credential rotation is blocked" | [Act on a Sentry email](/handbook/running/act-on-a-sentry-email) |
+| Invoice amounts | A live invoice whose total differs by more than two cents between our side, QuickBooks and Zoho, or whose QuickBooks balance disagrees with ours once pending bank payments are allowed for | 01:10 daily | for review | "An invoice has missing or inconsistent totals or payment accounting" | [Fix an invoice](/handbook/invoicing/fix-an-invoice) |
+
+## Housekeeping the monitor runs itself
+
+These do work rather than look for trouble. They open no condition of their own; if one does not finish, **Every check finished** below opens the condition.
+
+| Check | Does | Runs | Weight | The issue's title reads | Fix |
+|---|---|---|---|---|---|
+| Payment discovery | Reads Helcim's payment list page by page, so a payment is found even when the browser never called back. A stall shows through **Checkout payments** | every minute | urgent | "Payments and linked reversals are discovered independently of browser callbacks: scheduled completion is missing or failed" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Checkout capture clean-up | Removes encrypted checkout captures older than seven days | every 15 minutes | for review | "Encrypted checkout captures older than seven days are removed: scheduled completion is missing or failed" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Phone statistics | Saves the previous day's phone statistics | 01:15 daily | for review | "The previous Toronto day's phone statistics are saved: scheduled completion is missing or failed" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Recording clean-up | Removes call recordings past their keep window | 01:45 daily | for review | "Expired call recordings are removed and completion is recorded: scheduled completion is missing or failed" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+
+## Did every timer finish
+
+One row per timer on [Scheduled jobs](/reference/scheduled-jobs), plus the two jobs that run from GitHub. The monitor reads the engine's own run history and allows five minutes after a timer's start time; the two GitHub jobs get eight hours, because GitHub starts a scheduled job when its queue reaches it. Every title ends with "scheduled completion is missing or failed".
+
+| Check | Looks for | Runs | Weight | The issue's title starts with | Fix |
+|---|---|---|---|---|---|
+| Appointment reminders | the reminder timer did not finish | 16:10 daily | urgent | "Customer appointment reminders are durably scheduled" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Auto-submit overdue timesheets | the submit timer did not finish | 01:00 daily | urgent | "Overdue timesheets enter payroll processing" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Invoice reminders | the reminder timer did not finish | 10:15 daily | urgent | "Due invoice reminders are durably scheduled" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Open-appointment push | the push timer did not finish | every hour | for review | "Incomplete appointments remain visible to operators" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Tasks due soon | the push timer did not finish | 09:00 daily | for review | "Upcoming tasks remain visible to their owners" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Optimise routes | the route timer did not finish | 01:00 daily | for review | "Upcoming technician routes are scheduled for optimization" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Pipeline digest | the digest timer did not finish | 08:40 daily | for review | "The daily pipeline digest is durably scheduled" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Pipeline heartbeat | the heartbeat timer did not finish | 08:50 Mondays | for review | "The weekly pipeline summary is durably scheduled" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Prune cron history | the clean-up did not finish | 23:25 daily | for review | "Execution history retention completes" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Prune integration history | the clean-up did not finish | 00:30 daily | for review | "Integration and webhook history retention completes" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Prune queue archives | the clean-up did not finish | 23:35 daily | for review | "Completed queue archive retention completes" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Subscription visit ledger | the ledger timer did not finish | 02:20 daily | urgent | "Subscription visit entitlements are scheduled for reconciliation" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Sweep property imagery | the imagery timer did not finish | 01:40 daily | for review | "Missing technician imagery is scheduled for retrieval" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Timesheet reminder, evening | the reminder timer did not finish | 19:00 daily | urgent | "Evening timesheet reminders are durably scheduled" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Timesheet reminder, morning | the reminder timer did not finish | 09:00 daily | urgent | "Morning timesheet reminders are durably scheduled" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Close the call sync window | the clean-up did not finish | 00:17 daily | for review | "Expired call synchronization windows are closed" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Nightly sweep | GitHub did not report a finished sweep within eight hours | 02:20 daily | for review | "CRM reconciliation completes with matching independent GitHub workflow evidence" | [Run the sweep and the reconciler](/handbook/running/run-the-sweep-and-the-reconciler) |
+| Database advisors | GitHub did not report a finished advisor assessment within eight hours | 02:20 daily | for review | "Database security and performance advisors receive an accountable assessment" | [Act on a Sentry email](/handbook/running/act-on-a-sentry-email) |
+
+## The monitor watching itself
+
+| Check | Looks for | Runs | Weight | The issue's title reads | Fix |
+|---|---|---|---|---|---|
+| The evaluator's own run | Nothing of its own. Its result is what the uptime check and the Sentry check-in read: a run that fails, times out, or is older than 90 seconds makes the uptime check report unhealthy | every minute | urgent | none; the uptime check and the check-in carry it (see [Sentry](/systems/sentry)) | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Timer outcomes | Copies each timer's latest result out of the engine's run history into the monitor's own records, so the rows above have something to read | every minute | urgent | none of its own; a miss shows through **Every check finished** | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Timer list | The live timer list compared to the contract written into the build: a contracted timer missing, changed, or switched off; a timer nobody contracted | every minute | urgent for a contracted timer that is missing or changed; for review for an extra one | "*timer* no longer has its deployed execution contract" or "*timer* is scheduled outside the deployed registry" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Every check finished | A check on this page whose latest due run has no finished result by its deadline, or finished as failed or timed out | every minute | the missing check's own weight | "*the check's purpose*: scheduled completion is missing or failed" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+
+## Condition words
+
+| Word | Means |
+|---|---|
+| opened | The check found the problem for the first time. The notifier sends it to Sentry and a Sentry issue is created |
+| escalated | A condition opened for review was found urgent by a later run. The same issue gets another event, and the urgent alert rule mails it |
+| recovered | A later run of the same check no longer finds the problem. The monitor resolves the Sentry issue itself |
+| spell | One stretch of a condition being open, from opened to recovered. The same problem coming back is a fresh spell and a fresh Sentry issue |
+| capacity | A check stops at 500 findings. When it has more, it opens one extra condition, "This business check exceeds its bounded finding capacity", with the check's weight, rather than going quiet; the unseen records cannot recover until the count is back under the limit. Unfinished work, Deliveries and logins and Invoice amounts each have their own capacity condition with the same meaning |
+
+## Related
+
+- [How the monitor works](/handbook/running/how-the-monitor-works)
+- [Sentry](/systems/sentry)
+- [Scheduled jobs](/reference/scheduled-jobs)

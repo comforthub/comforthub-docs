@@ -5,41 +5,42 @@ kind: how-to
 ---
 
 import { Touches } from "/snippets/touches.mdx";
-import { Linear } from "/snippets/linear.mdx";
 
-<Touches systems="supabase-backend, zoho-crm, quickbooks" />
+<Touches systems="supabase-backend, zoho-crm, quickbooks, sentry" />
 
-When the engine stops on something rather than guess, it flags the event for a person and the human-review email counts it. The flag stays counted until you close it, and closing it is two calls to the ops function: one to see the list, one to close a flag with a note saying why.
+When the engine stops on something rather than guess, it flags the event for a person. The monitor lists every open flag as one review condition per record and operation, titled **A business discrepancy still requires review**; a flag about money whose effect is uncertain is urgent instead, titled **A recorded financial effect remains uncertain**. The condition stays open until you close every flag behind it, and closing is two calls to the ops function: one to see the list, one to close a flag with a note saying why.
 
 ## Before you start
 
-- The alert email "[ops] N events await a person" open, or the wish to check the list anyway.
+- The Sentry issue, or the wish to check the list anyway. Under **Additional Data**, the evidence names the operation, one event id, and how many events sit behind the condition.
 - The cron secret for the engine. It lives in the secrets vault under the edge-functions folder; never paste it into a page or a chat.
-- The engine's functions address: `https://vqockjhsosyewnrikqxs.supabase.co/functions/v1`.
+- The engine's functions address: the production project's address followed by the functions path. See [Environments and secrets](/systems/environments-and-secrets) for where addresses and keys live.
 
 ## Steps
 
 <Steps>
   <Step title="List the open flags">
-    Call `GET /ops/review` with the cron secret in the `x-cron-token` header. The answer lists every flag a person has not closed, newest first: when it happened, which integration and operation, the record in words where the engine knows them ("Invoice INV008200 for Harish Sharma"), the error class and detail, and whether the flag is open or already taken.
+    Call `GET /ops/review` with the cron secret in the `x-cron-token` header. The answer lists every flag a person has not closed, newest first: when it happened, which integration and operation, the record in words where the engine knows them, the error class and detail, and whether the flag is open or already taken.
 
     ```
     curl -H "x-cron-token: <the cron secret>" \
-      https://vqockjhsosyewnrikqxs.supabase.co/functions/v1/ops/review
+      <the engine's functions address>/ops/review
     ```
   </Step>
   <Step title="Fix the cause in the system that owns it">
-    A flag is a fact about the past; closing it does not retry anything. Put the record right first, in Zoho, QuickBooks or the engine, following [When an alert email arrives](/handbook/running/when-an-alert-email-arrives).
+    A flag is a fact about the past; closing it does not retry anything. Put the record right first, in Zoho, QuickBooks or the engine, following [Act on a Sentry email](/handbook/running/act-on-a-sentry-email).
   </Step>
   <Step title="Close the flag with a note">
-    Call `POST /ops/review/<event id>` with a JSON body. The note is required and is the only record of why a person closed it. The status is optional: it defaults to **resolved**; **ignored** says the flag was noise; **in_review** says you have taken it but are not done, which keeps it on the list and out of the email count.
+    Call `POST /ops/review/<event id>` with a JSON body. The note is required and is the only record of why a person closed it. The status is optional: it defaults to **resolved**; **ignored** says the flag was noise; **in_review** says you have taken it but are not done, which keeps it on the list and keeps the condition open.
 
     ```
     curl -X POST -H "x-cron-token: <the cron secret>" \
       -H "content-type: application/json" \
-      -d '{"status": "resolved", "note": "COM-160: probe payment, deleted on purpose"}' \
-      https://vqockjhsosyewnrikqxs.supabase.co/functions/v1/ops/review/<event id>
+      -d '{"status": "resolved", "note": "probe payment, deleted on purpose"}' \
+      <the engine's functions address>/ops/review/<event id>
     ```
+
+    One condition can stand for several events on the same record and operation; the evidence says how many. Close each of them.
   </Step>
 </Steps>
 
@@ -47,18 +48,17 @@ When the engine stops on something rather than guess, it flags the event for a p
 
 - The close call answers with the event id, its new status, the time and your note.
 - The list call no longer shows it (an in-review flag still shows, marked as taken).
-- The next human-review email, if any, counts one fewer. The email is sent only when the list changes, so a quiet inbox is the normal outcome.
-- Seen 4 September 2026 in production, by hand: one flag was raised on purpose at 17:44 UTC; the 17:45 wake sent "43 events await a person"; the flag was closed at 17:46 with the SQL statement the email carries, note and time stamped; the 17:50 wake sent "42 events await a person" and nothing in between. Closing it took one statement and the count moved on the next wake.
-- Seen the same day on the local engine: the route listed a flagged event, closed it with a note, dropped it from the list, then moved it to in review and listed it again. The production route ships in pull request 596 (<Linear issue="COM-160" />); until it is live, the update is the SQL statement above.
+- The check runs every 15 minutes, so within a quarter of an hour the condition recovers and the monitor resolves the Sentry issue itself.
 
 ## If it did not work
 
 - **401**: the cron secret is wrong or missing.
 - **400**: the note is empty, the status is not one of the three, or the id is not an event id.
 - **404**: that id is not a flagged event. Only events the engine flagged can be given a status; the flag itself is never cleared, so the fact that a person was wanted stays on record.
+- **The issue is still open after 15 minutes.** Another event behind the same condition is still open, or a flag was moved to in review rather than closed. List again.
 
 ## Related
 
-- [How alerts work](/handbook/running/how-alerts-work)
-- [When an alert email arrives](/handbook/running/when-an-alert-email-arrives)
-- [Alerts](/reference/alerts)
+- [How the monitor works](/handbook/running/how-the-monitor-works)
+- [Act on a Sentry email](/handbook/running/act-on-a-sentry-email)
+- [Monitor checks](/reference/monitor-checks)

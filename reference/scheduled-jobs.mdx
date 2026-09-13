@@ -4,9 +4,9 @@ description: "Everything that runs on a timer, when, and what it does"
 kind: reference
 ---
 
-Times are Ottawa time (Eastern). The engine keeps them in UTC, so they shift by an hour when the clocks change.
+Times are Ottawa time on a 24-hour clock. The engine keeps them in UTC, so a fixed time shifts by an hour when the clocks change.
 
-Every timer here is part of the engine's own build, so a copy of the engine rebuilt from scratch carries the same timers as production. Seen 5 September 2026: a rebuilt copy had 24 of production's 28 timers; the four missing were the two timesheet reminders, the timesheet auto-submit and the tasks-due push, all running in production for weeks with nothing in the build behind them. The same day they were added to the build and the rebuilt copy read 28, matching production.
+The timer list is written into the engine's build as a contract, and the monitor compares the live list to it every minute; a timer added, removed or changed by hand opens an urgent condition within a minute. The checks the monitor runs on its own clocks are on [Monitor checks](/reference/monitor-checks).
 
 ## Every minute
 
@@ -14,66 +14,56 @@ Every timer here is part of the engine's own build, so a copy of the engine rebu
 |---|---|
 | Wake the sync worker | Nudges the worker that carries changes between Zoho and Supabase, in case a queue has work |
 | Wake the action worker | Nudges the worker that does everything else: QuickBooks, emails, PDFs, pushes, invites |
-
-## Watches that send an alert
-
-Each runs on its own clock, looks for one kind of trouble, and emails the operator once per finding. See [Alerts](/reference/alerts) and [When an alert email arrives](/handbook/running/when-an-alert-email-arrives).
-
-| Job | When | Looks for |
-|---|---|---|
-| Dead-letter watch | every 15 minutes | a message that died in a queue |
-| Human-review watch | every 15 minutes | an event waiting for a person |
-| Delete-refused watch | every 15 minutes | a Zoho delete the rules refused |
-| Queue-health watch | every 15 minutes | a message on a live queue that nobody has picked up for 15 minutes |
-| Wake-failure watch | every 15 minutes | five or more wake-up calls in 15 minutes that did not reach their function |
-| Cron-failure watch | no timer of its own; runs whenever any other watch wakes the alert function | three or more different timed jobs failing in 15 minutes |
-| Orphan-action watch | 20 past the hour | a queued action no worker owns |
-| Sweep watch | 25 past the hour | a nightly drift sweep that has not run |
-| Cancelled-but-collectible watch | 35 past the hour | a cancelled job whose invoice is still owed in QuickBooks |
-| Card-number scan | 45 past the hour | a card number in a text or a transcript |
-| Imagery watch | 50 past the hour | a property still without its Street View image |
-| Invoice-amounts check | 1:10 am | an invoice whose amount differs between Supabase, QuickBooks and Zoho |
-| Payroll-calendar check | 2:55 am | fewer than 60 days of pay periods left |
+| Wake the evaluator | Nudges the monitor's worker that books every due check and runs the quick ones |
+| Wake the maintenance worker | Nudges the monitor's worker that runs the slow checks |
+| Wake the notifier | Nudges the monitor's worker that hands each condition to Sentry |
 
 ## Nightly clean-ups
 
 | Job | When | What it does |
 |---|---|---|
-| Prune cron history | 11:25 pm | Drops old cron run records |
-| Prune queue archives | 11:35 pm | Drops old archived queue messages |
-| Close the call sync window | 12:17 am | Stops syncing calls older than 30 days |
-| Prune integration history | 12:30 am | Drops old integration events past their keep window |
-| Sweep property imagery | 1:40 am | Fetches the Street View image for any property still missing one |
+| Prune cron history | 23:25 | Drops timer run records older than 7 days |
+| Prune queue archives | 23:35 | Drops archived queue messages older than 90 days |
+| Close the call sync window | 00:17 | Stops syncing calls and voicemails older than 30 days |
+| Prune integration history | 00:30 | Drops ledger lines older than 13 months and raw vendor notifications older than 90 days |
+| Sweep property imagery | 01:40 | Queues the Street View fetch for properties still missing an image, 25 at a time |
+
+## Overnight business jobs
+
+| Job | When | What it does |
+|---|---|---|
+| Optimise routes | 01:00 | Queues one route optimisation for the day when any technician holds three or more appointments that day |
+| Subscription visit ledger | 02:20 | Asks the action worker to re-derive every live subscription's visit ledger, two seconds apart |
 
 ## Reminders and pushes
 
 | Job | When | What it does |
 |---|---|---|
-| Open-appointment push | every hour | Looks for appointments still open an hour past their window. Each one gets a technician one push the first hour it is overdue, then one a day at 8:00 am until it is completed, not one every hour (seen 3 and 4 September 2026: a push at 11:00 am, then the next at 8:00 am the day after and nothing at the twenty hours between) |
-| Auto-submit overdue timesheets | 1:00 am | On the submit-by day, submits every timesheet for that period still open, with whatever hours it holds. Seen 4 September 2026 (recorded on the bug COM-206): a period 18 sheet submitted with 85 hours |
-| Timesheet reminder, morning | 9:00 am | The day before submit-by: "Timesheet Reminder" push to everyone whose sheet for that period is a draft or does not exist. Seen 4 September 2026 in a rolled-back rehearsal: four technicians addressed for a stand-in period due the next day |
-| Tasks due soon | 9:00 am | Push for tasks due today |
-| Timesheet reminder, evening | 7:00 pm | The same day, same people: "Urgent: Timesheet Due Now", marked time-sensitive. Running either reminder twice by hand sends twice; the timer is the only guard |
+| Open-appointment push | every hour | Looks for appointments still open an hour past their window. Each technician on it gets one push the first hour it is overdue, then one a day at 08:00 until it is completed |
+| Auto-submit overdue timesheets | 01:00 | On the submit-by day, submits every timesheet for that period still open, with whatever hours it holds |
+| Timesheet reminder, morning | 09:00 | The day before submit-by: "Timesheet Reminder" push to everyone whose sheet for that period is a draft or does not exist |
+| Tasks due soon | 09:00 | Push for tasks due today |
+| Invoice reminders | 10:15 | Queues a reminder email for every emailed, unpaid invoice seven or more days past due: one at seven days, another at twenty-one |
+| Appointment reminders | 16:10 | Queues a reminder email for every scheduled appointment tomorrow whose customer has an email and asked to be notified |
+| Timesheet reminder, evening | 19:00 | The same day, same people: "Urgent: Timesheet Due Now", marked time-sensitive. Running either reminder twice by hand sends twice; the timer is the only guard |
 
 ## Digests
 
 | Job | When | What it does |
 |---|---|---|
-| Pipeline digest | 8:40 am daily | The day's summary email to the operator |
-| Pipeline heartbeat | 8:50 am Mondays | A weekly "still alive" email |
+| Pipeline digest | 08:40 daily | A push, "Pipeline needs attention", to every super admin in the app, listing the pipeline states that have work; nothing is sent when there is none |
+| Pipeline heartbeat | 08:50 Mondays | A push, "Pipeline monitor alive", to the same people; if it stops arriving, the digest cannot be trusted either |
 
 ## The nightly drift sweep
 
 The sweep itself runs from GitHub, not from this list. It compares every synced record on both sides and opens a finding for each difference, and closes a finding the next time the two sides agree. See [How sync works](/handbook/running/how-sync-works).
 
-- Scheduled at 2:20 am (6:20 UTC). GitHub runs scheduled jobs late when it is busy: the last four nightly runs started at 7:40, 7:19, 7:15 and 7:19 am, about five hours after the hour they were asked for. The sweep watch tolerates 48 hours, so the delay does not page.
-- One run takes about a minute. On 4 September 2026 a run by hand started at 9:12 am and had written its findings by 9:13, and the same run is what the sweep watch reads.
-- The reconciler, which copies Zoho's value over ours for an open finding, has no schedule. A person runs it from GitHub, and it prints what it would write without writing unless told otherwise. On 4 September 2026 a dry run at 17:48 UTC listed 58 planned writes, all on fields Zoho owns, and wrote nothing; the links it measured were listed separately as never written.
+- Scheduled at 02:20. GitHub starts a scheduled job when its shared queue reaches it, so the start drifts later. The monitor allows eight hours after the scheduled start, then opens a for-review condition.
+- The reconciler, which copies Zoho's value over ours for an open finding, has no schedule. A person runs it from GitHub, and it prints what it would write without writing unless told otherwise.
 - The nightly run goes red when the open findings exceed 160. The findings are still written; the red is the gauge. How to run both by hand is on [Run the sweep and the reconciler](/handbook/running/run-the-sweep-and-the-reconciler).
-
-The cron-failure watch above has no timer of its own on purpose: if the timed jobs are failing, a timer is the wrong thing to rely on. It rides on every other wake instead, which means it is quiet when every other watch is quiet too.
 
 ## Related
 
-- [Alerts](/reference/alerts)
-- [How alerts work](/handbook/running/how-alerts-work)
+- [Monitor checks](/reference/monitor-checks)
+- [How the monitor works](/handbook/running/how-the-monitor-works)
+- [Sentry](/systems/sentry)

@@ -1,0 +1,72 @@
+---
+title: "Sentry"
+description: "Where crashes and the monitor's conditions land, which rules email the owner, and what the uptime check asks"
+kind: reference
+---
+
+Sentry is the outside watcher. The engine sends it every crash and every condition the monitor opens; Sentry asks the engine once a minute whether it is still serving; and three rules in Sentry decide what reaches the owner's inbox. Nothing on this page lives anywhere else: other pages link here.
+
+The organisation is akon-dion and the project is comforthub-backend.
+
+## What Sentry holds
+
+| What | Where it comes from | How it is grouped |
+|---|---|---|
+| Function crashes | Every function reports an unhandled failure, tagged with the function's name. Personal data and anything that looks like a secret are scrubbed before sending | One cause is one issue, however many times it happens |
+| The monitor's conditions | The notifier hands each opened or escalated condition to Sentry as an event and does not let go until Sentry confirms an issue exists | One spell is one issue. An urgent condition arrives at level error, a for-review one at level warning |
+| The uptime check | An uptime monitor named **Comfort Hub technician access and monitoring** that asks the engine's probe address once a minute | One incident per stretch of failed checks |
+| The evaluator's check-in | A cron monitor named **Reliability evaluator completion**. The evaluator tells Sentry when it starts and whether it finished healthy, every minute | One issue per missed or failed check-in; no rule emails it |
+
+## What emails you
+
+Three rules, all set in Sentry, all mailing the owner's Sentry user.
+
+| Rule, by its Sentry name | Fires when | Which means |
+|---|---|---|
+| **Comfort Hub urgent business conditions** | every event from the monitor whose weight is urgent | each urgent condition when it opens, and again when a for-review one escalates |
+| **Comfort Hub business review items** | the first event of an issue from the monitor, an issue that reappears, or a resolved issue that comes back | every condition once, when its spell opens, urgent ones included; so an urgent opening mails twice |
+| **Comfort Hub independent monitoring incidents** | the uptime check opens an incident, resolves one, or a resolved one comes back | the engine stopped answering the uptime check, or started again |
+
+The first two rules are bound to the project's issue stream and filter on the monitor's tags. The third is bound to the uptime monitor only. No rule is bound to function crashes or to the evaluator's check-in: those you read in Sentry.
+
+## The uptime check
+
+Sentry sends one request a minute to the probe address on the ops function, with a header token the function checks. The function answers healthy only when both of these hold:
+
+- **A technician can read their work.** The function logs in as the stand-in technician through the same public door the app uses, reads the stand-in's one work order and its two line items, checks their content, and logs out. The stand-in is an app user tied to a switched-off technician; its work order is cancelled, non-billable and belongs to no customer.
+- **The monitor is keeping up.** The monitor's setting is rehearsing or live; the evaluator finished healthy within the last 90 seconds and its latest run neither failed nor timed out; every finished check had its conditions applied within 90 seconds; no urgent notification has waited more than 2 minutes and no for-review one more than 15; and no notification has lost its queue message.
+
+| Number | Value | Set where |
+|---|---|---|
+| How often Sentry asks | every 60 seconds | Sentry |
+| How long Sentry waits for an answer | 25 seconds | Sentry |
+| How long the engine gives itself to answer | 22 seconds | the engine's code |
+| Failed checks in a row before an incident opens | 3 | Sentry |
+| Successful checks in a row before it closes | 2 | Sentry |
+| Evaluator freshness the probe demands | 90 seconds | the engine's code |
+| Longest an urgent notification may wait | 2 minutes | the engine's code |
+| Longest a for-review notification may wait | 15 minutes | the engine's code |
+| The evaluator's check-in schedule, grace, and longest run | every minute, 1 minute, 1 minute | Sentry |
+
+## Reading an issue
+
+An issue from the monitor carries:
+
+| Field | Holds |
+|---|---|
+| Title | The condition's summary, the same text listed on [Monitor checks](/reference/monitor-checks) |
+| Level | error for urgent, warning for review |
+| Tags | the source (always the monitor), the weight, the check, the condition's id, the spell number, and whether the record is synthetic |
+| Additional data | the action the check recommends, the record the condition is about, and the evidence: identifiers and counts only, never customer content |
+
+The monitor resolves the issue itself when a later run finds the condition gone. A resolved issue does not reopen: the same problem coming back is another spell and another issue, so the history of a record's trouble is one issue per spell. A person resolving an issue by hand changes nothing on the engine's side; the condition stays open until the check finds it gone.
+
+## Where the keys live
+
+The engine holds five Sentry values and two probe values in the edge-functions folder of the secrets vault: the project's ingest address, the organisation's name, a token the notifier uses to confirm and resolve issues, the environment name, and the trace sample rate; then the header token the uptime check must present, and the stand-in technician's identity. The gate's production-clean check uses a personal Sentry token from the operator-tools folder, also held as a GitHub repository secret. The uptime monitor's copy of the header token is set on the monitor in Sentry. The exact names are on [Names](/reference/names); the folders are described on [Environments and secrets](/systems/environments-and-secrets).
+
+## Related
+
+- [How the monitor works](/handbook/running/how-the-monitor-works)
+- [Act on a Sentry email](/handbook/running/act-on-a-sentry-email)
+- [Monitor checks](/reference/monitor-checks)

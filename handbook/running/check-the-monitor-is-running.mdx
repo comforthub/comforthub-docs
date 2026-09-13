@@ -1,0 +1,57 @@
+---
+title: "Check the monitor is running"
+description: "Confirm the monitor is checking and reporting, when the uptime alert arrives or when you want to know"
+kind: how-to
+---
+
+import { Touches } from "/snippets/touches.mdx";
+
+<Touches systems="sentry, supabase-backend" />
+
+## Before you start
+
+- A Sentry login for the backend project.
+- The monitor token, if you want to ask the engine's front door yourself. It lives in the secrets vault with the engine's other function secrets; never paste it into a page or a chat.
+- The backend repository's **Actions** page on GitHub.
+
+## Steps
+
+<Steps>
+  <Step title="Read the incident">
+    The uptime incident names the uptime check, **Comfort Hub technician access and monitoring**, and the front-door address it asked. It tells you the door answered unhealthy or did not answer in time. It does not show which of the door's two answers was no.
+
+    To see that, ask the door yourself: a GET to the front-door address with the monitor token in the `x-monitor-token` header. The reply carries two yes-or-no answers.
+
+    - **The technician's read is no.** The stand-in technician could not log in through the public door, could not read their one job and its two lines exactly as expected, or could not log out.
+    - **The monitoring answer is no.** The monitor is behind. One of: the monitor is switched off; no clean evaluator run finished in the last 90 seconds, or the latest one failed or timed out; a finished result has waited more than 90 seconds to become conditions; an urgent notification has waited more than 2 minutes, or a review one more than 15; or the stand-in technician is no longer the switched-off, registered technician it should be.
+  </Step>
+  <Step title="Open the evaluator's cron monitor">
+    In Sentry open **Crons** and the monitor named **Reliability evaluator completion**. The evaluator checks in when it starts and again when it finishes, so a healthy monitor shows a pair every minute, each ending in ok. Missed check-ins mean the evaluator is not being woken; check-ins ending in error mean it wakes but does not complete.
+  </Step>
+  <Step title="Open the monitor's own issues">
+    In the backend project's issues, look for unresolved issues from the monitor about itself. Two titles matter:
+
+    - A title ending in **scheduled completion is missing or failed**. The first half names the purpose of the check that did not complete.
+    - A title ending in **no longer has its deployed execution contract**. It names a timer someone changed by hand. A title ending in **is scheduled outside the deployed registry** names a timer nobody deployed.
+  </Step>
+  <Step title="Check the last deploy">
+    On the backend repository's **Actions** page, open the latest run of the **deploy** workflow. A red or half-finished deploy can leave the functions and the timers out of step with each other.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- The incident resolves on its own once the door has answered clean the required number of times in a row; the count is on [Sentry](/systems/sentry). Expect a couple of minutes.
+- The cron monitor shows paired check-ins every minute again.
+- No issue from the monitor about itself is unresolved.
+
+## If it did not work
+
+- Do not clear a queue, widen any access, or resolve the incident by hand to make it green. A green incident with the cause still there is worse than a red one.
+- A developer investigates from the engine's function logs; see [Supabase backend](/systems/supabase-backend).
+
+## Related
+
+- [How the monitor works](/handbook/running/how-the-monitor-works)
+- [Act on a Sentry email](/handbook/running/act-on-a-sentry-email)
+- [Sentry](/systems/sentry)

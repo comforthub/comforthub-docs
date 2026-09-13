@@ -118,12 +118,12 @@ done
 
 # 9. No notebook content. A page says what is true, never when it was checked or what is owed.
 #    Each pattern is a regex, case-insensitive, run over front matter and body alike.
-notebook='TODO|\bCOM-[0-9]+\b|linear|NotWrittenYet|\b[0-9]{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) 20[0-9]{2}\b|\b20[0-9]{2}-[0-9]{2}-[0-9]{2}\b|\b[0-9]{1,2}:[0-9]{2}(:[0-9]{2})? ?(UTC|am|pm)\b|\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b|\b[0-9]{18,19}\b|\bas of\b|at the time of writing|\bcurrently\b|\bnot yet\b|\bfor now\b|\bunverified\b|\bnot verified\b|\bnot measured\b|\bnot checked\b|\bnot exercised\b|\bseen on\b|\btested on\b|\bobserved on\b|\bmeasured on\b|\bpull request\b|\bPR #|\bknown gap\b|\bwill be written\b|\bplanned\b|\bships in\b|^## How this was checked|^## What was done|^## What was seen|\| *(Seen|Tested) *\|'
+notebook='TODO|\bCOM-[0-9]+\b|linear|NotWrittenYet|\b[0-9]{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) 20[0-9]{2}\b|\b20[0-9]{2}-[0-9]{2}-[0-9]{2}\b|\b[0-9]{1,2}:[0-9]{2}:[0-9]{2}\b|\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b|\b[0-9]{18,19}\b|\bas of\b|at the time of writing|\bcurrently\b|\bnot yet\b|\bfor now\b|\bunverified\b|\bnot verified\b|\bnot measured\b|\bnot checked\b|\bnot exercised\b|\bseen on\b|\btested on\b|\bobserved on\b|\bmeasured on\b|\bpull request\b|\bPR #|\bknown gap\b|\bwill be written\b|\bplanned\b|\bships in\b|^## How this was checked|^## What was done|^## What was seen|\| *(Seen|Tested) *\|'
 for p in $pages; do
   hits=$(grep -n -i -E "$notebook" "$p.mdx" || true)
   [ -z "$hits" ] && continue
   while IFS= read -r l; do
-    say "$p.mdx line ${l%%:*}: notebook content (a date, a ticket id, a record id, or a 'seen on / unverified' note). Say what is true, or delete it"
+    say "$p.mdx line ${l%%:*}: notebook content (a date, a timestamp, a ticket id, a record id, or a 'seen on / unverified' note). Say what is true, or delete it"
   done <<<"$hits"
 done
 

@@ -1,0 +1,65 @@
+---
+title: "Act on a Sentry email"
+description: "Read the issue behind the email, fix the cause where the record lives, and let the monitor close it"
+kind: how-to
+---
+
+import { Touches } from "/snippets/touches.mdx";
+
+<Touches systems="sentry, supabase-backend" />
+
+## Before you start
+
+- The Sentry email, or a Sentry login and the backend project's issue list.
+- [Monitor checks](/reference/monitor-checks) open beside you; it maps each issue title to its check.
+
+## Steps
+
+<Steps>
+  <Step title="Open the issue, not the digest">
+    Sentry may bundle several alerts into one digest email. Follow the link to each issue inside it. Everything below is read from the issue page.
+  </Step>
+  <Step title="Tell the two kinds apart">
+    An **uptime incident** comes from the uptime check named **Comfort Hub technician access and monitoring** and is about the engine's front door, not a record. It has no **check** tag. Stop here and follow [Check the monitor is running](/handbook/running/check-the-monitor-is-running).
+
+    A **business condition** has a plain sentence as its title, a **check** tag naming the check, a **disposition** tag saying urgent or review, and an **occurrence** tag saying which spell this is.
+  </Step>
+  <Step title="Read the four parts">
+    The title is the summary: what is wrong. Under **Additional Data** are the **resource** (the record, as an id), the **action** (what the check suggests you do) and the **evidence** (the ids and counts that locate the problem). Evidence never carries customer content, only identifiers.
+  </Step>
+  <Step title="Find the check">
+    Match the title to its row on [Monitor checks](/reference/monitor-checks). The row tells you how often the check runs, which decides how soon the issue can close once you have fixed the cause.
+  </Step>
+  <Step title="Fix the cause where the record lives">
+    Put the record right in the system that owns it; [Who is the source of truth](/systems/who-is-the-source-of-truth) says which. The usual routes:
+
+    - A queued action that died: [Redrive a dead letter](/handbook/running/redrive-a-dead-letter).
+    - A discrepancy waiting for a person: [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
+    - An invoice whose totals disagree: [Fix an invoice](/handbook/invoicing/fix-an-invoice) or [Void an invoice](/handbook/invoicing/void-an-invoice).
+    - A payroll calendar running out or a timesheet with no period: [Load the payroll calendar](/handbook/hours/load-the-payroll-calendar).
+    - A lead that converted with no customer behind it: [Fix a customer that did not set up](/handbook/new-customers/fix-a-customer-that-did-not-set-up).
+    - An uncertain payment: [How payments work](/handbook/payments/how-payments-work).
+  </Step>
+  <Step title="Leave the issue open">
+    Do not click **Resolve**. The monitor resolves the issue itself when the check next runs and no longer sees the problem. An issue resolved by hand looks fixed in Sentry while the condition stays open in the engine, and nothing brings it back to your attention.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- The issue shows as resolved with no person's name on the resolution; the monitor resolved it through Sentry's API.
+- For a check that runs every minute, that happens within a minute or two of the fix. For the others, at the check's next run.
+- If the same problem returns later, it opens as a new issue with the next spell number, and you get a new email.
+
+## If it did not work
+
+- **The check has not run yet.** Slow checks run every 5 or 15 minutes, hourly or nightly; the schedule is on [Monitor checks](/reference/monitor-checks).
+- **The fix is on the wrong side.** Checks read the engine's copy of the record. A fix made in Zoho or QuickBooks reaches the engine through sync; if it did not, see [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync).
+- **The title says the check exceeded its capacity.** More than 500 records match. The check reports the first 500 and cannot declare recovery for the rest, so the capacity issue stays until fewer than 500 remain.
+- **The issue came back.** The cause was not fixed, only the symptom. Read the evidence again.
+
+## Related
+
+- [How the monitor works](/handbook/running/how-the-monitor-works)
+- [Monitor checks](/reference/monitor-checks)
+- [Sentry](/systems/sentry)
