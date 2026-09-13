@@ -41,6 +41,28 @@ Use the first column everywhere in the handbook. The other columns exist so you 
 | stock list | (not in Zoho) | app.stock_lists |
 | task, note | (not in Zoho) | operations.tasks, app.notes |
 | app user | (not in Zoho) | app.users |
+| covered items | Covered Items on the subscription | billing.subscription_covered_items |
+| subscription visit | Subscription Visits on the subscription | (kept in the CRM; the engine sweeps it) |
+| checklist question | Checklist Questions on the template | checklists.template_steps |
+| completion note template | (not in Zoho) | app.completion_note_templates |
+| stocking order | (not in Zoho) | catalog.stocking_orders |
+| supplier branch | a subform on the vendor | catalog.supplier_branches |
+| pay period | Payroll, Schedule | payroll.pay_periods |
+| statutory holiday | Payroll, Holidays | payroll.statutory_holidays |
+| department | (not in Zoho) | communication.departments |
+| phone line, its members | (not in Zoho) | communication.phone_lines, communication.line_members |
+| phone settings, the closed switch | (not in Zoho) | communication.phone_settings |
+| callback request | (not in Zoho) | communication.callback_requests |
+| voicemail | (not in Zoho) | communication.voicemails |
+| text conversation | (not in Zoho) | communication.sms_conversations |
+| Twilio error | (not in Zoho) | communication.twilio_alerts |
+| team chat | (not in Zoho) | app.team_threads, app.team_thread_members |
+| the crosswalk | Supabase id fields on each record | integrations.external_ids |
+| a tombstone | (not in Zoho) | a retired row of integrations.external_ids |
+| a finding | (not in Zoho) | integrations.drift_findings |
+| the integration ledger | (not in Zoho) | integrations.integration_events |
+| the webhook log | (not in Zoho) | integrations.webhook_events |
+| the sent-mail ledger | (not in Zoho) | integrations.sent_messages |
 
 ## Statuses people say
 
@@ -50,9 +72,60 @@ Use the first column everywhere in the handbook. The other columns exist so you 
 | non-billable | nothing on the job is billable; no invoice will be made |
 | invoiced | the invoice exists in QuickBooks and Zoho |
 | paid, partially paid | what QuickBooks told us |
-| void | the invoice was cancelled everywhere |
+| void | the invoice was cancelled in QuickBooks and the CRM; the work order stays invoiced |
 
 The full list is on [Statuses](/reference/statuses).
+
+## The monitor
+
+The monitor's setting lives in the engine's config table under the key `reliability.monitoring`, as the `phase` value.
+
+| We say | The phase reads |
+|---|---|
+| off | disabled |
+| rehearsing | shadow |
+| live | active |
+
+| We say | Timer that wakes it | Route on the ops function | In Sentry |
+|---|---|---|---|
+| the evaluator | reliability-evaluator | ops/evaluate | cron monitor "Reliability evaluator completion", slug wake-action-worker |
+| the maintenance worker | reliability-maintenance | ops/maintain | |
+| the notifier | reliability-notifications | ops/notify | |
+| the uptime check | (Sentry calls it) | ops/probe, answering technician_read and monitoring | uptime monitor "Comfort Hub technician access and monitoring" |
+| the stand-in technician | | the identity in RELIABILITY_PROBE_IDENTITY | |
+
+| We say | Check id | Condition keys |
+|---|---|---|
+| Converted leads | sales.provisioning | sales.provisioning |
+| Cancelled work | billing.safety | billing.cancelled_collectible, billing.cancelled_paid_work |
+| Human review | business.review | business.external_effect_uncertain, business.review_required |
+| Property imagery | technician.imagery | technician.imagery_missing |
+| Payroll calendar | payroll.readiness | payroll.calendar_runway, payroll.timesheets_unassigned |
+| Card numbers in stored text | privacy.stored_data | privacy.sensitive_data_stored |
+| Checkout payments | billing.checkout | billing.checkout |
+| Unfinished work | business.work | business.work_incomplete, monitoring.work_scan_capacity |
+| Deliveries and logins | business.delivery | business.delivery_incomplete, monitoring.delivery_scan_capacity |
+| Invoice amounts | billing.invoice_consistency | billing.invoice_consistency, monitoring.capacity |
+| Payment discovery | billing.payment_discovery | (none; a stall shows through billing.checkout) |
+| Checkout capture clean-up | privacy.checkout_capture | (none) |
+| Phone statistics | phone.statistics | (none) |
+| Recording clean-up | privacy.recording_retention | (none) |
+| Did every timer finish (one per timer) | database.\<timer name\>, for example database.appointment-reminders | monitoring.execution_incomplete |
+| Nightly sweep | sweep.run | monitoring.execution_incomplete |
+| Database advisors | database.advisors | monitoring.execution_incomplete |
+| The evaluator's own run | monitoring.evaluate | (none) |
+| Timer outcomes | monitoring.database_jobs | (none) |
+| Timer list | monitoring.schedules | monitoring.schedule_changed |
+| Every check finished | monitoring.progress | monitoring.execution_incomplete |
+| capacity (any bounded business check) | | monitoring.scan_capacity |
+
+The condition keys are the `check` and `condition_id` tags on the Sentry issue; the weight is the `disposition` tag and the spell number is `occurrence`.
+
+| Secret | Vault folder | Read by |
+|---|---|---|
+| SENTRY_DSN, SENTRY_ORG_SLUG, SENTRY_OPS_TOKEN, SENTRY_ENVIRONMENT, SENTRY_TRACES_SAMPLE_RATE | /edge-functions | the functions: crash reporting, the notifier, the evaluator's check-in |
+| RELIABILITY_PROBE_SECRET, RELIABILITY_PROBE_IDENTITY | /edge-functions | the uptime check's door on the ops function |
+| SENTRY_PERSONAL_TOKEN | /operator-tools, and a GitHub repository secret | the gate's production-clean check |
 
 ## Related
 

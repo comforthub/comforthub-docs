@@ -1,41 +1,48 @@
 ---
 title: "Emails we send"
-description: "Every email the system sends, who gets it, what triggers it, and what is attached"
+description: "Every email the engine sends, who gets it, what triggers it, and what is attached"
 kind: reference
 ---
 
-Every customer email goes through one sender that checks the address first: only our own addresses and our alias domain are delivered to as written; anything else is redirected to the operator with "[TEST → …]" in the subject. See [Email safety](/handbook/running/email-safety).
+Every email leaves through one sender that keeps a ledger and checks the address first; only allowed addresses are delivered to as written, and everything else goes to the operator instead. The rule is on [Email safety](/handbook/running/email-safety). The engine sends no operator alert email: a problem the monitor finds becomes a condition on [Sentry](/systems/sentry), and Sentry does the mailing.
 
-| Email | Subject | To | When | Attached | Seen |
-|---|---|---|---|---|---|
-| Booking confirmation | Your Comfort Hub appointment on … | customer | appointment booked with Notify Client on | none; **Add to calendar** link | 4 Sep 2026 |
-| Appointment moved | Your Comfort Hub appointment has moved to … | customer | date changed | none; **Update your calendar** link | 4 Sep 2026 |
-| Invoice | Invoice INV… from Comfort Hub | customer | invoice reaches QuickBooks | invoice PDF; the job's certificate when it earned one (since 4 Sep 2026); pay link | 4 Sep 2026 |
-| Receipt | Payment received for INV… | customer | invoice fully paid | receipt PDF | 4 Sep 2026 |
-| Quote | Your Comfort Hub quote for WO… | customer | technician sends a quote | none; approve button, good for 30 days | 3 Sep 2026 |
-| Stocking order | Purchase order PO… from Comfort Hub | supplier branch email; reply-to is the technician who saved it | a stocking order is saved with its PDF | purchase order PDF named after the number | 4 Sep 2026 |
-| App login invite | Your Comfort Hub app login | technician | a technician in Zoho gets an email | none; one-time set-password button | 3 Sep 2026 |
-| Dead-letter alert | [ops] a message died in … | operator | a message dies in a queue | none | 3 Sep 2026 |
+Times are Ottawa time; the engine's timers run in UTC, four hours ahead of Ottawa in summer.
+
+| Email | Subject | To | What triggers it | Attached |
+|---|---|---|---|---|
+| Booking confirmation | Your Comfort Hub appointment on … | customer | an appointment is saved as scheduled with **Notify Client** on and a date today or later | none; an **Add to calendar** link |
+| Appointment moved | Your Comfort Hub appointment has moved to … | customer | the date changes on a scheduled appointment with **Notify Client** on | none; an **Update your calendar** link |
+| Appointment reminder | Reminder: your Comfort Hub appointment on … | customer | daily at 16:10, for every scheduled appointment tomorrow with **Notify Client** on and a customer email; sent once per appointment | none |
+| Invoice | Invoice INV… from Comfort Hub | customer | the invoice gets its QuickBooks counterpart, and is not void, paid or already sent | the invoice PDF; on a completed maintenance or commissioning job, one certificate PDF per certifiable visit; a pay link |
+| Invoice reminder | A reminder about invoice INV… from Comfort Hub | customer | daily at 10:15, for an emailed, unpaid, non-void invoice seven or more days past due; once per invoice | none; a pay link |
+| Invoice overdue | Invoice INV… from Comfort Hub is overdue | customer | daily at 10:15, for the same invoice once it is twenty-one or more days past due; once per invoice | none; a pay link |
+| Receipt | Payment received for INV… | customer | a payment on the invoice is recorded, whether or not it clears the balance; the body shows the amount paid and the balance left | the receipt PDF and the current invoice PDF |
+| Quote | Your Comfort Hub quote for WO… | customer | a quote is saved as sent | none; an approve button that works for 30 days |
+| Stocking order | Purchase order … from Comfort Hub | the supplier email on the order; replies go to the technician who saved it | a stocking order is saved with its PDF and has not been emailed | the order PDF, named after the order number |
+| App login invite | Your Comfort Hub app login | technician | a technician is created active with an email, or an active technician's email changes; skipped when the technician already has an app login | none; a set-password button that works once |
+
+A demo invoice, made for testing the pay page, gets the same invoice and receipt emails with "Demo" in the receipt's subject and body.
+
+## When an email is skipped
+
+Each sender re-reads the record when it runs and declines when the email no longer makes sense. A decline is written to the integration ledger with the reason, and some declines raise a human-review flag.
+
+| Email | Skipped, no flag | Skipped, flagged for a person |
+|---|---|---|
+| Booking confirmation, appointment moved, appointment reminder | **Notify Client** off; not scheduled; date in the past; a reminder for a date later than tomorrow | no date; the customer has no email |
+| Invoice | void; already sent; not owed; no QuickBooks counterpart; amount due is zero | the customer has no email; the invoice has no pay-page token |
+| Invoice reminder, invoice overdue | void; the invoice email never went out; nothing owed; not seven days past due | the customer has no email; no pay-page token |
+| Receipt | | the customer has no email; the invoice has no work order and is not one of ours |
+| Quote | not in the sent state | no lines; the customer has no email |
+| Stocking order | already emailed; no PDF yet | the order names no supplier email |
+| App login invite | no email; the technician is inactive; already has a login | |
 
 ## The calendar link
 
-The two appointment emails carry a signed link that downloads a calendar file for the visit. Checked 4 September 2026: the file held the right day, the start of the arrival window in Ottawa time (10:00 for a "10:00-12:00 PM" window), the two-hour window, the property's street and city as the location, and the job's lines as the description. The link is good for 30 days or until the day after the visit, whichever is later; a link with a tampered signature is refused. Because the entry keeps one identity per appointment, adding the moved email's link replaces the first entry instead of making a second.
-
-## Timings seen during the walk
-
-| Email | Left after |
-|---|---|
-| Booking confirmation | under a second after the appointment reached our side (Zoho itself took about 100 seconds to pass it on) |
-| Appointment moved | under a second after the new date reached our side |
-| Invoice | 15 seconds after the technician's completion |
-| Stocking order | 0.9 seconds after the order was saved; stamped sent 1.0 second after |
-| Receipt | 21 seconds after the last payment was recorded in QuickBooks; no receipt after the first, partial payment, on purpose |
-
-Not sent today: an appointment reminder the day before, and invoice reminders.
+The two appointment emails carry a signed link that downloads a calendar file for the visit: the day, the start of the arrival window, the window's length, the property's address, and the job's lines. The link works for 30 days or until the day after the visit, whichever is later. A link whose signature does not match is refused.
 
 ## Related
 
-- [How booking works](/handbook/booking/how-booking-works)
-- [How invoicing works](/handbook/invoicing/how-invoicing-works)
-- [Order stock from a supplier](/handbook/parts/order-stock)
+- [Email safety](/handbook/running/email-safety)
+- [Scheduled jobs](/reference/scheduled-jobs)
 - [Resend](/systems/resend)

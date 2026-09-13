@@ -1,91 +1,49 @@
 ---
 title: "Sync rules by module"
-description: "For each Zoho module: which way it flows, and what a delete in Zoho does on our side"
+description: "For each mirrored module: which way it flows, who owns its fields, and what a delete in the CRM does here"
 kind: reference
 ---
 
-import { Linear } from "/snippets/linear.mdx";
+Every module below is mirrored between the CRM and the engine. The mechanics, why a change never loops, and what the three delete rules mean are on [How sync works](/handbook/running/how-sync-works). This page is the per-module table.
 
-Every module below is mirrored between Zoho and Supabase. Almost all flow both ways. The interesting column is the last one: what happens here when someone deletes the record in Zoho.
+Direction reads: **both** means a record can be made and edited on either side; **CRM → engine** means the engine only reads it; **engine → CRM** means the CRM only reads it, and a record typed into the CRM is refused. "Deactivate here" keeps the row and marks it inactive. "Delete here" removes the row and the children it owns, and is refused and flagged for review when something else still points at it. "Refuse and flag" writes nothing and raises a human-review flag, because the record moved money.
 
-| What a delete does | Meaning |
-|---|---|
-| **deactivate** | The row stays and is marked inactive. Nothing else is touched. |
-| **delete** | The row is removed, along with only the child rows it owns. |
-| **refuse and flag** | Nothing is written. A human-review flag is raised because this record moved money. The two systems now disagree until a person rules. |
+| Module | Direction | Who owns the fields | On a CRM delete | Notes |
+|---|---|---|---|---|
+| customer | both | shared; the name is the CRM's | deactivate here | one person, one email |
+| account | both | shared | deactivate here | |
+| lead | both | shared; the status and the conversion are the CRM's | deactivate here | converting is the CRM's own action, see [Convert a lead](/handbook/new-customers/convert-a-lead) |
+| property | both | address and account shared; name and type are the CRM's; the active flag is the engine's | deactivate here | |
+| equipment | both | shared | deactivate here | |
+| product | both | name, description, price and active flag shared; the rest is the CRM's | deactivate here | |
+| stock material | both | shared; the supplier link is the engine's | deactivate here | |
+| supplier | both | shared | deactivate here | branches belong to the supplier; a supplier with none gets a **Default branch** when a purchase order arrives from the CRM |
+| purchase order | both | notes shared; the supplier is the CRM's; the number and creation time are the engine's | delete here | the engine numbers an order made in the CRM |
+| work order | both | name, status, type, billing status and notes shared; the customer, subscription, number, discount and fee are the CRM's; completion notes are the engine's | refuse and flag | line items and equipment links go with the work order; a change to one line re-sends the whole work order |
+| appointment | both | name, date, service type, status, duration, technicians and arrival window shared; the customer, property, work order, territory, checklists, number and notify-client switch are the CRM's; no-show and completion time are the engine's | delete here | |
+| territory | both | active flag shared; name and arrival windows are the CRM's; the major service area is the engine's | deactivate here | the arrival windows are ticked in the CRM and never pushed back |
+| technician | both | shared | deactivate here | a technician made in the CRM with an email gets an app login and an invite email |
+| phone agent | both | active flag and order shared; the app user is the CRM's; the Twilio worker is the engine's | deactivate here | an agent made in the CRM must name an app user nobody else holds, or it is refused once and flagged |
+| invoice | both | discount and fee shared; status, amount, customer, properties and partial-payment switch are the CRM's; number, payment status, sent time and due date are the engine's | refuse and flag | a CRM edit to an engine-owned field is refused, flagged and put back; the CRM's Created, Delivered and Void read Draft, Sent and Void here |
+| payment | both | the engine's | refuse and flag | a CRM edit to an engine-owned field is refused, flagged and put back |
+| subscription | both | the engine's | deactivate here | a CRM edit to an engine-owned field is refused, flagged and put back |
+| subscription payment | engine → CRM | the engine's; the subscription link is the CRM's | refuse and flag | Stripe is the only path; one typed into the CRM is refused once and flagged |
+| checklist template | CRM → engine | name shared; category and equipment type are the CRM's | delete here | nothing flows up: author templates in the CRM; a template that still has a submission here cannot be deleted |
+| assigned checklist | both | name shared; type and description are the CRM's | delete here | |
+| checklist submission | both | completion time and technician shared; the template and the appointment are the CRM's | delete here | one typed into the CRM has no answers; the real path is the app |
+| timesheet | both | technician, status, approval time and rejection reason shared; the period, hours and submitted time are the engine's | delete here | a status set in the CRM is applied here and stamps the approval or rejection; a change here pushes once, however many entries it touches |
+| time off request | both | technician, status, review time and review notes shared; the days and submitted time are the engine's | delete here | a request typed into the CRM must name an app user |
+| payroll calendar | both | name shared; processing status and summary are the CRM's | delete here | all four CRM processing statuses land here, Needs Review included |
+| call | engine → CRM | the engine's | delete here | one record per call, with its result, people, recording and transcript; the CRM reads it and cannot change it |
+| email | both | the customer link shared; the rest is the CRM's, except the message id | delete here | a customer mail sent by the engine names its account in the CRM |
+| record lock | both | status shared; the rest is the CRM's | delete here | a push refused because the CRM record is locked is re-sent once when this lock is resolved or deleted; the flag it raised stays until a person closes it |
 
-Tested 2 September 2026 on a lead, a contact and a property: each was inactive on our side within 6 seconds of the delete in Zoho, and the records linked to it were not changed. A deactivated customer keeps its QuickBooks customer.
+## How ownership works
 
-Tested again 4 September 2026 on one record in each of Contacts, Accounts, Leads, Properties and Assets: the row stayed, was marked inactive, and its link to the Zoho record was tombstoned, 42 to 110 seconds after the delete in Zoho. All but the last 0.1 to 0.3 seconds of that was Zoho holding the notification. Deleting the account did not touch its property or equipment.
-
-| Module | Flows up from Supabase? | On delete in Zoho |
-|---|---|---|
-| Contacts (customers) | yes | deactivate |
-| Accounts | yes | deactivate |
-| Leads | yes | deactivate |
-| Properties | yes | deactivate |
-| Assets | yes | deactivate |
-| Products | yes | deactivate |
-| Stock materials | yes | deactivate |
-| Vendors (suppliers) | yes | deactivate |
-| Service territories | yes | deactivate |
-| Technicians | yes | deactivate |
-| Agents | yes | deactivate |
-| Subscriptions | yes | deactivate |
-| Supplier orders (purchase orders) | yes | delete |
-| Service appointments | yes | delete |
-| Timesheets and entries | yes | delete |
-| Time off requests and days | yes | delete |
-| Checklist templates | **no**, Zoho only | delete |
-| Assigned checklists | yes | delete |
-| Checklist submissions | yes | delete |
-| Payroll | yes | delete |
-| Call history | yes | delete |
-| Email tracking | yes | delete |
-| Record lock history | yes | delete |
-| Work orders and line items | yes | **refuse and flag** |
-| Invoices | yes | **refuse and flag** |
-| Payments | yes | **refuse and flag** |
-| Subscription payments | yes | **refuse and flag** |
-
-Tested 4 September 2026 on a product, a stock material, a supplier and a purchase order, each made in Zoho for the test. Our side acted on every create, edit and delete within two seconds of Zoho sending word of it; Zoho itself took between 24 seconds and two minutes to send word of a create or an edit that day, and between 7 and 49 seconds for a delete. Every edit made on our side was in Zoho within five seconds. On delete, the product, the stock material and the supplier stayed and went inactive, the product's QuickBooks item went inactive with it, the supplier kept its branch, and the purchase order was removed.
-
-One thing to know about purchase orders made in Zoho: our side gives the order its number, but Zoho only sees that number the next time the order is edited on our side. Until then the number field in Zoho is blank. Observed 4 September 2026, twice.
-
-A purchase order made in Zoho on a supplier that has no branches yet gives that supplier a branch named **Default branch** on our side, and the branch stays when the order is deleted. Observed 4 September 2026.
-
-Tested 4 September 2026 on a territory, a technician, a phone agent, a work order with two line items, and an appointment, each made in Zoho for the test. Every edit made in Zoho reached our side 25 seconds to 1½ minutes later, all of it Zoho holding the notice; every edit made on our side was in Zoho within 2 seconds. On delete, the territory, the technician and the phone agent stayed and went inactive, 55 seconds to 2½ minutes after the delete in Zoho. The appointment was removed 2¼ minutes after its delete, and the work order it pointed at kept both of its line items. The work order delete changed nothing on our side: 1¾ minutes after the delete in Zoho a human-review flag was raised, and the work order and both lines are still here while Zoho no longer has them. Closing that flag is [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
-
-Two things to know about work orders, seen the same day: a line item changed on either side re-sends the whole work order with all its lines, in 2 to 3 seconds; and a work order made in Zoho gets a draft billing status from our side within 3 seconds of arriving, which Zoho shows as **Draft**.
-
-A technician made in Zoho with an email address gets an app login and an invite email from our side within a second of arriving, and a phone agent made in Zoho has to name an existing app user or it cannot be created here. Seen 4 September 2026.
-
-Tested 4 September 2026 on the four money modules, using the day's probe invoice INV008348, its two payments, and a subscription and a subscription payment typed into Zoho on the probe account. An invoice is never typed into Zoho; it is made here and was in Zoho 6 seconds later, and a payment recorded in QuickBooks was a Zoho Payment 3 to 4 seconds after it landed here. The subscription and the subscription payment typed into Zoho were here 8 and 4 seconds later. Every edit made on our side was in Zoho within 2 to 7 seconds; Zoho took 22 to 53 seconds to send word of an edit and 3 to 4 seconds for a delete, and our side acted within a second of the notice. Deleting the payment, the invoice and the subscription payment in Zoho changed nothing here: each raised a human-review flag 4 seconds after the delete, and each row still stands with its QuickBooks record while Zoho no longer has it. Deleting the subscription in Zoho left the row here, marked inactive, 3 seconds later.
-
-Three things about the money modules changed that evening, after the billing fixes went live, and were tested again on probe invoice INV008350 and its payment. Zoho sent word of each edit within 2 to 3 seconds that evening.
-
-- **A payment, invoice, subscription or subscription payment edited in Zoho on a field this side owns is refused and put back.** Payment Method typed as e-Transfer in Zoho: 2 seconds later a human-review flag named the field and said the edit was refused, and 3 seconds after the edit Zoho read Cash again. The row here never changed. Earlier that day the same edit was silently overwritten by the next push, with nothing to show for it. Other modules are not flagged this way: a status this side derives, such as a timesheet's, still settles on the next push (<Linear issue="COM-197" />).
-- **A subscription payment cannot be typed into Zoho.** Stripe is the only path. A Subscription Payment made in Zoho by hand writes nothing here and raises one flag saying the Zoho record will never sync, 2.5 seconds after the save; deleting that record in Zoho afterwards is silent here. Earlier that day it had become a paid row with a made-up Stripe reference (<Linear issue="COM-196" />).
-- **The invoice status is one list.** Zoho's Created, Delivered and Void are Draft, Sent and Void here. Created typed in Zoho read Draft here 3 seconds later, and Delivered read Sent 3 seconds later; earlier that day Delivered had bounced back to Sent within half a minute (<Linear issue="COM-195" />). Deleting an invoice in Zoho still unlinks its Zoho Payments, and Zoho sends no word of that.
-
-Tested 4 September 2026 in the evening, after that day's three sync fixes went live, on a probe territory, stock material, purchase order and customer, a replayed phone call, a timesheet, a time-off request, a checklist submission and a booking confirmation email. Zoho was quick that evening: every create, edit and delete made in Zoho was here 3 to 8 seconds later, and every edit made on our side was in Zoho within 1 to 3 seconds.
-
-- **A territory's arrival windows are Zoho's.** Two **Allowed Time Slots** ticked in Zoho were the two windows set here 4 seconds later; clearing one cleared it here in 6 seconds; the other three stayed off throughout. Our side never pushes the windows back. Until that day the ticks did not reach us at all (<Linear issue="COM-194" />).
-- **The last-updated time moves.** On the stock material, the purchase order, the customer and the territory, an edit made in Zoho and an edit made on our side each moved the row's last-updated time: eight edits, eight moves. Until that day the time stayed at the moment the row first arrived, which could hide a changed row from the nightly sweep (<Linear issue="COM-191" />).
-- **A call names its customer.** A call from a number that belongs to a customer had that customer in **Contact** on its Call History record in Zoho 1 second after the call ended. The customer is worked out here from the number; Zoho only reads it (<Linear issue="COM-169" />).
-- **A timesheet, a time-off request and a checklist submission name their technician.** Each record pushed from our side had the right person in **Technician** in Zoho 1 to 3 seconds after being saved here. The app records the login; our side turns that into the technician. A technician whose Zoho record has been deleted cannot be named, so the test used a probe technician that still had one (<Linear issue="COM-172" />).
-- **An email names the account.** The Email Tracking record for a booking confirmation showed the customer's **Account** in Zoho 1 second after the mail went out (<Linear issue="COM-170" />).
-
-Tested 5 September 2026 just after midnight UTC, on a territory and a phone agent typed into Zoho for the test, after the two inbound fixes of 4 September went live.
-
-- **A record born in Zoho gets its engine id written back.** Every module that has a "Supabase id" field in Zoho now has it filled on the record's first arrival here, not only on a later push from our side. The probe territory arrived at 00:09:45 and its Zoho record showed the engine's id the same second; an edit made here afterwards was in Zoho 3 seconds later with the id still in place. Before that day the field stayed empty on every record created in Zoho (<Linear issue="COM-189" />); records created before the fix are still empty until they next arrive here.
-- **A record that can never apply is refused once.** A phone agent typed into Zoho naming an app login another agent already holds was refused on its first delivery, 3 seconds after the create in Zoho: one dead letter, one human-review flag, one alert email, and no retry. The same goes for a record missing a value our side requires: the probe territory, typed in without its major service area, was refused once with the reason spelled out, and applied as soon as the field was filled in Zoho. On 4 September the same agent collision had been retried six times in two minutes (<Linear issue="COM-190" />). Closing the flag is [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag); a retry only makes sense after the record is changed in Zoho.
-
-## Three rules that apply to every module
-
-- **A locked record in Zoho is a one-way door.** A change made here is skipped and noted, and nothing alarms. Unlocking is the office's call.
-- **A change never bounces.** When the sync writes a record, it marks the write as its own so the other side does not push it straight back. Seen again 4 September 2026 in five modules: each of our pushes came back from Zoho as one apply and no second push.
-- **Zoho's notification is the slow part.** Our side applies a change in 0.1 to 2.4 seconds and pushes one in 1 to 2 seconds. Zoho took 19 to 128 seconds to send its notification on 4 September 2026. The one thing that stalls our side is a refused login refresh; see [The Supabase backend](/systems/supabase-backend).
+- **Shared is the default.** Both sides may write a shared field, and the last writer wins; there is no arbitration. Edit one side at a time.
+- **A transform converts between the two houses' value styles**, for example the engine's lowercase statuses and the CRM's title-case picklists. It is the only thing safe to apply on a write.
+- **A comparison-only normalizer never stands in for a transform.** It makes two spellings of one value compare equal in the sweep; on its own it would silence a finding while the wrong value is still written.
+- **The CRM returns a picklist's display value on a read, while a push must send the actual value.** The two differ on some picklists, and the transform knows which is which.
 
 ## Related
 

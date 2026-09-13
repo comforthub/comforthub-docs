@@ -1,44 +1,40 @@
 ---
 title: "QuickBooks"
-description: "Customers, items, invoices and payments, and the webhook that tells us about money"
+description: "Customers, items, invoices and payments: what the engine writes there and what it reads back"
 kind: reference
 ---
 
-QuickBooks is where money is counted. The engine writes customers, items and invoices into it, and QuickBooks tells the engine when a payment is recorded. Nobody types an invoice into QuickBooks; nobody marks an invoice paid anywhere but QuickBooks.
+QuickBooks is where money is counted. The engine writes customers, items and invoices into it, and reads a payment back from it once the payment is there. Nobody types an invoice into QuickBooks; nobody marks an invoice paid anywhere but QuickBooks.
 
 ## What QuickBooks holds, and who writes it
 
-| Record | Written by | When | Seen |
-|---|---|---|---|
-| Customer | the engine | a lead is converted, or a customer's name or address changes | 4 Sep 2026: customer made 7 seconds after the lead was converted, with both addresses |
-| Item | the engine | a product is created or repriced in Zoho | 3 Sep 2026 |
-| Invoice | the engine | a work order completes with something to bill | 4 Sep 2026: invoice in QuickBooks 12 seconds after completion, with HST added ($5.00 became $5.65) |
-| Payment | the office, or the pay page | money arrives | 4 Sep 2026: two payments on one invoice |
-| Void | the engine | an invoice is voided or its job cancelled | 3 Sep 2026 |
+| Record | Written by | When |
+|---|---|---|
+| Customer | the engine | a customer is created here, or its name, email, phone or address changes, or the address of one of its properties changes |
+| Item | the engine | a product is created, or its name, description, code, type or price changes. The item is made inactive when the product is deleted in Zoho |
+| Invoice | the engine | an invoice is made here and has no QuickBooks copy yet |
+| Payment | the pay page's processor | a customer pays on the pay page |
+| Void | the engine | an invoice is voided here, or its work order is cancelled |
 
 The invoice number in QuickBooks is our INV number, so the two are always the same document.
 
-## What QuickBooks tells us
+## What the engine reads back
 
-QuickBooks sends one message when a payment is created. The engine checks it, reads the payment, finds its invoice by the QuickBooks id, and does the rest: amounts and status on our side, the receipt PDF, the payment and PDFs on the Zoho invoice, the work order's billing status, and the receipt email once the balance is zero. See [How payments work](/handbook/payments/how-payments-work).
-
-Seen 4 September 2026: the message arrived 1 second after the payment was saved; the whole chain took 12 seconds for a partial payment and 21 seconds for the one that paid the invoice off.
+QuickBooks does not call the engine. When a payment is made on the pay page, the processor posts it into QuickBooks itself, and the engine's settle step looks for it there against the invoice, asking again until it is there, for up to two hours. Once the payment is found the engine does the rest: amounts and status on our side, the receipt PDF, the payment and PDFs on the Zoho invoice, the work order's billing status, and the receipt email after each payment. See [How payments work](/handbook/payments/how-payments-work).
 
 ## Rules worth knowing
 
 - A payment must be applied to an invoice. A payment with no invoice is flagged for a person and nothing else happens.
-- Payments that Stripe's own sync writes into QuickBooks (subscription charges) are recognised and skipped; they are not invoice payments.
-- The method shown in Zoho comes from the QuickBooks payment method: Cash, Cheque, Credit Card or e-Transfer. Anything else is labelled Credit Card and flagged.
-- A payment on an invoice the engine never made is adopted: the invoice is copied to our side from QuickBooks and flagged so someone looks at it.
-- The nightly amounts check compares every live invoice's total here, in QuickBooks and in Zoho, and opens a finding for any that differ by more than two cents. See [Alerts](/reference/alerts).
+- The method shown in Zoho comes from the QuickBooks payment method: Cash, Cheque, Credit Card or e-Transfer. A payment with no method reads Credit Card, or ACH when its reference says so. Any other method is labelled Credit Card and flagged.
+- A void in QuickBooks is recognised by its zeroed amounts and the "Voided" note QuickBooks writes; QuickBooks puts no status on an invoice.
+- Every night the monitor compares each live invoice's total here, in QuickBooks and in Zoho, and its balance where the pay page keeps the accounting, and holds a condition open in Sentry for any that differ by more than two cents. See [Monitor checks](/reference/monitor-checks) and [How the monitor works](/handbook/running/how-the-monitor-works).
 
 ## Where the keys live
 
-The QuickBooks connection is an app authorised once by the owner; its refresh token lives in the secrets store and in the engine's own token table, never in a page or a repo. See [Environments and secrets](/systems/environments-and-secrets).
+The QuickBooks connection is an app authorised once by the owner. Its client id and secret sit in the functions' secret group; its refresh token rotates on every use and is kept in the engine's own token table, never in a page or a repo. See [Environments and secrets](/systems/environments-and-secrets).
 
 ## Related
 
 - [How payments work](/handbook/payments/how-payments-work)
-- [Record a payment in QuickBooks](/handbook/payments/record-a-payment-in-quickbooks)
 - [How invoicing works](/handbook/invoicing/how-invoicing-works)
 - [Who is the source of truth](/systems/who-is-the-source-of-truth)

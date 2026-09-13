@@ -8,24 +8,57 @@ kind: reference
 |---|---|
 | **allowlist** | The short list of email addresses that mail is allowed to reach. Everything else is redirected to the owner. |
 | **asset** | A piece of equipment at a customer's property. Same thing as *equipment*. |
-| **lead** | Someone who might become a customer. The module in Zoho is Leads, and the engine's table is named the same way; the old word prospect is gone. |
 | **billable, warranty, subscription** | The three kinds of line item. Only billable lines end up on an invoice. |
 | **billing decision** | Supabase looking at a work order's lines and marking it *draft* (to be invoiced) or *non-billable*. |
+| **callback request** | A caller who chose to be called back instead of waiting. The engine files it, a person works it, and it is marked done. |
+| **check** | One question the monitor asks on a clock, such as "is any cancelled work still collectible?". The list is [Monitor checks](/reference/monitor-checks). |
+| **checklist category** | Maintenance or Commissioning, set on the checklist template. It decides whether a completed visit earns a certificate. See [Certificates](/handbook/invoicing/certificates). |
+| **closed switch** | The one setting that makes the phone say the office is closed regardless of the hours table. See [Change hours and holidays](/handbook/phone/change-hours-and-holidays). |
+| **completion note** | The note a technician writes when completing a job. It starts from a template chosen by the job type, which the office can reword. See [Complete a work order](/handbook/on-site/complete-a-work-order). |
+| **condition** | One problem on one record, found by a check and held open until a later run of the same check finds it gone. Each one is a Sentry issue. |
+| **converts to asset** | A flag on a product. An install line for such a product becomes a piece of equipment on the customer when the job is completed. |
+| **covered item** | A product a subscription pays for. A visit whose lines are all covered items is not billed. |
 | **crosswalk** | The table that remembers which Zoho record is which Supabase record. Rows are never deleted, only marked. |
-| **dead letter** | A queued job that failed too many times and was parked. An alert email tells you. |
-| **human-review flag** | A note the system leaves when the two sides disagree about money and a person must rule. |
+| **dead letter** | A queued job that failed too many times and was parked. The Unfinished work check opens a condition for it, so it shows up in Sentry. |
+| **delete policy** | What the engine does when the CRM deletes a record: deactivate the copy here, delete it here, or refuse and raise a flag. Set per module on [Sync rules by module](/reference/sync-rules-by-module). |
+| **echo guard** | How a push to the CRM avoids bouncing back as a change: the engine stores a fingerprint of what the CRM ended up holding, so the CRM's own notification about that write is recognised and ignored. |
+| **the engine** | Supabase: the database and the automation around it. |
+| **escalated** | A condition that opened as for review and was found urgent by a later run of its check. |
+| **the evaluator** | The monitor's worker that, once a minute, books every check that is due and runs the quick ones itself. |
+| **expand and contract** | The safe way to change the database: add the new column first and stop reading the old one, then remove the old one in a later deployment, so no running code reads a column that is not there. |
+| **finding** | One difference the nightly sweep recorded between a record here and its twin in the CRM. See [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync). |
+| **for review** | The lighter of the two weights a condition can have. Sentry emails it once, when its spell opens. |
+| **human-review flag** | A note the system leaves when the two sides disagree about money and a person must rule. The Human review check turns each open flag into a condition, so it shows up in Sentry until a person closes it. |
+| **lead** | Someone who might become a customer. The module in Zoho is Leads, and the engine's table is named the same way; the old word prospect is gone. |
 | **line item** | One part or one block of labour on a work order. |
+| **the maintenance worker** | The monitor's worker that runs the slow checks, one at a time, from a queue the evaluator fills. |
+| **the monitor** | The part of the engine that watches the business and the engine itself: the checks, the open conditions, and the three workers behind them. See [How the monitor works](/handbook/running/how-the-monitor-works). |
+| **the notifier** | The monitor's worker that hands each opened, escalated or recovered condition to Sentry and does not let go until Sentry confirms an issue exists. |
+| **off, rehearsing, live** | The monitor's three settings. Off runs nothing. Rehearsing runs every check and records conditions but sends none of them to Sentry. Live does both. |
 | **pay calendar** | The year's pay periods and holidays, parsed from ADP's PDF. Timesheets read it. |
 | **pay page** | The web page a customer opens from the invoice email to pay. Runs on Helcim. |
+| **public door** | The engine's web interface that the app reads and writes through. Every request is checked against who is signed in. |
+| **purchase order** | Parts bought for one work order, usually a counter pickup, recorded in the app with its own number and copied to the CRM. Not the same as a stocking order. |
 | **push** | A notification on a technician's phone. |
-| **stocking order** | An order sent to a supplier for parts, made from a stock list. Not the same as a purchase order. |
-| **purchase order** | The supplier's paperwork from a counter pickup, recorded in the app. |
+| **reconciler** | The tool that, run on purpose, fixes findings by copying the CRM's value here. It never runs on its own. |
 | **required actions** | The rings at the top of a work order in the app: forms, serials, photos. All must be done before Complete. |
+| **Sentry** | The outside service that holds every crash and every condition as an issue, asks the engine once a minute whether it is serving, and emails the owner. See [Sentry](/systems/sentry). |
+| **settle job** | The step that, after a pay-page payment, finds the payment QuickBooks holds and finishes the paperwork here and in the CRM. See [Take a payment](/handbook/payments/take-a-payment). |
+| **spell** | One stretch of a condition being open, from opened to recovered. The same problem coming back is a fresh spell and a fresh Sentry issue. |
+| **the stand-in technician** | A fake, switched-off technician the uptime check logs in as, to prove a technician can still read their work. Its one work order is cancelled and belongs to no customer. |
+| **stocking order** | An order sent to a supplier for parts, made from a stock list. Not the same as a purchase order. |
+| **super admin** | The highest app role. Super admins receive the engine's own pushes, such as a Twilio error. |
+| **sweep** | The nightly comparison of every mirrored module here against the CRM. It writes findings; it changes nothing. |
 | **sync** | The mirror between Zoho and Supabase. Two directions, one minute, never loops. |
+| **TaskRouter** | Twilio's system of queues and workers that decides which phone agents ring for a call. The engine writes its shape from the departments here. |
 | **territory** | A map area. A property falls into one; technicians are scheduled by it. |
-| **the engine** | Supabase: the database and the automation around it. |
+| **time-sensitive** | A push that iPhone shows through Do Not Disturb. Used for the pushes a technician must not miss. |
+| **tombstone** | A retired pairing between a record here and its CRM twin, kept with the reason it was retired so the same twin is never re-paired by mistake. |
+| **the uptime check** | Sentry, from outside, asking the engine once a minute whether the stand-in technician can read their work and whether the monitor is keeping up. |
+| **urgent** | The heavier of the two weights a condition can have. Sentry emails every urgent event: the opening and any escalation. |
 | **webhook** | A message a vendor (QuickBooks, Stripe, Zoho, Twilio) sends us when something happened on their side. |
 | **widget** | A screen embedded inside Zoho, like the dispatch calendar. |
+| **writer lock** | A rule that only one of the jobs that write to the crosswalk runs at a time, so the sweep and the crosswalk bootstrap never overlap. |
 
 ## Related
 

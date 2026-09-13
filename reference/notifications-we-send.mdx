@@ -1,10 +1,50 @@
 ---
 title: "Notifications we send"
-description: "Every push notification, who gets it, and what tapping it opens"
+description: "Every push notification the engine sends to the app, who gets it, what triggers it, and when"
 kind: reference
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+Every push is written by the engine and handed to Apple for delivery to the app. A person can switch off any kind that has a name in the app's notification preferences; a kind switched off is not sent to that person. Times are Ottawa time; the engine's timers run in UTC, four hours ahead of Ottawa in summer.
 
-<NotWrittenYet issue="COM-124" />
+## Sent when something happens
+
+| Notification | Who gets it | What triggers it |
+|---|---|---|
+| New service appointment | the technicians on the appointment | an appointment is created with technicians on it |
+| Appointment assigned to you | the technicians added | a technician is added to an existing appointment |
+| Appointment rescheduled | the technicians on the appointment | the date or the arrival window changes on an appointment that is not cancelled |
+| Appointment cancelled | the technicians on the appointment | the appointment is cancelled |
+| Work order updated, instructions | the technicians on the work order | the work order's notes change |
+| Work order updated, parts and services | the technicians on the work order | a line item is added, removed, renamed, requantified or moved to another work order; one push per save, however many lines changed |
+| A customer approved your quote | the technician who wrote the quote | the quote's status becomes approved |
+| New global task | every app user linked to an active technician | a task is created as global |
+| Global task completed | every other app user linked to an active technician | a global task is completed |
+| Timesheet submitted | the super admins | a timesheet moves to submitted |
+| Timesheet approved, timesheet rejected | the timesheet's owner | the timesheet is approved or rejected; the rejection carries its reason |
+| Time off request | the super admins | a time off request is submitted |
+| Time off approved, time off rejected | the requester | the request is approved or rejected; the rejection carries the notes |
+| Note shared | the person it was shared with | a note is shared |
+| Stock list shared | the person it was shared with | a stock list is shared |
+| Team message | the other members of the thread, never the sender | a message is posted in a team thread |
+| New text message | the app users on that phone line | a text arrives on a line |
+| New voicemail | the app users on that phone line | a voicemail is left on a line |
+| Missed call | the app users on that phone line | an inbound call ends unanswered, busy, failed or cancelled, and left no voicemail |
+| Callback requested | the app users on that phone line | a caller asks to be called back |
+| Twilio error … | the super admins | Twilio forwards an event from its error log at level error; warnings are stored and page nobody; marked time-sensitive |
+
+## Sent on a timer
+
+| Notification | Who gets it | What triggers it | When |
+|---|---|---|---|
+| Appointment not completed | the technicians on the appointment | an appointment from the last seven days is still scheduled an hour after its arrival window ended; one push the first hour, then one a day | every hour; the daily repeat at 8:00 |
+| Task due soon | the task's owner | a task is due within the next 24 hours and is not completed or cancelled | 9:00 daily |
+| Timesheet reminder | everyone except the super admins whose timesheet for the period does not exist or is a draft | the pay period's submit-by day is tomorrow | 9:00 the day before |
+| Urgent: timesheet due now | the same people | the same day; marked time-sensitive so it breaks through focus modes | 19:00 the day before |
+| Pipeline needs attention | the super admins | at least one pipeline state has something stuck in it; the body lists the states and their counts | 8:40 daily |
+| Pipeline monitor alive | the super admins | nothing; it is the weekly proof the digest above is still running | 8:50 on Mondays |
+
+## Related
+
+- [Scheduled jobs](/reference/scheduled-jobs)
+- [Emails we send](/reference/emails-we-send)
+- [The 7AM app](/systems/the-7am-app)

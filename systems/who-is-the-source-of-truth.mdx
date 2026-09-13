@@ -9,24 +9,23 @@ When two systems both hold a record, one of them is the owner. An edit on the ow
 | Record | Owner | Also lives in | Notes |
 |---|---|---|---|
 | Lead | Zoho | Supabase | Converting one is done in Zoho |
-| Customer, account, property | Zoho and Supabase, last edit wins | QuickBooks (customer only) | Address changes flow to QuickBooks |
+| Customer, account, property | Zoho and Supabase, last edit wins | QuickBooks (customer only) | Name, contact and address changes flow to QuickBooks |
 | Equipment (asset) | Zoho and Supabase, last edit wins | | The app can add and edit them on site |
 | Work order and its lines | Zoho and Supabase, last edit wins | | The app writes lines; the billing decision is made in Supabase |
 | Appointment | Zoho and Supabase, last edit wins | | The app marks no-show and complete |
 | Checklist template | Zoho | Supabase (read-only copy) | Author in Zoho only |
 | Checklist answers | Supabase (the app) | Zoho gets the submission | |
 | Invoice | Zoho owns the amount; Supabase builds it | QuickBooks | An amount edited only in Supabase is overwritten |
-| Payment | QuickBooks | Supabase, Zoho | QuickBooks tells us; we never invent one |
-| Subscription | Stripe | Supabase, Zoho | |
+| Payment | QuickBooks | Supabase, Zoho | The engine reads a payment back from QuickBooks; it never invents one |
+| Subscription and its payments | Stripe | Supabase, Zoho | A subscription payment typed into Zoho is refused |
 | Product (catalog item) | Zoho | Supabase, QuickBooks item | |
 | Stock material, supplier | Zoho | Supabase | |
 | Technician | Zoho | Supabase | An email on the technician invites them to the app on its own |
-| Phone agent | Zoho | Supabase | The Twilio side is made by hand today |
+| Phone agent | Zoho | Supabase, Twilio | The engine makes the agent's Twilio worker and keeps its departments in step |
 | Timesheet, time off | The app | Zoho | Approvals can happen on either side |
 | Purchase order | The app | Zoho | One made in Zoho comes down too |
 | Payroll calendar | Zoho (the parsed PDF) | Supabase | |
-| Calls, voicemail, texts | Supabase (from Twilio) | Zoho gets call history | |
-| Emails we send | Supabase | Not in Zoho yet | Known gap |
+| Calls, voicemail, texts | Supabase (from Twilio) | Zoho gets one call history record per call | Every field on that record is the engine's; an edit in Zoho is pushed back |
 
 ## What happens on delete
 

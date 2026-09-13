@@ -14,22 +14,15 @@ Stripe bills plan customers by the month and is the source of truth for a subscr
 | The plan and its price | A Stripe product and price | The office in Stripe |
 | The subscription's status (Active, Past Due, Paused, Canceled) | Stripe | Stripe, on payment or cancellation |
 
-Our side and Zoho hold copies. The engine's plan table maps each Stripe product to a plan name (All-Season, Heating Only, Cooling Only, Tankless) and the visits it includes. A product missing from that table is refused and flagged.
+Our side and Zoho hold copies. The engine's plan table, kept in the backend code, maps each Stripe product to a plan name (All-Season, Heating Only, Cooling Only, Tankless) and whether it includes protection. An event naming a product missing from that table is refused: nothing is written, it is not retried, and the failure is left for a person. A new Stripe product is therefore a code change before it is sold.
 
 ## The events we listen to
 
-| Stripe event | What the engine does |
-|---|---|
-| Subscription created or updated | Creates or updates our subscription and the Zoho Subscription |
-| Subscription deleted | Marks both Canceled |
-| Invoice paid | Adds a subscription payment here and a Subscription Payment in Zoho, then refreshes the Subscription's Months Paid, Paid This Term and Last Payment Date |
-| Invoice payment failed | Recorded only. The subscription update Stripe sends next carries the Past Due status |
-
-Every call is checked against Stripe's signature and against a five-minute clock window, and an event seen before is ignored. Timings as observed are on [Subscriptions](/handbook/payments/subscriptions).
+The engine listens to five events: subscription created, updated and deleted, invoice paid, and invoice payment failed. Every call is checked against Stripe's signature and against a five-minute clock window, and an event seen before is stored once and ignored after. What follows each event, on our side and in Zoho, is on [Subscriptions](/handbook/payments/subscriptions).
 
 ## Keys and mode
 
-The account has one live secret key and the subscription webhook's signing secret, both in the secrets store under the functions path (see [Environments and secrets](/systems/environments-and-secrets)). There is no test-mode key, so Stripe's own side is tested with a real card, and the engine's side with the replay harness described on [Subscriptions](/handbook/payments/subscriptions).
+The vault holds one Stripe secret key, a live one, and the subscription webhook's signing secret, both in the functions' secret group; see [Environments and secrets](/systems/environments-and-secrets). There is no test-mode key, so Stripe's own side is tested with a real card, and the engine's side with the replay harness described on [Subscriptions](/handbook/payments/subscriptions). A webhook call the engine refuses with "unauthorized" means the signing secret in Stripe and the one the engine holds differ; rotate them together.
 
 ## Related
 

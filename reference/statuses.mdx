@@ -1,32 +1,32 @@
 ---
 title: "Statuses"
-description: "Every status a work order, appointment, invoice, lead, subscription, timesheet, time off request or checklist can have, and what it means"
+description: "Every status a work order, appointment, invoice, lead, subscription, timesheet, time off request, checklist, task, quote or callback can have, and what it means"
 kind: reference
 ---
 
-The status you see in Zoho is the same one our side holds, spelled the way Zoho shows it. Each table says who sets the value and what it makes happen.
+The status you see in the CRM is the same one the engine holds, spelled the way the CRM shows it. Each table says who sets the value and what it makes happen.
 
 ## Work order
 
 | Status | Set by | Means |
 |---|---|---|
 | New | the office | booked, no visit yet |
-| Scheduled | the office, or the dispatch widget | it has at least one appointment |
-| Completed | the technician's **Complete** tap, or the office in Zoho | the work is done; billing starts |
+| Scheduled | the office | it has at least one appointment |
+| Completed | the technician's **Complete** tap, or the office in the CRM | the work is done; billing starts |
 | Cancelled | the office | the job is off; a live invoice is voided |
 
 ## Work order billing status
 
 | Billing status | Set by | Means |
 |---|---|---|
-| Not yet invoiced | the engine, at birth | no decision yet |
-| Draft | the engine, when a line is billed to the customer | an invoice will be made on completion |
-| Non-Billable | the engine, when every line is warranty or plan | no invoice will ever be made |
-| Invoiced | the engine, when the invoice reaches QuickBooks | the customer owes it |
-| Paid | the engine, when QuickBooks reports the last payment | nothing owed |
+| Not invoiced yet | the engine, at birth | no decision yet |
+| Draft | the engine, when a line is billed to the customer | an invoice is made on completion |
+| Non-Billable | the engine, when no line is billed to the customer | no invoice is made |
+| Invoiced | the engine, when the invoice is issued | the customer owes it |
+| Paid | the engine, when the balance is settled | nothing owed |
 | Cancelled | the engine, when the job is cancelled | closed with nothing to bill |
 
-Seen 4 September 2026: Draft the second a job arrived, Invoiced 11 seconds after the technician completed it, Paid 21 seconds after the last payment was recorded in QuickBooks. Two older values, "No charge (subscription)" and "No charge (warranty)", are still accepted for records that carry them but are no longer written.
+Two older values, "No charge (subscription)" and "No charge (warranty)", are kept on the records that carry them and are not written any more.
 
 ## Appointment
 
@@ -41,41 +41,43 @@ Seen 4 September 2026: Draft the second a job arrived, Invoiced 11 seconds after
 
 An invoice carries two statuses. **Status** says where the document is; **Payment Status** says what is owed.
 
-| Status | Means |
-|---|---|
-| Draft | made by the engine; our side keeps Draft after sending |
-| Sent | Zoho's own mark once the invoice email has gone; seen on Zoho only |
-| Void | cancelled; the QuickBooks copy is voided too |
+| Status | In the CRM | Means |
+|---|---|---|
+| Draft | Created | made by the engine |
+| Sent | Delivered | the invoice email has gone |
+| Void | Void | cancelled; the QuickBooks copy is voided too |
 
 | Payment status | Set by | Means |
 |---|---|---|
 | Due | the engine, at creation | the whole amount is owed |
 | Partial | the engine, after a payment smaller than the balance | some is owed |
-| Paid | the engine, after the balance reaches zero | nothing owed; the receipt goes out |
+| Paid | the engine, after the balance reaches zero | nothing owed |
 | Void | the engine, when the invoice is voided | nothing owed, nothing collectible |
-| New, In progress, Overdue | older values | accepted, not written today |
+
+New, In progress and Overdue are older values, kept on the records that carry them and not written any more.
 
 ## Lead
 
-New, Contacted, Qualified, Scheduled, Quote sent, Quote accepted, No response, Lost, and Converted. Only **Converted** does anything: it makes the customer. See [Convert a lead](/handbook/new-customers/convert-a-lead).
+The list is the CRM's: New, Scheduled, Quote Sent, Quote Accepted, No response, Lost. Converting a lead is the CRM's own action, not a status you pick; see [Convert a lead](/handbook/new-customers/convert-a-lead).
 
 ## Subscription
 
-Active, Trialing, Past due, Paused, Unpaid, Incomplete, Incomplete expired, Canceled. Active, Trialing and Past due are the three that make a plan visit free; the rest bill as usual.
+Active, Trialing, Past due, Paused, Unpaid, Incomplete, Incomplete expired, Canceled. Stripe sets them. Active, Trialing and Past due are the three that count as a live plan; the rest bill as usual.
 
 ## Timesheet and time off
 
 | Record | Statuses |
 |---|---|
-| Timesheet | Draft, Submitted, Approved, Rejected. Rejected can be edited and submitted again. |
-| Time off request | Pending, Approved, Rejected, Cancelled. Only Pending can be cancelled by the requester. |
+| Timesheet | Draft, Submitted, Approved, Rejected |
+| Time off request | Pending, Approved, Rejected, Cancelled |
 
-## Checklist and task
+## Checklist, task, quote and callback
 
 | Record | Statuses |
 |---|---|
-| Assigned checklist | Pending, In progress, Completed. The last Completed time on a job is what Zoho shows as the work order's Completed At. |
+| Checklist on a job | Pending, In progress, Completed |
 | Task | Pending, In progress, Completed |
+| Quote | Draft, Sent, Approved, Cancelled |
 | Callback request | Pending, Attempted, Done, Canceled, Needs attention |
 
 ## Related

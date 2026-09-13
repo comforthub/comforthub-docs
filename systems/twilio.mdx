@@ -1,10 +1,65 @@
 ---
 title: "Twilio"
-description: "The phone line, queues, voicemail, recording, and texts"
+description: "The phone line: numbers, calls, texts, voicemail, recordings and the queue routing, and what the engine keeps of each"
 kind: reference
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+Twilio carries the calls and texts. The engine decides what happens on them: who is open, which department a caller reaches, who rings, and what is kept afterwards. Twilio posts every event on a call or a text to the engine's phone function, and every post is checked against Twilio's signature before anything is read.
 
-<NotWrittenYet issue="COM-97" />
+## Who owns what
+
+| Twilio owns | The engine owns |
+|---|---|
+| The phone numbers | The list of lines: which number is the main line, and which number belongs to one agent |
+| The calls themselves, and the words the caller hears | The phone agents, their departments and their extensions |
+| Texts and their delivery receipts | Departments, their weekly hours, the holiday list and the closed switch |
+| Voicemail recording and its transcript | The call records: direction, department, outcome, timings, who answered |
+| Call recordings | A copy of each recording in the engine's own storage, kept for a year and then purged |
+| The queue routing (TaskRouter): the queues, the workers, the rules that ring them | The shape of that routing, written from the database by a script in the backend repo. Nothing is configured in Twilio's console by hand |
+| The push that makes the app ring | Call transcripts, voicemail transcripts, callback requests, and every text conversation |
+
+A department's ring length, wait limit and whether it is always open are settings on the department; the closed switch, the callback offer interval and the voicemail length are phone settings. The phone reads all of them fresh every 30 seconds, so a change is live within half a minute. How to change them is on [Change opening hours and holidays](/handbook/phone/change-hours-and-holidays).
+
+## How a call is routed
+
+1. A call to the main line is written down as it starts. A call to an agent's own number rings that agent and nobody else, whatever the closed switch says.
+2. If the closed switch is on, the caller hears the closed greeting and is asked to leave a message.
+3. Otherwise the caller hears the menu and presses a digit. Star lets the caller dial an extension instead; see [Reach an agent by extension or personal line](/handbook/phone/reach-an-agent-by-extension). No answer after the menu's retries ends with a goodbye.
+4. The digit picks a department. A department that is closed for the day, on holiday, or outside its hours sends the caller to the closed greeting and voicemail.
+5. An open department puts the caller in that department's queue. The department's agents ring for the department's ring length; a task nobody takes falls back to the main queue, where every agent is a target.
+6. While waiting, the caller is offered a callback at the callback interval. A caller who accepts types or confirms a number, and a callback request is filed for the department.
+
+An agent with no department of their own belongs to every active department. The routing script writes one queue per active department, keeps the main queue as the catch-all, and writes the workflow's per-department rule (the department's queue for its ring length, then the main queue). It runs dry by default and reports what it would change; a second write run must find nothing to change.
+
+## What a call ends as
+
+| Outcome word | Meaning |
+|---|---|
+| no answer, busy, failed, canceled | The caller rang the line or an agent and nobody picked up. The members of that line get a missed-call push, unless the caller left a voicemail, which already notified through its own path |
+| hang-up in queue | The caller gave up while waiting. The call record keeps the time spent in the queue |
+| bridged | An agent took the call |
+| callback requested, then done | The caller asked to be called back. When an agent calls the number back from the app, the request is marked attempted, and done once that call ends |
+
+The call's department, whether it came after hours, its queue time and its result are written on the call record as each event arrives.
+
+## Texts
+
+An inbound text lands in a conversation on the engine's side. A photo sent with it is copied into the engine's own storage, because Twilio's copy needs the account's login to view. An outbound text is queued by the engine, sent through Twilio, and its delivery receipt comes back to the phone function. Card numbers are masked on the way in; see [How card numbers stay out of texts and transcripts](/handbook/phone/how-card-numbers-stay-out-of-texts-and-transcripts).
+
+## Where the keys live
+
+The Twilio account, its API key and its auth token live in the database's encrypted vault, filled from the phone group described on [Environments and secrets](/systems/environments-and-secrets). A database function hands them to the phone function; nothing in a function's environment holds them. The auth token is what every incoming post is checked against, so a phone function that cannot read it refuses every call with "service unavailable".
+
+## What Twilio talks to
+
+| System | What flows |
+|---|---|
+| The app | The app is the agent's phone. The engine makes the Twilio worker for each phone agent and keeps its departments in step; the app registers for the push that makes it ring. A missed call, a new text and a voicemail reach the app as pushes; see [Notifications we send](/reference/notifications-we-send) |
+| The CRM | One call history record per call, with its result, department, duration, both transcripts, the recording links and the customer, lead, supplier or agent it names. The engine owns every field: an edit made in the CRM is refused and the engine's value pushed back, and a call typed into the CRM is not accepted |
+| Sentry | Twilio's own error log is forwarded to the phone function; the engine keeps every event and pages the super admins for the serious ones. See [How a Twilio error reaches the owner](/handbook/phone/how-a-twilio-error-reaches-the-owner) |
+
+## Related
+
+- [How the phone works](/handbook/phone/how-the-phone-works)
+- [Change opening hours and holidays](/handbook/phone/change-hours-and-holidays)
+- [The 7AM app](/systems/the-7am-app)
