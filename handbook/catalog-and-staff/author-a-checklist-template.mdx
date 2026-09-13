@@ -1,6 +1,6 @@
 ---
 title: "Author a checklist template"
-description: "Write the questions a technician answers on site"
+description: "Write the readings a technician takes on site for one kind of equipment"
 kind: how-to
 ---
 
@@ -19,24 +19,30 @@ A checklist template is a list of readings a technician takes for one kind of eq
 
 <Steps>
   <Step title="Create the template">
-    In **Checklist Templates**, click **Create**. Fill in **Name**, pick a **Category** (Maintenance, Commissioning, Post-repair or Project Scope) and the **Asset Type**.
+    In **Checklist Templates**, click **Create**. Fill in **Name**, pick a **Category** (Maintenance, Commissioning or Post-repair) and the **Asset Type**.
   </Step>
   <Step title="Add the questions">
-    In **Checklist Questions**, add one row per reading: **Question Title**, **Unit**, **Expected Min** and **Expected Max**, or **Nominal** with **Tolerance Pct**. Set **Display Order** and tick **Required** where it matters. Save.
-  </Step>
-  <Step title="Let the engine suggest questions (optional)">
-    The **Generate questions** button on the record asks the engine for readings suited to the equipment type. It answered a furnace prompt with four grounded readings in the test. Keep the ones you want and save.
+    In **Checklist Questions**, add one row per reading: **Question Title**, **Helper Text**, **Unit**, **Expected Min** and **Expected Max**. Set **Display Order** and tick **Required** where it matters. Save.
   </Step>
 </Steps>
 
+## How to title a reading
+
+Write the title as the component, an em dash, then what is measured: **Disconnect — Line Voltage**, **Run Capacitor — Capacitance**. No unit in the title; the unit has its own box. The app groups a customer's readings year over year by this title, so the same reading must carry the same title on every template.
+
+## When to leave the band empty
+
+Give a reading an **Expected Min** and **Expected Max** only when the acceptable range is the same for every unit of that type. Where the right value depends on the unit's own rating plate, such as a compressor's running amps, leave the band empty. A made-up band flags good readings as out of range, which is worse than no band at all.
+
 ## How you know it worked
 
-- Tested 3 September 2026: the template and its three questions were on our side in 2 seconds, in order, with units and bands, without pressing any button.
+- The template and its questions are on our side within seconds, in order, with units and bands.
+- The template can be attached to an appointment; see [Assign a checklist to a visit](/handbook/booking/assign-a-checklist).
 
 ## Good to know
 
-- Only readings exist. There are no yes/no, text or choice questions in the Zoho form.
-- Zoho is the owner. Edit questions there, never on our side.
+- Only readings exist. There are no yes/no, text or choice questions.
+- Zoho is the owner. Edit questions there, never on our side. A template deleted in Zoho is removed here with its questions.
 
 ## Related
 

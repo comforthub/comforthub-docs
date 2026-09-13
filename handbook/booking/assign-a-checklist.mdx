@@ -8,7 +8,7 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="zoho-crm, supabase-backend, the-7am-app" />
 
-A checklist template attached to an appointment becomes the form the technician fills on site. The engine picks the piece of equipment it belongs to: the one already on the work order of that type, or failing that the newest one of that type the customer owns.
+A checklist template attached to an appointment becomes the form the technician fills in on site. The engine picks the piece of equipment it belongs to: the customer's equipment of the template's type, preferring one already on the work order, and otherwise the one installed most recently.
 
 ## Before you start
 
@@ -19,22 +19,22 @@ A checklist template attached to an appointment becomes the form the technician 
 
 <Steps>
   <Step title="Attach the template">
-    On the appointment in Zoho, add the template in the **Checklist** list (the widget does this in the wizard).
+    On the appointment in Zoho, add the template in the **Checklist** list. The dispatch calendar widget does this when it books.
   </Step>
   <Step title="Save the appointment">
-    Attaching alone does not wake our side. Save the appointment itself, for example by touching its duration, or let the widget save it as it does.
+    Save. The engine turns the list into a form on our side.
   </Step>
 </Steps>
 
 ## How you know it worked
 
-- Tested 3 September 2026: the assignment appeared on our side 2 seconds after the appointment was saved, matched to the furnace already on the work order rather than a newer one.
-- In the app the technician sees the checklist on the appointment.
+- In the app the technician sees the checklist on the work order, under **Forms**.
+- The equipment the form was matched to is also linked to the work order.
 
 ## Good to know
 
-- Removing the template from the appointment removes a checklist that has not been started. A completed one is kept.
-- Cancelling the work order removes the not-yet-started checklists too.
+- Removing the template from the appointment removes a checklist nobody has started. One that is in progress or completed stays.
+- Cancelling the work order removes every checklist on it that was not completed.
 
 ## Related
 

@@ -6,46 +6,50 @@ kind: how-to
 
 import { Touches } from "/snippets/touches.mdx";
 
-<Touches systems="zoho-crm, crm-widgets, supabase-backend" />
+<Touches systems="zoho-crm, supabase-backend" />
 
-You book from the customer's account in Zoho with the dispatch calendar widget. It asks for the job type, the equipment, the lines, the day and window, and the technician, then writes the work order and the appointment for you. The work order number comes from the engine, so it is never reused.
+You book from the **Service calendar** widget in Zoho. You click a day, and a side panel asks who the visit is for, what kind of visit it is, the arrival window, the lines, the equipment and the technician, then writes the work order and the appointment for you. The work order's name comes from the engine, so it is never handed out twice.
 
 ## Before you start
 
-- The customer's account open in Zoho, with the property on it.
-- The products you will put on the job already in the catalog; see [Add a product](/handbook/catalog-and-staff/add-a-product).
+- The customer's account exists in Zoho, with the property on it.
+- The products you put on the job are in the catalog; see [Add a product](/handbook/catalog-and-staff/add-a-product).
 
 ## Steps
 
 <Steps>
-  <Step title="Open the dispatch calendar">
-    From the account, open the **Service Calendar** widget.
+  <Step title="Open the calendar">
+    Open the **Service calendar** widget, from the account or on its own, and click the day of the visit.
   </Step>
-  <Step title="Walk the wizard">
-    Pick the job type, tick the equipment (or add a new unit), pick the lines from the catalog and set who pays for each, choose the day and the arrival window, pick the technician, and choose whether the customer is emailed.
+  <Step title="Say who and what">
+    In the panel, pick the account (**Who is this visit for?**), the type of visit (**What kind of visit?**) and the **Arrival window**.
   </Step>
-  <Step title="Confirm">
-    The widget writes the work order, the equipment links and the appointment, and shows each step's result.
+  <Step title="Add the lines and the equipment">
+    Pick the lines from the catalog and set **Charge to** for each: the customer, warranty, or the plan. Tick the equipment the visit is for, or add the unit an installation puts in. For a repair the equipment comes first, so the widget can tell you what is under warranty before you price the work.
+  </Step>
+  <Step title="Choose the technician and confirm">
+    Pick the **Technicians**, any **Checklists**, and notes for the technician. Say whether to notify the customer, then confirm. The widget writes the work order, the equipment links and the appointment, and shows each step's result.
   </Step>
 </Steps>
 
 ## How you know it worked
 
 - Zoho has a work order named like WO458 with its lines, and an appointment under it.
-- Tested 3 September 2026 with the same records the widget writes: the work order and its line were on our side in 2 seconds, with the line matched to the catalog item, and the appointment in 2 seconds with the technician, the window, the territory and the property.
-- If you asked for an email, the customer has "Your Comfort Hub appointment on …" within a few seconds.
+- The work order shows a **Billing Status** within a minute; see [How booking works](/handbook/booking/how-booking-works).
+- If you asked for an email, the customer has "Your Comfort Hub appointment on …" within a minute.
+- The technician's phone gets a push, if they have the app.
 
 ## Booking from the app instead
 
-A phone agent can book a service or maintenance visit from the app while on the call. The app writes the job on our side and the engine makes the Zoho copies; the technician picked in the app is on the Zoho appointment. Tested 4 September 2026 at 23:40 UTC: the app had its answer in 9.2 seconds, and the appointment (SA-1130) was in Zoho with its technician in **Assigned Technicians** 1.8 seconds after it was written here. The territory is set only when the customer's property has a service area; that probe customer's did not, so it stayed empty.
+A phone agent can book a service visit from the app while on the call. The app writes the job on our side and the engine makes the Zoho copies; the technician picked in the app is on the Zoho appointment. The territory is set only when the customer's property has one.
 
 ## An install typed into Zoho
 
-A work order typed straight into Zoho (no widget) makes its equipment when the job is completed: one piece for each line whose product converts to an asset, in Zoho Assets and on the work order's asset list within 5 seconds. Tested 4 September 2026; see [How booking works](/handbook/booking/how-booking-works).
+A work order typed straight into Zoho, without the widget, gets its equipment when the job is completed; see [Complete a work order](/handbook/on-site/complete-a-work-order).
 
 ## Changing lines afterwards
 
-Edit the lines on the work order in Zoho. Quantity and price changes reach our side in 3 seconds and the billing decision runs again. A line added on our side by the technician reaches Zoho in 2 seconds.
+Edit the lines on the work order in Zoho. A change to a line's item, quantity, price or **Charge to** reaches our side and the billing decision runs again. A line added from the app reaches Zoho.
 
 ## Related
 

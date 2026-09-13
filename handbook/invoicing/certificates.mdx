@@ -1,22 +1,20 @@
 ---
 title: "Certificates"
-description: "Which jobs produce a certificate, where it is stored, and who gets it"
+description: "Which visits produce a certificate, where it is stored, and who gets it"
 kind: reference
 ---
 
-import { Linear } from "/snippets/linear.mdx";
+A certificate is a PDF the engine writes when a job is completed, one per visit whose checklist earned it. The checklist template's category decides which certificate, not the job type.
 
-A certificate is a PDF the engine writes when a maintenance or commissioning job is completed. It lists the equipment and the readings the technician took.
+| Checklist category | Certificate | Where it goes |
+|---|---|---|
+| Maintenance | Certificate of Maintenance | filed by the engine; attached to the Zoho work order; attached to the invoice email next to the invoice PDF |
+| Commissioning | Certificate of Commissioning | the same |
+| Any other category, or two categories on one visit | none | |
 
-| Job type | Certificate | Where it goes | Tested |
-|---|---|---|---|
-| Maintenance | Certificate of Maintenance | stored on the work order; attached to the Zoho work order; attached to the invoice email | 3 Sep 2026, 9 s after completion; 4 Sep 2026, 3 s after completion and in the email 15 s after |
-| Commissioning | Certificate of Commissioning | same | 3 Sep 2026, filed 6 s after completion; not yet seen in an email |
-| Service, installation, warranty | none | | |
+A service job never produces a certificate, whatever its checklists. On every other kind of job, each completed visit with at least one finished checklist gets one certificate when all its checklists share one of the two categories. The file is named after the certificate kind, the job and the visit date.
 
-Since 4 September 2026 the invoice email carries the certificate as a second attachment, next to the invoice PDF. Seen that evening on probe job WO-1209: the email left 15 seconds after completion with INV008350.pdf and Certificate-of-Maintenance-Probe-COM-185-Billing-2026-09-04.pdf, one file per maintenance or commissioning visit of the job, named after the certificate kind, the job and the visit date. Before that day the email carried the invoice PDF only (<Linear issue="COM-180" />).
-
-Readings come from the completed checklist; a checklist completed without readings gives a certificate with none.
+The invoice email waits for every certificate the job earned before it goes out, and attaches each one.
 
 ## Related
 

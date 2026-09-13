@@ -1,6 +1,6 @@
 ---
 title: "What lives where"
-description: "Products, materials, suppliers, technicians, territories, checklist templates and agents: which system owns each"
+description: "Products, materials, suppliers, technicians, territories, checklist templates and agents: which system you type each into"
 kind: explanation
 ---
 
@@ -8,27 +8,26 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="zoho-crm, supabase-backend, quickbooks, the-7am-app" />
 
-Everything the business runs on is typed into Zoho once. The engine copies it to our side within seconds, and for the things money touches it makes the QuickBooks record too. Nobody types setup data into QuickBooks or the app.
+Everything the business runs on is typed into Zoho once. The engine copies it to our side within seconds, and for the things money touches it makes the QuickBooks record too. Nobody types setup data into QuickBooks or the app. Which system owns each record after that is on [Who is the source of truth](/systems/who-is-the-source-of-truth).
 
-| Setup data | Typed in | Copied to | Also made in | Tested |
-|---|---|---|---|---|
-| Product (something we sell) | Zoho | our catalog, 3 s | QuickBooks item, 5 s | 3 Sep 2026 |
-| Stock material | Zoho | our side, 5 s; the app's material search | | 3 Sep 2026 |
-| Supplier and its branches | Zoho | our side, 2 s; each branch gets a Street View picture | | 3 Sep 2026 |
-| Technician | Zoho | our side, 2 s | app login: by hand today | 3 Sep 2026 |
-| Service territory | Zoho | our side, 2 s | | partly, see below |
-| Checklist template | Zoho | our side with its questions, 2 s | | 3 Sep 2026 |
-| Phone agent | Zoho | our side | phone line: not built | gap |
+| Setup data | Typed in | What the engine makes from it |
+|---|---|---|
+| Product (something we sell) | Zoho, **Products** | A catalog item on our side and a QuickBooks item; see [Add a product](/handbook/catalog-and-staff/add-a-product) |
+| Stock material | Zoho, **Stock Materials** | A material on our side, which the app lists |
+| Supplier and its branches | Zoho, **Vendors** | A supplier on our side with its branches; each branch gets a Street View picture; see [Add a supplier and its branches](/handbook/catalog-and-staff/add-a-supplier) |
+| Technician | Zoho, **Technicians** | A technician on our side, and an app login when the record has an email; see [Add a technician](/handbook/catalog-and-staff/add-a-technician) |
+| Service territory | Zoho, **Service Territories** | A territory on our side; a developer draws its map area; see [Draw a service territory](/handbook/catalog-and-staff/draw-a-service-territory) |
+| Checklist template | Zoho, **Checklist Templates** | A template on our side with its questions; see [Author a checklist template](/handbook/catalog-and-staff/author-a-checklist-template) |
+| Phone agent | Zoho, **Agents** | An agent on our side and a worker in the phone system; see [How the phone works](/handbook/phone/how-the-phone-works) |
 
 ## Edits and deletes
 
-A price change on a product reaches QuickBooks in 3 seconds. Deleting a product in Zoho switches it off on our side and makes the QuickBooks item inactive; nothing is ever removed. A rename of a territory or technician crosses in 2 seconds.
+An edit in Zoho reaches our side within seconds, and a product's price change reaches QuickBooks after it. Deleting a product, supplier, technician, territory or agent in Zoho switches it off on our side; nothing is removed, and a deleted product's QuickBooks item goes inactive. A checklist template deleted in Zoho is removed on our side with its questions.
 
-## What does not cross yet
+## What does not cross
 
-- A technician's email and home location stay in Zoho.
-- A territory's active flag has nowhere to go: Zoho's territory module has no such box. The time windows a territory allows are not carried either, and there is no way to draw its map area outside a developer's hands. See [Draw a service territory](/handbook/catalog-and-staff/draw-a-service-territory).
-- A phone agent needs a phone line and an extension that nothing sets up yet.
+- A technician's home location stays in Zoho.
+- A territory's map area lives only on our side.
 
 ## Related
 

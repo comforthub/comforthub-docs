@@ -4,41 +4,26 @@ description: "The five roles and what each one can see and change"
 kind: reference
 ---
 
-import { Linear } from "/snippets/linear.mdx";
-
-Every person in the app has one of five roles, on a ladder. The engine checks the ladder on every write. The app does not yet grey out or hide anything by role, so a write above your rank looks like it saved and does nothing.
+Every person in the app has one of five roles, on a ladder. The engine checks the ladder on every write. The app does not grey out or hide most controls by role, so an edit above your rank matches nothing and comes back as if it saved; adding a record above your rank is refused with an error.
 
 ## The ladder
 
 | Role | Rung | What the engine lets them do |
 |---|---|---|
-| apprentice | 1 | See what staff see. Change nothing measured below. |
-| technician | 2 | Change customers, quotes, purchase orders, work orders and appointments, on any work order, not only their own. |
-| senior technician | 3 | Everything a technician can, and more. Not measured on 4 September 2026. |
-| admin | 4 | Not measured on 4 September 2026. |
-| super admin | 5 | Not measured on 4 September 2026. |
+| apprentice | 1 | See what staff see: customers, accounts, properties, equipment, work orders, appointments, quotes, purchase orders, suppliers, products, stock materials, checklists, invoices, calls, texts and voicemails. File their own hours and time off. Change nothing else. |
+| technician | 2 | Everything above, plus create, change and delete customers, accounts, properties, equipment, work orders and line items, quotes, purchase orders, suppliers, products, stock materials, checklists, tasks, notes, stock lists, calls, texts, voicemails and callbacks. Change an appointment only when they are one of its technicians. |
+| senior technician | 3 | The same as a technician. The rung exists so an admin can rank people. |
+| admin | 4 | Everything above, plus see and approve timesheets and time off, see payments and subscriptions, change or delete any appointment, and set roles. |
+| super admin | 5 | Everything above, plus the Twilio error pushes. |
 
-Only the owner can change someone's role; see [Invite someone to the app](/handbook/app/invite-someone-to-the-app).
+## Setting a role
 
-## What happens when a write is above your rank
-
-Measured 4 September 2026 (<Linear issue="COM-57" />), each write run against the engine directly and rolled back, so no record changed.
-
-| Write | Signed in as a technician | Signed in below technician rank |
-|---|---|---|
-| Edit a customer | Saved, 1 row | Nothing saved, no error, 0 rows |
-| Add a quote | Saved | Refused with an error from the engine |
-| Raise a purchase order | Saved | Refused with an error from the engine |
-| Edit a work order you are not on | Saved, 1 row | Nothing saved, no error, 0 rows |
-| Mark a no-show | Saved, 1 row | Nothing saved, no error, 0 rows |
-
-Two things to know about that table:
-
-- Nobody held the apprentice role on 4 September (one super admin, two technicians), so the right-hand column was measured with a signed-in account that has no staff row, which sits on rung 0. The apprentice rung, 1, is below the technician rung, 2, on the same ladder, so the engine gives the same answers.
-- Edits above your rank match no rows and come back as success; that is why the app shows nothing. Adding a record above your rank is refused with an error, which the app may or may not show. Disabling the control with a reason is app work not yet done; that is the gap in <Linear issue="COM-57" />.
+- An admin or a super admin sets roles. Nobody sets their own, nobody grants a role above their own rung, and nobody changes the role of someone above them.
+- A new app user starts as an apprentice.
+- An extension is set the same way; nobody sets their own.
 
 ## Related
 
 - [The app tour](/handbook/app/the-app-tour)
 - [A visit in the app](/handbook/on-site/a-visit-in-the-app)
-- [The 7AM app](/systems/the-7am-app)
+- [The 7am app](/systems/the-7am-app)

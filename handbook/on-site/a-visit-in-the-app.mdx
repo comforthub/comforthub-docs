@@ -1,12 +1,21 @@
 ---
 title: "A visit in the app"
-description: "What a technician does from opening the work order to tapping Complete"
+description: "What a technician sees on a work order, what they do on site, and where each task is explained"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-52" />
+<Touches systems="the-7am-app, supabase-backend, zoho-crm" />
 
-Required actions, checklists, serials, photos, line items, note, complete.
+A visit is one work order opened from the day's list in the app. The screen is one page: a picture of the property at the top, then the **Required actions** ring, the lines, the work order notes, the quote, the purchase orders, the invoice, and the completion note at the bottom. A menu at the bottom of the screen offers the extra things a technician can do on site: **Quote**, **Line item**, **Order** and **No show**.
+
+The ring is the job's to-do list. It counts three kinds of required action: every checklist the office attached to the appointment (**Forms**), and for every piece of equipment on the job a serial number (**Serials**) and a photo (**Photos**). Each row opens the thing it asks for: a checklist opens question by question, a serial opens the camera to scan the rating plate, a photo opens the camera or the photo library. The ring shows how many steps are left and which one is up next. How a checklist is filled in is on [Answer a checklist](/handbook/on-site/answer-a-checklist).
+
+Parts and labour are added from **Line item**: parts come from the catalog with their price, labour is hours at the labour rate, and both land on the work order in Zoho. Work found on site that the customer has to agree to first is quoted from **Quote**; see [Quote extra work](/handbook/on-site/quote-extra-work). When every required action is done and the completion note is written, the technician taps **Complete**, which closes the visit and starts billing; see [Complete a work order](/handbook/on-site/complete-a-work-order). Answers given with no signal wait on the phone and are sent when it is back.
+
+## Related
+
+- [Answer a checklist](/handbook/on-site/answer-a-checklist)
+- [Complete a work order](/handbook/on-site/complete-a-work-order)
+- [The 7am app](/systems/the-7am-app)

@@ -1,6 +1,6 @@
 ---
 title: "Fix an invoice"
-description: "Change a discount or due date, and know which edits stick"
+description: "Change the discount or the processing fee, and know which edits stick"
 kind: how-to
 ---
 
@@ -12,24 +12,26 @@ Small fixes are made on the Zoho invoice. The engine carries them to our side an
 
 ## Before you start
 
-- The invoice open in Zoho, not yet paid.
+- The invoice open in Zoho, unpaid.
 
 ## Steps
 
 <Steps>
-  <Step title="Change the discount or the due date">
-    Edit **Discount** or **Due Date** and save.
+  <Step title="Change the discount or the processing fee">
+    Edit **Discount** or **Enable Processing Fee** and save.
   </Step>
 </Steps>
 
 ## How you know it worked
 
-- Tested 3 September 2026: a $1 discount reached our side in 2 seconds and QuickBooks 2 seconds later, shown as a discount line; the total went from $5.65 to $4.52 in all three places.
+- Within a minute our copy of the invoice carries the change, and the QuickBooks invoice shows the discount as a line named **Order discount**, taken off before tax.
+- The total drops by the discount plus its tax, and reads the same in Zoho, in QuickBooks and here.
 
 ## What you cannot change
 
 - The amount. It is computed from the lines. Change the lines on the work order instead, before the job is completed.
-- The invoice number and the payment state. Those are ours and QuickBooks'.
+- The due date. QuickBooks sets it; Zoho only shows it.
+- The invoice number and the payment status. Those are ours.
 
 ## Related
 

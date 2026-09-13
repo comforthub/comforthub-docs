@@ -70,9 +70,6 @@
               "handbook/on-site/a-visit-in-the-app",
               "handbook/on-site/complete-a-work-order",
               "handbook/on-site/answer-a-checklist",
-              "handbook/on-site/record-equipment",
-              "handbook/on-site/add-parts-and-labour",
-              "handbook/on-site/handle-a-no-show",
               "handbook/on-site/quote-extra-work"
             ]
           },
@@ -90,7 +87,6 @@
             "pages": [
               "handbook/payments/how-payments-work",
               "handbook/payments/take-a-payment",
-              "handbook/payments/record-a-payment-in-quickbooks",
               "handbook/payments/subscriptions"
             ]
           },
@@ -99,10 +95,8 @@
             "pages": [
               "handbook/parts/how-ordering-parts-works",
               "handbook/parts/order-stock",
-              "handbook/parts/raise-a-purchase-order",
               "handbook/parts/delete-a-purchase-order",
-              "handbook/parts/how-purchase-order-numbers-work",
-              "handbook/parts/record-a-return"
+              "handbook/parts/how-purchase-order-numbers-work"
             ]
           },
           {
@@ -119,13 +113,9 @@
             "group": "Phone and messages",
             "pages": [
               "handbook/phone/how-the-phone-works",
-              "handbook/phone/set-up-a-phone-agent",
               "handbook/phone/change-hours-and-holidays",
               "handbook/phone/reach-an-agent-by-extension",
-              "handbook/phone/handle-voicemail-and-callbacks",
-              "handbook/phone/text-a-customer",
               "handbook/phone/how-card-numbers-stay-out-of-texts-and-transcripts",
-              "handbook/phone/transfer-and-record-calls",
               "handbook/phone/how-a-twilio-error-reaches-the-owner"
             ]
           },
@@ -133,39 +123,23 @@
             "group": "The app, day to day",
             "pages": [
               "handbook/app/the-app-tour",
-              "handbook/app/invite-someone-to-the-app",
               "handbook/app/roles-and-what-they-can-do",
-              "handbook/app/tasks-and-notes",
-              "handbook/app/team-messages-and-group-chats",
-              "handbook/app/the-assistant"
+              "handbook/app/team-messages-and-group-chats"
             ]
           },
           {
             "group": "Keeping it running",
             "pages": [
               "handbook/running/how-sync-works",
-              "handbook/running/how-alerts-work",
-              "handbook/running/when-an-alert-email-arrives",
+              "handbook/running/how-the-monitor-works",
+              "handbook/running/act-on-a-sentry-email",
+              "handbook/running/check-the-monitor-is-running",
               "handbook/running/fix-a-record-that-did-not-sync",
               "handbook/running/run-the-sweep-and-the-reconciler",
               "handbook/running/redrive-a-dead-letter",
               "handbook/running/resolve-a-human-review-flag",
               "handbook/running/what-replaces-the-audit-log",
               "handbook/running/email-safety"
-            ]
-          },
-          {
-            "group": "Sync checks, module by module",
-            "pages": [
-              "handbook/sync-checks/checklist-templates",
-              "handbook/sync-checks/assigned-checklists",
-              "handbook/sync-checks/checklist-submissions",
-              "handbook/sync-checks/timesheets",
-              "handbook/sync-checks/time-off-requests",
-              "handbook/sync-checks/payroll",
-              "handbook/sync-checks/call-history",
-              "handbook/sync-checks/record-locks",
-              "handbook/sync-checks/a-locked-zoho-record"
             ]
           }
         ]
@@ -189,13 +163,10 @@
               "systems/supabase-backend",
               "systems/the-7am-app",
               "systems/quickbooks",
-              "systems/pay-page",
               "systems/stripe",
               "systems/twilio",
               "systems/resend",
-              "systems/the-assistant",
-              "systems/crm-widgets",
-              "systems/website-and-portal"
+              "systems/sentry"
             ]
           }
         ]
@@ -214,8 +185,7 @@
               "reference/emails-we-send",
               "reference/notifications-we-send",
               "reference/scheduled-jobs",
-              "reference/alerts",
-              "reference/documents-and-pdfs",
+              "reference/monitor-checks",
               "reference/repos-and-links"
             ]
           }
@@ -237,5 +207,127 @@
     "socials": {
       "github": "https://github.com/comforthub"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/reference/alerts",
+      "destination": "/reference/monitor-checks"
+    },
+    {
+      "source": "/handbook/running/how-alerts-work",
+      "destination": "/handbook/running/how-the-monitor-works"
+    },
+    {
+      "source": "/handbook/running/when-an-alert-email-arrives",
+      "destination": "/handbook/running/act-on-a-sentry-email"
+    },
+    {
+      "source": "/handbook/on-site/record-equipment",
+      "destination": "/handbook/on-site/complete-a-work-order"
+    },
+    {
+      "source": "/handbook/on-site/add-parts-and-labour",
+      "destination": "/handbook/on-site/a-visit-in-the-app"
+    },
+    {
+      "source": "/handbook/on-site/handle-a-no-show",
+      "destination": "/handbook/on-site/a-visit-in-the-app"
+    },
+    {
+      "source": "/handbook/parts/raise-a-purchase-order",
+      "destination": "/handbook/parts/how-ordering-parts-works"
+    },
+    {
+      "source": "/handbook/parts/record-a-return",
+      "destination": "/handbook/parts/how-ordering-parts-works"
+    },
+    {
+      "source": "/handbook/phone/set-up-a-phone-agent",
+      "destination": "/systems/twilio"
+    },
+    {
+      "source": "/handbook/phone/handle-voicemail-and-callbacks",
+      "destination": "/handbook/phone/how-the-phone-works"
+    },
+    {
+      "source": "/handbook/phone/text-a-customer",
+      "destination": "/handbook/phone/how-the-phone-works"
+    },
+    {
+      "source": "/handbook/phone/transfer-and-record-calls",
+      "destination": "/handbook/phone/how-the-phone-works"
+    },
+    {
+      "source": "/handbook/app/invite-someone-to-the-app",
+      "destination": "/systems/the-7am-app"
+    },
+    {
+      "source": "/handbook/app/tasks-and-notes",
+      "destination": "/handbook/app/the-app-tour"
+    },
+    {
+      "source": "/handbook/app/the-assistant",
+      "destination": "/handbook/app/the-app-tour"
+    },
+    {
+      "source": "/systems/the-assistant",
+      "destination": "/systems/how-it-all-fits-together"
+    },
+    {
+      "source": "/systems/crm-widgets",
+      "destination": "/systems/how-it-all-fits-together"
+    },
+    {
+      "source": "/systems/website-and-portal",
+      "destination": "/systems/how-it-all-fits-together"
+    },
+    {
+      "source": "/systems/pay-page",
+      "destination": "/handbook/payments/take-a-payment"
+    },
+    {
+      "source": "/reference/documents-and-pdfs",
+      "destination": "/handbook/invoicing/certificates"
+    },
+    {
+      "source": "/handbook/sync-checks/checklist-templates",
+      "destination": "/reference/sync-rules-by-module"
+    },
+    {
+      "source": "/handbook/sync-checks/assigned-checklists",
+      "destination": "/reference/sync-rules-by-module"
+    },
+    {
+      "source": "/handbook/sync-checks/checklist-submissions",
+      "destination": "/reference/sync-rules-by-module"
+    },
+    {
+      "source": "/handbook/sync-checks/timesheets",
+      "destination": "/reference/sync-rules-by-module"
+    },
+    {
+      "source": "/handbook/sync-checks/time-off-requests",
+      "destination": "/reference/sync-rules-by-module"
+    },
+    {
+      "source": "/handbook/sync-checks/payroll",
+      "destination": "/reference/sync-rules-by-module"
+    },
+    {
+      "source": "/handbook/sync-checks/call-history",
+      "destination": "/reference/sync-rules-by-module"
+    },
+    {
+      "source": "/handbook/sync-checks/record-locks",
+      "destination": "/reference/sync-rules-by-module"
+    },
+    {
+      "source": "/handbook/sync-checks/a-locked-zoho-record",
+      "destination": "/reference/sync-rules-by-module"
+    },
+    {
+      "source": "/handbook/payments/record-a-payment-in-quickbooks",
+      "destination": "/handbook/payments/how-payments-work"
+    }
+  ]
 }

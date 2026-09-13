@@ -1,66 +1,53 @@
 ---
 title: "How a lead becomes a customer"
-description: "What happens the moment a lead is marked Converted, and where each record ends up"
+description: "What happens the moment a lead is converted in Zoho, and where each record ends up"
 kind: explanation
 ---
 
 import { Touches } from "/snippets/touches.mdx";
-import { Linear } from "/snippets/linear.mdx";
 
 <Touches systems="zoho-crm, supabase-backend, quickbooks" />
 
-The moment a lead's **Status** is saved as **Converted** in Zoho, the engine sets the customer up everywhere at once. Nobody types the customer into Zoho or QuickBooks. Tested 2 September 2026 on a lead with a billing address different from its service address: the whole run took 11 seconds, and the pictures and territories were on the properties 4 seconds after that.
+Converting a lead with Zoho's **Convert** button is what sets the customer up everywhere. Zoho makes the contact; the engine sees the lead turn converted and makes everything else, then links it all. Nobody types the customer into QuickBooks or our side.
 
 ## What gets created
 
 | Record | Where | What it carries |
 |---|---|---|
-| Customer | Our side | The lead's name, email and phone, and a pointer back to the lead |
-| Contact | Zoho | Same name, email and phone; linked to the account and to both addresses; shows the QuickBooks customer number in **QBO Id** |
-| Account | Zoho and our side | Named after the person; linked to the contact and to both addresses |
-| Property (service address) | Zoho and our side | The service address; linked to the account |
-| Property (billing address) | Zoho and our side | Only when billing differs from service. Same address, same links |
-| Customer | QuickBooks | Name, email, phone and addresses, so an invoice can be raised later |
+| Contact | Zoho, made by **Convert** | The lead's name, email and phone. The engine adds **Account Name**, **Service Address**, **Billing Address**, **QBO Id** and **Supabase Customer Id** |
+| Customer | Our side | Same name, email and phone, and a pointer back to the lead |
+| Account | Zoho and our side | Named after the person, linked to the contact, with the phone. If **Convert** already made one, it is reused |
+| Property (service address) | Zoho and our side | The service address, named after the person and the street, linked to the account |
+| Property (billing address) | Zoho and our side | Only when the lead's billing address is complete and differs from the service address |
+| Customer | QuickBooks | Name, email, phone; the service address as the shipping address, the billing address as the billing address |
 
-Each new property then gets its own follow-up: a map position, a Street View picture and a **Major Service Area** (the territory). See [A new property gets its picture and territory](/handbook/new-customers/convert-a-lead#how-you-know-it-worked) for what that looks like in Zoho.
+The engine runs the pieces in this order: customer, QuickBooks customer, account, properties. Each property then gets its own follow-up: a map position, a Street View picture and a **Major Service Area** (the territory). See [Draw a service territory](/handbook/catalog-and-staff/draw-a-service-territory).
 
 ## It runs once
 
-A lead that already has its customer is left alone. Setting **Status** back to **New** and then to **Converted** again was tested: nothing new was made, and nothing was changed. The safety catch is on our side, so it holds no matter who flips the status or how many times.
+A lead that already has its customer is left alone, whoever converts it or how many times. The engine watches Zoho's own converted flag on the lead, not the **Status** picklist: setting **Status** to **Converted** by hand does nothing.
 
 ## What the lead shows afterwards
 
-- **Supabase Lead ID** fills in on the lead. That is the only visible change to the lead in Zoho.
-- The lead does not link to its new Contact in Zoho. The link exists on our side only. If you need to get from a lead to its contact in Zoho, search Contacts by the email.
-- The lead also carries an older field, **Supabase Lead Id**, that stays blank. It was the first copy of the same pointer and cannot be used any more (see below). It is dead metadata until the owner removes it from the Leads layout in Zoho; the engine ignores it.
+- Zoho fills **Converted Contact** and **Converted Account** on the lead. Those are the links to the customer records.
+- The engine writes nothing back to a converted lead, and an edit to the lead after conversion goes nowhere: it is not copied to the contact, and it is not pushed to Zoho. Edit the contact, account and property from then on.
 
 ## A lead born on our side
 
-Not every lead is typed into Zoho. When a phone agent books a visit in the app for a caller nobody has heard of, the lead is created on our side first, and the engine has to create its copy in Zoho before it can convert it. The order is: lead here, lead in Zoho with **Supabase Lead ID** filled in, then the same conversion as above, then the booking is confirmed to the agent.
+A phone agent who books a visit in the app for a caller nobody has heard of does not type a lead into Zoho. The app saves the lead on our side, the engine pushes it to Zoho, then asks Zoho to convert it, and the same set-up as above follows. The app waits up to 25 seconds for the customer to be ready before it books the visit.
 
-On 5 September 2026 that first step failed on the live system, and the booking answered that the customer was not ready. Zoho refused to create the lead because the engine named it by **Supabase Lead Id**, and Zoho only lets a record be named from outside by a field that was set up for it when the field was created; that one was not, and Zoho cannot change a field after the fact. The fix was a new field set up the right way, and the engine now uses it for every lead; since the rename that field is **Supabase Lead ID**. This is <Linear issue="COM-216" />. Unverified on the live system until the next new caller is booked; when it has been watched, this paragraph will say what was seen.
-
-The same booking showed a second fault, which would have stood even with the field fixed. The engine hands out two jobs a few thousandths of a second apart: create the lead in Zoho, and set the customer up. The second job was picked up first, looked for the lead's Zoho copy, found none, and gave up for good as if the lead were bad, 1.3 seconds before the copy could have existed. The booking then waited its full 25 seconds for a customer that was never coming, and a retry from the app changed nothing, because the lead was already marked converted and nothing asked for the set-up again. This is <Linear issue="COM-217" />.
-
-Now a set-up that finds no Zoho copy yet waits and looks again, a few seconds later and then at growing intervals, up to ten tries; it gives up only when the lead's own Zoho copy has failed for good, and that failure is what you will see recorded. A booking retried from the app also asks for the set-up again when the lead is converted, has no customer, and no set-up for it is queued or under way. Unverified on the live system until the next new caller is booked; when it has been watched, this paragraph will say what was seen.
-
-Until then, a caller who is new and whose booking answers "customer not ready": [Set up a customer by hand](/handbook/new-customers/set-up-a-customer-by-hand), then book again.
+The engine expects the lead's Zoho copy to exist a few seconds after the row does. If it is not there yet, the set-up waits and tries again, at growing intervals, up to ten times; it gives up only when the lead's own push to Zoho has failed for good. If the app times out, it says **Couldn't set the caller up. Check the address, then book again.** Booking again keeps the same lead and asks for the set-up again.
 
 ## After the conversion
 
-The customer, the account and the properties are ordinary two-way records from then on. Tested the same day, one edit each way on each of the three:
+The customer, the account and the properties are ordinary two-way records. An edit on either side reaches the other, and a change to the customer's name, email, phone or addresses reaches QuickBooks too.
 
-- A phone change on our side reached the Zoho contact in 4 seconds, and QuickBooks in the same run.
-- An email change in Zoho reached our side in 2 seconds, and QuickBooks a second later.
-- An account name change in either direction crossed in 2 seconds.
-- A postal code change on our side, and a city change in Zoho, each crossed in 2 seconds.
-- A street change on the service property in Zoho reached our side in 2 seconds and the QuickBooks customer's shipping address 2 seconds after that. The service address is the shipping address in QuickBooks; the billing property is the billing address.
-
-One thing to know: if the same record is edited on both sides within a few seconds, the side that pushes last wins and the other edit is lost. That happened once during the test, when a Zoho email edit landed 2 seconds before a push from our side. Edit one side, wait a few seconds, then the other.
+If the same record is edited on both sides within a few seconds, the side that pushes last wins and the other edit is lost. Edit one side, wait a few seconds, then the other.
 
 ## What the engine refuses
 
-Unverified in the live system, but written into the engine: a lead with no email or with an incomplete service address is not converted, and the reason is recorded. [Fix a customer that did not set up properly](/handbook/new-customers/fix-a-customer-that-did-not-set-up) will cover reading that reason once it has been tested.
+- A service address without a street, a city or a postal code. The province and country are worked out; those three are not. The refusal is recorded as a dead letter and flagged for review; see [Fix a customer that did not set up properly](/handbook/new-customers/fix-a-customer-that-did-not-set-up).
+- A caller with no email cannot be saved as a lead from the app, because Zoho addresses a lead by its email. The agent fills it in on the call.
 
 ## Related
 

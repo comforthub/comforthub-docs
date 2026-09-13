@@ -1,47 +1,51 @@
 ---
 title: "How payments work"
-description: "From the pay page or QuickBooks to a paid invoice, a receipt, and a paid work order"
+description: "From the pay page to a paid invoice, a receipt, and a paid work order"
 kind: explanation
 ---
 
 import { Touches } from "/snippets/touches.mdx";
 
-<Touches systems="pay-page, quickbooks, supabase-backend, zoho-crm, resend" />
+<Touches systems="quickbooks, supabase-backend, zoho-crm, resend" />
 
-QuickBooks is the one that tells us a payment happened. Whether the customer paid on the pay page (Helcim) or the office recorded a payment in QuickBooks, the same thing follows: QuickBooks sends us the payment, and the engine does the rest.
+A customer pays on the pay page. The engine records the payment the moment Helcim approves it, Helcim posts the same payment into QuickBooks on its own, and the engine's settle job finds it there and finishes the paperwork: receipt, Zoho payment, paid work order.
+
+## The shape of it
+
+```mermaid
+flowchart LR
+  A[Customer pays on the pay page] --> B[Engine records the payment; invoice Paid or Partial]
+  A --> C[Helcim posts the payment into QuickBooks]
+  C --> D[Settle job finds it on the QuickBooks invoice]
+  B --> D
+  D --> E[Receipt PDF and email, Zoho payment, work order Paid]
+```
 
 ## What follows a payment
 
-Seen on 3 September 2026, two payments on a $5.65 invoice:
+| Step | What happens |
+|---|---|
+| Card approved | The engine writes the payment and marks the invoice Paid, or Partial when something is still owed. The pay page shows it at once. |
+| QuickBooks | Helcim posts the payment into QuickBooks under its own reference. The engine never posts a payment into QuickBooks itself; if it did, every pay-page payment would appear there twice. |
+| Settle | The settle job looks at the QuickBooks invoice for that payment, and asks again until it is there. Once found, it links the two, stores the receipt PDF, emails "Payment received for INV…" with the receipt and the paid invoice attached, and marks the work order Paid here and in Zoho. |
+| Zoho | A Payment named after the invoice is made in Zoho with the amount and the method, the receipt attached to it and the paid invoice PDF attached to the Zoho invoice. The invoice's **Payment Status** follows. |
 
-| After | Our side | Zoho | Email |
-|---|---|---|---|
-| $2.00, first | payment recorded with its receipt PDF; invoice Partial, $3.65 due | a Payment on the invoice | none, on purpose |
-| $3.65, second | invoice Paid, paid-on date set; work order Paid | a second Payment; the paid PDF attached to the invoice | "Payment received for INV…" with the receipt |
+A receipt goes out after every payment, including a part payment; it names the amount paid and the balance left.
 
-Each step landed within 13 seconds of the payment.
+A bank transfer is left alone by the settle job until it clears, which takes days; it is settled then.
 
-## The Zoho half, watched once more
-
-Seen 4 September 2026 on a fresh probe customer, invoice INV008348 for $5.65, paid $2.00 then $3.65 in QuickBooks:
-
-| After | In Zoho | How long |
-|---|---|---|
-| $2.00 | a Payment named "INV008348 Payment", $2, Cash, linked to the invoice and the account; the invoice PDF and a paid copy attached to the invoice | 8 seconds |
-| $3.65 | a second Payment, $3.65; the invoice's **Payment Status** Paid; the work order's **Billing Status** Paid | 9 seconds for the Payment, 15 for the work order |
-
-On our side the invoice went Partial with $3.65 owing after the first payment and Paid after the second, each with its receipt PDF stored, and the receipt email left 21 seconds after the second payment. No receipt after the first, on purpose. The payment method in Zoho is the one chosen in QuickBooks (Cash, Cheque, Credit Card or e-Transfer); a payment recorded with any other method is labelled Credit Card and flagged for a person.
+If QuickBooks still has no such payment two hours after the card was approved, the job gives up and the monitor opens an urgent condition in Sentry. See [Act on a Sentry email](/handbook/running/act-on-a-sentry-email).
 
 ## Edits and deletes in Zoho
 
-Our side owns the amount and the method on a payment. A method changed here was in Zoho within 3 seconds (seen 4 September 2026); a method typed in Zoho is not applied here and is overwritten at the next push, and nothing flags it. Deleting a Payment in Zoho changes nothing here or in QuickBooks: a human-review flag is raised within seconds and the payment stands. See [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
+The engine owns a payment's amount and its method. A value typed over either in Zoho is refused: a human-review flag names the field, and the engine pushes its own value back. Deleting a Payment in Zoho changes nothing here or in QuickBooks; the engine writes nothing and raises a human-review flag, because the record is money that changed hands. See [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
 
-## The pay page
+## A payment recorded straight into QuickBooks
 
-The pay link in the invoice email opens the invoice with its lines, total and PDF. Paying there records the payment in QuickBooks, and QuickBooks tells us as above.
+The engine has no way to learn about a payment the office records in QuickBooks by hand. Nothing follows from it here or in Zoho, and the nightly invoice check opens a condition when the balances disagree.
 
 ## Related
 
-- [Record a payment in QuickBooks](/handbook/payments/record-a-payment-in-quickbooks)
+- [Take a payment](/handbook/payments/take-a-payment)
 - [How invoicing works](/handbook/invoicing/how-invoicing-works)
-- [The pay page](/systems/pay-page)
+- [QuickBooks](/systems/quickbooks)

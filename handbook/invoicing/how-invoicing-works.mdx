@@ -5,55 +5,59 @@ kind: explanation
 ---
 
 import { Touches } from "/snippets/touches.mdx";
-import { Linear } from "/snippets/linear.mdx";
 
-<Touches systems="supabase-backend, quickbooks, zoho-crm, resend, pay-page" />
+<Touches systems="supabase-backend, quickbooks, zoho-crm, resend" />
 
-The moment a billable job's appointment is completed, the engine builds the invoice from the lines billed to the customer, sends it to QuickBooks, files the PDF, makes the Zoho copy, and emails the customer. Nobody builds an invoice by hand.
+The moment a job is marked complete, the engine builds the invoice from the lines billed to the customer, sends it to QuickBooks, files the PDF, makes the Zoho copy, and emails the customer. Nobody builds an invoice by hand.
 
 ## What happens, in order
 
-| Step | Seen on 3 September 2026 |
+| Step | What the engine does |
 |---|---|
-| Invoice built here from the billable lines, HST added | within 1 s of completion |
-| QuickBooks invoice made, PDF fetched and filed | 2 s later |
-| Zoho invoice made, linked to the contact, account, work order and addresses | 3 s later |
-| Email "Invoice INV… from Comfort Hub" with the PDF and the pay link | 7 s after the invoice |
-| Work order marked Invoiced | with the invoice |
+| Build | The invoice is built from the work order's lines. Billable lines are priced; warranty and plan lines are on it at no charge. |
+| QuickBooks | The invoice is created in QuickBooks, which adds the tax and sets the due date. |
+| PDF | The invoice PDF is drawn and filed. |
+| Zoho | The Zoho invoice is made, linked to the contact, the account, the work order and both addresses, with the PDF attached. |
+| Work order | The work order's billing status becomes Invoiced. |
+| Email | "Invoice INV… from Comfort Hub" goes to the customer with the PDF, any certificate the job earned, and the pay link. The invoice is then marked sent. |
 
-A $5.00 line invoiced at $5.65: Ontario HST is always applied. A job with only warranty lines is marked Non-Billable and never invoiced.
+A job whose lines are all warranty or all covered by a plan is marked Non-Billable and never invoiced. A discount that would take the total to zero or below stops the invoice too, and leaves a human-review flag.
 
-Seen again 4 September 2026 in the evening on probe job WO-1209, a maintenance visit with a finished checklist: the invoice was built 0.9 seconds after completion, the certificate 3 seconds after, QuickBooks had the invoice at 8 seconds, Zoho at 11 seconds, and the email left at 15 seconds with the invoice PDF and the certificate attached.
+Every figure on the invoice PDF is rounded before the page is drawn, so the document never shows a half cent.
 
-## The work order's discount and processing fee
+## Three fields the office controls
 
-A **Discount** and **Enable Processing Fee** set on the Zoho work order before the job is completed are carried onto the invoice, so the invoice matches the total the office quoted. Seen 4 September 2026 on WO-1209: a $10.00 line with a $2.00 discount and the fee switch on became invoice INV008350 for $9.04 ($8.00 after the discount, plus $1.04 HST). The Zoho invoice read Discount $2 and Enable Processing Fee Yes, and the QuickBooks invoice carried a $2.00 discount line. The discount typed in Zoho was on our copy of the work order 2.5 seconds later. Before that day neither field reached the invoice (<Linear issue="COM-185" />).
+| Field in Zoho | Who sets it | What the engine does with it |
+|---|---|---|
+| **Discount** | The office, on the work order before the job is completed, or on the invoice after | Copies it onto the invoice and sends it to QuickBooks as a discount line, taken off before tax, so the tax is right and all three totals agree |
+| **Enable Processing Fee** | The office, on the work order or the invoice | Mirrors the Yes or No onto the invoice, in both directions |
+| **Due Date** | QuickBooks, when the invoice is created | Copies QuickBooks' date to the invoice and to Zoho. Zoho only shows it |
 
-## Edits
+The amount itself is never typed. Zoho computes it from the lines, and the engine reads it. See [Fix an invoice](/handbook/invoicing/fix-an-invoice).
 
-A discount or due date changed on the Zoho invoice reaches our side and QuickBooks within seconds. A discount changed on our side reaches both too. The amount itself is Zoho's: it is computed from the lines and never typed.
+## Statuses
 
-Seen 4 September 2026 on the probe invoice: a due date changed here was in Zoho 5 seconds later; the processing-fee switch flipped in Zoho was here 28 seconds later, all but a second of it Zoho holding the notice.
+An invoice has two statuses, each with one home.
 
-**Status** means the same thing on both sides since 4 September 2026: Zoho's Created, Delivered and Void are our Draft, Sent and Void. A status typed in Zoho sticks. Seen that evening on INV008350: Created typed in Zoho read Draft here 3 seconds later, and Delivered read Sent 3 seconds later. Earlier that day, Delivered had bounced back to Sent within half a minute, because the two lists disagreed (<Linear issue="COM-195" />). Void still goes through [Void an invoice](/handbook/invoicing/void-an-invoice).
+- **Status** is Zoho's and describes the document: Created, Delivered or Void in Zoho read as Draft, Sent or Void here. Setting it in Zoho sticks.
+- **Payment Status** is the engine's and describes the money: New, In Progress, Due, Partial, Paid, Overdue or Void. Zoho shows it; nothing typed there changes it.
 
-## Issued and paid times
+The values are listed on [Statuses](/reference/statuses).
 
-Both times are kept as instants on one clock. Until 4 September 2026 the issued time was UTC and the paid time was Toronto wall-clock in the same row, so INV008348 read paid at 09:33 and issued at 13:29, four hours before it was issued. After the fix the same row reads issued 13:29:17 UTC and paid 13:33:08 UTC, 3 minutes 51 seconds apart, and INV008350's payment recorded in QuickBooks at 23:56:13 UTC reads exactly that here, 9 minutes 23 seconds after the invoice was issued (<Linear issue="COM-199" />). The app shows both in the device's time zone.
+## Reminders
 
-## Delete
+A sent invoice that is still unpaid gets a reminder email seven days after its due date, and an overdue notice from twenty-one days. A void, paid or never-sent invoice gets neither. The wording is on [Emails we send](/reference/emails-we-send).
 
-Deleting an invoice in Zoho changes nothing here or in QuickBooks. A human-review flag is raised within seconds, the invoice keeps its number, amount and payments on our side, and Zoho no longer has it or its PDFs. Zoho also unlinks the invoice's Payments, silently. See [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
+## Delete and void
 
-## Void
+Deleting an invoice in Zoho changes nothing here or in QuickBooks. The engine writes nothing and raises a human-review flag, because the invoice records money. See [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
 
-Setting the Zoho invoice to Void voids it in QuickBooks within seconds and files a VOID PDF. See [Void an invoice](/handbook/invoicing/void-an-invoice).
+Setting the Zoho invoice to Void voids it in QuickBooks and files a VOID copy of the PDF. See [Void an invoice](/handbook/invoicing/void-an-invoice).
 
 ## Two things to know
 
-- The unpaid PDF is not attached to the Zoho invoice; the paid one is, once the customer pays.
-- A maintenance or commissioning job also produces a certificate, and the invoice email carries it; see [Certificates](/handbook/invoicing/certificates).
-- The Zoho invoice names its **Account Name** and its **Work Order**. Seen 4 September 2026 on INV008350: both were filled the moment the Zoho invoice was made (<Linear issue="COM-171" />).
+- Both the issued time and the paid time are kept on one clock, and the app shows them in the phone's time zone.
+- A completed visit with a finished maintenance or commissioning checklist also produces a certificate, and the invoice email carries it. See [Certificates](/handbook/invoicing/certificates).
 
 ## Related
 

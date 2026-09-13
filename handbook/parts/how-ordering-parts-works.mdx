@@ -1,10 +1,40 @@
 ---
 title: "How ordering parts works"
-description: "Stock lists, stocking orders and counter purchase orders, and how they differ"
+description: "Stock lists become stocking orders emailed to the supplier; counter pickups become purchase orders synced to Zoho"
 kind: explanation
-tag: "TODO"
 ---
 
-import { NotWrittenYet } from "/snippets/not-written-yet.mdx";
+import { Touches } from "/snippets/touches.mdx";
 
-<NotWrittenYet issue="COM-79" />
+<Touches systems="the-7am-app, supabase-backend, resend, zoho-crm" />
+
+Parts reach a truck two ways, and the app keeps them apart: a stocking order is placed from a stock list and emailed to the supplier, and a purchase order is the paperwork from a pickup at the supplier's counter.
+
+## Stock lists and stocking orders
+
+A stock list is a technician's own list of what the truck is short of, with a quantity per material. You can share a list with a colleague, who can then see it and change it. A line can be crossed off, which keeps it on the list but leaves it out of any order.
+
+Sending a list makes one stocking order per supplier, one supplier at a time. The app takes a purchase order number from the engine, draws the order PDF, files it, and saves the order. The engine then emails the PDF to the supplier's address, from the orders mailbox, with the technician who saved it as the reply-to. The order is stamped sent only when that email really left. See [Order stock from a supplier](/handbook/parts/order-stock).
+
+## Counter purchase orders
+
+A purchase order is raised on a work order when a technician picks parts up at the counter. The app hands out the number the moment the sheet opens, so it can be written on the supplier's paperwork before anything is saved. The saved order carries the supplier, the branch, the work order and a scan of the paperwork. The engine mirrors it into Zoho as a supplier order within a minute, and deleting it in the app deletes the Zoho copy the same way.
+
+A part taken back to the counter is recorded on the same purchase order: swipe the order, tap **Return**, enter the return date, and attach the credit note. Nothing else moves.
+
+## Why it works this way
+
+- One counter hands out every number, so a stocking order and a counter purchase order never share one. See [How purchase order numbers work](/handbook/parts/how-purchase-order-numbers-work).
+- The stocking order goes out by email because that is what the supplier reads; it has no Zoho copy.
+- A crossed-off line stays on the list so the record of it is not lost; the order simply skips it.
+
+## What can go wrong
+
+- The supplier never got the order: its address is missing or is outside the email allowlist. See [Order stock from a supplier](/handbook/parts/order-stock).
+- A number was handed out and never used. That leaves a gap in the series, and a gap is harmless. See [How purchase order numbers work](/handbook/parts/how-purchase-order-numbers-work).
+
+## Related
+
+- [Order stock from a supplier](/handbook/parts/order-stock)
+- [Delete a purchase order](/handbook/parts/delete-a-purchase-order)
+- [The 7AM app](/systems/the-7am-app)

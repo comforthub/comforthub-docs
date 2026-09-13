@@ -8,41 +8,50 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="the-7am-app, supabase-backend, zoho-crm, quickbooks" />
 
-When the work is done, the technician writes the note and taps **Complete** twice. That one action closes the appointment and the work order on both sides, stamps who and when, and starts billing.
+When the work is done, the technician checks the completion note and taps **Complete**. That one action closes every appointment on the job and the work order itself, on both sides, stamps who and when, makes the job's equipment, and starts billing.
 
 ## Before you start
 
-- Every required ring on the work order done: checklists answered, serials and photos where the job asks for them.
-- The completion note written.
+- Every required action on the work order done: checklists answered, and a serial and a photo for each piece of equipment on the job. Until they are, **Complete** stays greyed out.
+- The completion note written. The box starts filled in; see below.
 
 ## Steps
 
 <Steps>
+  <Step title="Check the note">
+    Read the completion note and the recommendations, and change what does not fit the visit.
+  </Step>
   <Step title="Tap Complete">
-    On the work order, tap **Complete**. The app shows what is still open, if anything.
+    Tap **Complete**. The app asks **Complete this work order?**
   </Step>
   <Step title="Confirm">
-    Tap **Complete** again. The appointment is marked complete with the time, and the work order is marked complete with your name and your note.
+    Tap **Complete** again. The appointment and the work order are marked complete with the time, and the work order with your name and your note.
   </Step>
 </Steps>
 
+## The completion note starts from a template
+
+The note does not start empty. For a service, maintenance or installation job the app fills the box from a fixed template for that type of job, and the recommendations box from a second template. You edit them; the templates are the starting point, not the answer. Both live in the database, so the office can reword them without an app release. The other types of job open with an empty box on purpose. A note containing a blocked word cannot be saved; that list lives in the database too.
+
+## Equipment is made when an install completes
+
+When a work order is completed, each line whose product converts to an asset becomes a piece of equipment on the customer, at their service address, whether the job was booked from the dispatch widget or typed into the CRM. The piece is also added to the work order's own equipment list in Zoho. A job that already has equipment gets none added, so a widget-booked installation, which made its equipment at booking time, is left alone. The model, brand and type come from the product; the serial and the photos are what you record on site.
+
 ## How you know it worked
 
-- In Zoho, the appointment and the work order show Completed, with Completed By and Completed At.
-- Completed At on the work order is the moment the last checklist was finished, not the moment of the tap, so it matches what the customer saw.
-- Seen 3 September 2026: one second after completing probe job WO461, Zoho showed both records Completed with the person and the time, and the invoice step began in the same second.
-- Seen again 4 September 2026 on a probe job completed straight on our side, the way the app's tap lands: the appointment was Completed in Zoho 2 seconds later with the tap time; the work order was Completed in Zoho with Jeremy as **Completed By**, the note, and **Completed At** equal to the checklist's finish time (13:20, not the 13:29 tap); its **Billing Status** read Invoiced 11 seconds after the tap and the invoice email left at 15 seconds. The proof of the tap itself in the app is a separate test.
+- In Zoho, the appointment and the work order show **Completed**, with **Completed By** and **Completed At**. **Completed At** is the moment of the tap.
+- Once billing has run, the work order's **Billing Status** reads **Invoiced**, unless the job has nothing billed to the customer.
 
 ## What happens next
 
-Billing runs on its own: see [How invoicing works](/handbook/invoicing/how-invoicing-works). A job with only warranty or plan lines is marked Non-Billable and stops there.
+Billing runs on its own: see [How invoicing works](/handbook/invoicing/how-invoicing-works). A job with only warranty or plan lines is marked **Non-Billable** and stops there. A maintenance or commissioning job with a finished checklist also gets a certificate; see [Certificates](/handbook/invoicing/certificates).
 
 ## If the job was completed in Zoho instead
 
-The status arrives here and the time is stamped, but that stamp does not go back to Zoho today (tracked as COM-176). Complete from the app when you can.
+The status reaches our side, the completion time is stamped here and sent back to Zoho's **Completed At**, and billing runs the same way. The equipment is made too. The completion note and **Completed By** stay empty, so complete from the app when you can.
 
 ## Related
 
 - [A visit in the app](/handbook/on-site/a-visit-in-the-app)
-- [Add parts and labour](/handbook/on-site/add-parts-and-labour)
+- [Answer a checklist](/handbook/on-site/answer-a-checklist)
 - [How invoicing works](/handbook/invoicing/how-invoicing-works)

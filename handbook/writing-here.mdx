@@ -23,7 +23,7 @@ kind: how-to
     A timing, a threshold, a name, a trigger: find the code, the config row, or the vendor setting that makes it true before you write it. Put the proof in the commit message, not on the page.
   </Step>
   <Step title="Write it like you would say it">
-    Short sentences. "You", not "the user". Say *customer* and *work order*, never the code names. If you must show a code name, it goes on the [Names](/reference/names) page, nowhere else. Say what is true today. No dates, no "not yet", no ticket ids, no notes about how it was tested.
+    Short sentences. "You", not "the user". Say *customer* and *work order*, never the code names. If you must show a code name, it goes on the [Names](/reference/names) page, nowhere else. Say what is true today. No dates, no promises about later, no ticket ids, no notes about how it was tested.
   </Step>
   <Step title="End with Related">
     Every page ends with a `## Related` list of at least one link: the explanation page for its chapter, the system pages it touches, or the reference tables it leans on.
@@ -35,7 +35,7 @@ kind: how-to
     ```bash
     bash scripts/check.sh
     ```
-    It reads every page. It fails on a missing title or kind, a page not in the menu, a broken link, a code name outside the Names page, a robotic phrase, a Title Case Heading, a date or ticket id or "unverified" note, or anything that looks like a secret.
+    It reads every page. It fails on a missing title or kind, a page not in the menu, a broken link, a code name outside the Names page, a robotic phrase, a Title Case Heading, a date, a ticket id or a test note, or anything that looks like a secret.
   </Step>
 </Steps>
 
@@ -45,7 +45,7 @@ kind: how-to
 
 ## When a page changes
 
-When the system changes, the page changes in the same pull request or the same sitting. A page that describes what the system used to do is worse than no page.
+When the system changes, the page changes in the same change or the same sitting. A page that describes what the system used to do is worse than no page.
 
 ## Related
 

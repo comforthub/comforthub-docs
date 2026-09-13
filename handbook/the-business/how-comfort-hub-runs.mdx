@@ -6,13 +6,13 @@ kind: explanation
 
 import { Touches } from "/snippets/touches.mdx";
 
-<Touches systems="zoho-crm, supabase-backend, the-7am-app, quickbooks, pay-page, resend" />
+<Touches systems="zoho-crm, supabase-backend, the-7am-app, quickbooks, resend" />
 
-Comfort Hub sells, installs, services and maintains heating and cooling equipment for homeowners. Every piece of equipment a customer buys becomes an **asset** on their account, and that asset is what brings them back. It needs fixing, it needs looking after, and it is covered by a warranty or by a plan.
+Comfort Hub sells, installs, services and maintains heating and cooling equipment for homeowners. Every piece of equipment a customer buys becomes an **asset** on their account, and that asset is what brings them back: it needs fixing, it needs looking after, and it is covered by a warranty or by a plan.
 
 ## Every visit has the same shape
 
-A **work order** says what the job is. A **service appointment** puts a technician at the property on a day. The technician does the work in the app and taps Complete. An **invoice** bills the customer. A **payment** settles it. The only things that change from visit to visit are *why* the customer is being visited and *whether* they are billed for it.
+A **work order** says what the job is. An **appointment** puts a technician at the property on a day. The technician does the work in the app and taps **Complete**. An **invoice** bills the customer. A **payment** settles it. The only things that change from visit to visit are *why* the customer is visited and *whether* they are billed for it.
 
 ```mermaid
 flowchart LR
@@ -24,7 +24,7 @@ flowchart LR
   M -->|receipt| C
 ```
 
-## Four kinds of visit
+## Five kinds of visit
 
 | Visit | Why | Billed? |
 |---|---|---|
@@ -32,15 +32,15 @@ flowchart LR
 | Service | Something broke | Yes |
 | Maintenance | Yearly upkeep; produces a certificate | Yes |
 | Warranty | Covered repair | No |
-| Subscription | Plan visit, paid monthly through Stripe | No, logged on the plan instead |
+| Plan visit | A visit the customer's subscription covers | No, logged on the subscription instead |
 
-The work order's line items decide this. Every line is billable, warranty, or subscription. The job is only invoiced for what is billable, and a job with nothing billable never makes an invoice.
+The work order's lines decide this. Every line is billed to the customer, to warranty, or to the subscription. The job is invoiced only for what is billed to the customer, and a job with nothing billed to the customer never makes an invoice. See [How booking works](/handbook/booking/how-booking-works) for the rule.
 
 ## Who does what
 
 - **The office works in Zoho.** Leads, customers, booking, checklists, timesheet approvals, and anything that needs a record edited by hand.
-- **Supabase is the engine.** It mirrors Zoho both ways, makes the billing decision, builds invoices, talks to QuickBooks, sends the emails, and runs the phone. Nothing here is edited by hand day to day.
-- **Technicians work in the 7AM app.** Their day, the work order, checklists, parts, quotes, hours, time off, the phone and texts.
+- **The engine (Supabase) runs in the background.** It mirrors Zoho both ways, makes the billing decision, builds invoices, talks to QuickBooks, sends the emails, and runs the phone. Nobody edits it by hand day to day.
+- **Technicians work in the app.** Their day, the work order, checklists, parts, quotes, hours, time off, the phone and texts.
 - **QuickBooks holds the money.** Customers, items, invoices, payments. It is the one that tells us a payment happened.
 - **The customer sees email and the pay page.** A booking confirmation, an invoice with a link to pay, and a receipt.
 
@@ -54,7 +54,7 @@ The rest of the handbook walks this loop in order. Each chapter opens with a pag
   <Card title="On site" href="/handbook/on-site/a-visit-in-the-app">What the technician does in the app.</Card>
   <Card title="Invoicing" href="/handbook/invoicing/how-invoicing-works">How Complete becomes an invoice.</Card>
   <Card title="Payments" href="/handbook/payments/how-payments-work">The pay page, QuickBooks, the receipt.</Card>
-  <Card title="Keeping it running" href="/handbook/running/how-sync-works">Sync, alerts, and what to do when one arrives.</Card>
+  <Card title="Keeping it running" href="/handbook/running/how-sync-works">Sync, the monitor, and what to do when a check fails.</Card>
 </Columns>
 
 ## Related

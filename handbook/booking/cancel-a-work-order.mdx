@@ -8,7 +8,7 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="zoho-crm, supabase-backend, quickbooks, the-7am-app" />
 
-Cancel the work order in Zoho and the engine cleans up behind it: appointments are cancelled here and in Zoho, checklists that were never started are removed, and an invoice that was already made is voided.
+Cancel the work order in Zoho and the engine cleans up behind it: open appointments are cancelled here and in Zoho, checklists that were never completed are removed, and an invoice that was already made is voided. Completed work is never touched.
 
 ## Before you start
 
@@ -24,9 +24,10 @@ Cancel the work order in Zoho and the engine cleans up behind it: appointments a
 
 ## How you know it worked
 
-- Tested 3 September 2026 on WO459: the work order was cancelled on our side in 2 seconds, its appointment was cancelled here and written back to Zoho as Cancelled, and its pending checklist was gone.
-- The technician's phone gets a cancelled push.
-- If the job was already invoiced, the invoice is voided; see [Void an invoice](/handbook/invoicing/void-an-invoice).
+- Every appointment on the job that was not already completed shows **Cancelled** in Zoho. A completed appointment stays completed.
+- The checklists on those appointments are gone, unless they were completed.
+- Each technician on a cancelled appointment gets an **Appointment Cancelled** push.
+- If the job was already invoiced, the invoice is voided, unless a payment was received or is in flight; then the void is refused and the invoice stays. See [Void an invoice](/handbook/invoicing/void-an-invoice).
 
 ## Related
 

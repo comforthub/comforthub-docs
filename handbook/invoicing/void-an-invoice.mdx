@@ -12,7 +12,7 @@ An invoice is voided from Zoho. The engine voids it in QuickBooks and files a VO
 
 ## Before you start
 
-- The invoice open in Zoho, unpaid. A paid invoice is not voided this way.
+- The invoice open in Zoho, unpaid. The engine refuses to void an invoice that has received any money, part or whole; that is a business decision, and the refusal is left for a person to act on.
 
 ## Steps
 
@@ -24,15 +24,16 @@ An invoice is voided from Zoho. The engine voids it in QuickBooks and files a VO
 
 ## How you know it worked
 
-- Tested 3 September 2026 on INV008344: our side was Void in 2 seconds, QuickBooks voided the invoice 1 second later, and the VOID PDF was stored 6 seconds after that.
-- The pay page for that invoice shows it as void and offers no pay button.
+- Within a minute the invoice reads Void here, the QuickBooks invoice is voided, and a PDF named **VOID-INV….pdf** is filed and attached to the Zoho invoice.
+- The pay page for that invoice offers no way to pay.
 
 ## Good to know
 
-- Cancelling an invoiced work order voids its invoice the same way. Seen 3 September 2026 on WO461: cancelled in Zoho, invoice void here in 4 seconds, in QuickBooks and Zoho in 8.
-- The work order keeps saying Invoiced after a void. Known.
+- Cancelling an invoiced work order voids its invoice the same way: the engine sets the Zoho invoice to Void, and the rest follows.
+- The work order's billing status stays Invoiced after a void. Nothing changes it.
 
 ## Related
 
 - [How invoicing works](/handbook/invoicing/how-invoicing-works)
 - [Cancel a work order](/handbook/booking/cancel-a-work-order)
+- [Act on a Sentry email](/handbook/running/act-on-a-sentry-email)

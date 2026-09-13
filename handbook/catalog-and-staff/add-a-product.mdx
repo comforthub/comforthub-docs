@@ -19,7 +19,7 @@ A product is anything that can be a line on a work order: a service call, a part
 
 <Steps>
   <Step title="Create the product">
-    In **Products**, click **Create**. Fill in **Product Name**, **Unit Price** and **Product Type** (Services or Goods). Pick a **Usage Unit**. Leave **Product Active** ticked.
+    In **Products**, click **Create**. Fill in **Product Name**, **Unit Price** and **Product Type**. Pick a **Usage Unit**. Tick **Converts to Asset** if buying one puts a piece of equipment at the customer's property. Leave **Product Active** ticked.
   </Step>
   <Step title="Save">
     Click **Save**. The **SKU** is given by Zoho.
@@ -28,18 +28,17 @@ A product is anything that can be a line on a work order: a service call, a part
 
 ## How you know it worked
 
-- Within a few seconds the product shows a **QBO Id**. That number is the QuickBooks item.
-- Tested 3 September 2026: our catalog had the product in 3 seconds and QuickBooks had the item 2 seconds later, as a service with the price and the sales income account.
+- Within a minute the product shows a **QBO Id**. That number is the QuickBooks item.
+- In QuickBooks the item has the name, the price and the sales income account. A product typed as **Services** is a service item; anything else is a non-inventory item.
 
 ## Changing or removing one
 
-- Change the price in Zoho. QuickBooks follows in about 3 seconds.
-- Delete the product in Zoho. Our side keeps it, switched off, and the QuickBooks item goes inactive with "(deleted)" added to its name by QuickBooks. Old invoices keep their lines.
+- Change the price in Zoho. QuickBooks follows.
+- Delete the product in Zoho. Our side keeps it, switched off, and the QuickBooks item goes inactive. Old invoices keep their lines.
 
 ## If it did not work
 
-- **No QBO Id after a minute.** Give it two more. Zoho can be slow to tell the engine a product exists: on 4 September 2026 it waited two minutes before sending word of a new product, and the catalog and QuickBooks item followed within three seconds of that. A price change the same day took 24 seconds to reach the engine and QuickBooks one second later.
-- **Still nothing after five minutes.** The engine could not reach QuickBooks. See [When an alert email arrives](/handbook/running/when-an-alert-email-arrives).
+- **No QBO Id after a few minutes.** The engine could not reach QuickBooks and the job is parked. See [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync).
 
 ## Related
 

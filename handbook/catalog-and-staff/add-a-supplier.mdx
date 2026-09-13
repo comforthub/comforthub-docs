@@ -19,7 +19,7 @@ A supplier is where we buy parts. Its branches are the counters a technician dri
 
 <Steps>
   <Step title="Create the vendor">
-    In **Vendors**, click **Create**. Fill in **Vendor Name** and, if you have it, **Email** and **Website**.
+    In **Vendors**, click **Create**. Fill in **Vendor Name**.
   </Step>
   <Step title="Add the branches">
     In **Vendor Branches**, add one row per counter: **Branch Name**, **Branch Address**, **Branch Phone**, **Branch Email**. Save.
@@ -28,15 +28,16 @@ A supplier is where we buy parts. Its branches are the counters a technician dri
 
 ## How you know it worked
 
-- Tested 3 September 2026: the supplier was on our side in 2 seconds, both branches with it, and each branch had its Street View picture within a few seconds more.
-- The app's Suppliers screen lists it with both branches.
+- The supplier is on our side within seconds, with its branches, and each branch gets a Street View picture of its address within a minute.
+- The app lists the supplier with its branches.
 
 ## Good to know
 
+- Only the supplier's name and its active flag cross to our side; the branches cross with it, from Zoho to us only.
 - A branch you remove from the list in Zoho is removed here, unless a purchase order names it; then it stays.
-- Branch coordinates are set by hand by a developer, not from the address.
+- A branch's map position (**Branch Latitude** and **Branch Longitude**) is typed by hand in Zoho, not worked out from the address.
 
 ## Related
 
 - [What lives where](/handbook/catalog-and-staff/what-lives-where)
-- [Raise a purchase order](/handbook/parts/raise-a-purchase-order)
+- [Order stock from a supplier](/handbook/parts/order-stock)

@@ -1,44 +1,30 @@
 ---
 title: "How a Twilio error reaches the owner"
-description: "Twilio's error log is wired to the engine; an error is stored and pages every super admin"
+description: "Twilio posts its error log to the engine; an error is stored and pushed to every super admin"
 kind: explanation
 ---
 
 import { Touches } from "/snippets/touches.mdx";
-import { Linear } from "/snippets/linear.mdx";
 
 <Touches systems="twilio, supabase-backend, the-7am-app" />
 
-When something goes wrong on Twilio's side of a call or a text, Twilio writes to its own error log, and that log is forwarded to the engine. The engine keeps every event and pages the super admins for the serious ones, so a broken phone is noticed within a minute rather than when a customer complains.
+When something goes wrong on Twilio's side of a call or a text, Twilio writes to its own error log and posts each entry to the engine. The engine keeps every entry and pushes the serious ones to the super admins, so a broken phone is noticed within a minute rather than when a customer complains.
 
 ## What happens
 
-1. Twilio raises an error or a warning, for example "could not fetch the voice webhook" (code 11200) or "message blocked" (code 30044).
-2. The engine stores the event in its Twilio alerts list: level, code, product and message.
-3. If the level is error, every super admin gets a push titled "Twilio error 11200" with the message. Warnings are stored but do not page anyone.
+1. Twilio raises an error or a warning, for example "could not fetch the voice webhook" (code 11200) or "message blocked" (code 30044), and posts it to the engine.
+2. The engine checks Twilio's signature on the post, then stores the entry in its Twilio alerts list: level, code, product and message.
+3. If the level is error, every super admin gets a time-sensitive push titled **Twilio error 11200** (the code varies) with the message. Warnings are stored but page nobody.
 
-A forged or stale webhook signature is refused by the engine with "forbidden" and a warning in its log, and the call is not touched. Twilio then raises its own error for the failed webhook, which arrives through the same path as any other.
+## What does not page anyone
 
-## What was observed
-
-Tested 4 September 2026 (<Linear issue="COM-110" />):
-
-- A webhook with a wrong signature was refused with "forbidden" and logged as a signature mismatch at 3:10 pm Toronto time.
-- A replayed error event (code 11200) was stored 0.6 seconds after it was posted, and the push to the owner left 0.4 seconds later: 10 devices, all accepted by Apple.
-- The list already held 11 real events from Twilio before that day, the latest from 12 August 2026, so the forwarding from Twilio has been live.
-
-Run again at 5:46 pm Toronto time the same day, one trigger at a time:
-
-- A webhook with a wrong signature, and one with no signature at all, were both refused with "forbidden" in about 1.2 seconds and logged as a signature mismatch. Nothing was stored and nobody was paged: a forged webhook is not a Twilio error until Twilio itself reports the failed fetch.
-- A status callback saying a call had failed was accepted; the call was stored as failed 0.1 seconds later and copied to the CRM's call history like any other call. Nobody was paged: a failed call is a call outcome, not an error event.
-- A replayed error event (code 11200, level error, the message naming the failed fetch) was stored 0.1 seconds after posting; the push "Twilio error 11200" to the one super admin left 0.4 seconds later and reached 10 devices, all accepted by Apple. The probe rows were removed afterwards.
-
-Not tested: that Twilio's forwarding is still pointed at the engine today. That is set in the Twilio console and cannot be read from here; the August events are the last proof.
+- A forged or stale signature on any Twilio post is refused with "forbidden" and a warning in the engine's log. Nothing is stored and nobody is paged; Twilio then raises its own error for the failed post, and that arrives through the path above.
+- A call that fails is a call outcome, not an error. It is stored as a failed call and copied to the CRM's call history like any other call.
 
 ## If the push stops arriving
 
-- Check the Twilio alerts list on the engine for new rows. Rows without a push mean the level was a warning.
-- Check that the super admin has not turned off Twilio alerts in the app's notification settings.
+- Check the Twilio alerts list in the engine for rows since the problem began. Rows without a push mean the level was a warning.
+- Check the person is a super admin. Only that role is paged.
 
 ## Related
 
