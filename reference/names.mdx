@@ -118,6 +118,7 @@ The monitor's setting lives in the engine's config table under the key `reliabil
 | Timer outcomes | monitoring.database_jobs | (none) |
 | Timer list | monitoring.schedules | monitoring.schedule_changed |
 | Every check finished | monitoring.progress | monitoring.execution_incomplete |
+| Queue age | monitoring.queue_age | monitoring.queue_age |
 | capacity (any bounded business check) | | monitoring.scan_capacity |
 
 The condition keys are the `check` and `condition_id` tags on the Sentry issue; the weight is the `disposition` tag and the spell number is `occurrence`.

@@ -67,6 +67,7 @@ One row per timer on [Scheduled jobs](/reference/scheduled-jobs), plus the two j
 | Timer outcomes | Copies each timer's latest result out of the engine's run history into the monitor's own records, so the rows above have something to read | every minute | urgent | none of its own; a miss shows through **Every check finished** | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
 | Timer list | The live timer list compared to the contract written into the build: a contracted timer missing, changed, or switched off; a timer nobody contracted | every minute | urgent for a contracted timer that is missing or changed; for review for an extra one | "*timer* no longer has its deployed execution contract" or "*timer* is scheduled outside the deployed registry" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
 | Every check finished | A check on this page whose latest due run has no finished result by its deadline, or finished as failed or timed out | every 15 minutes | the missing check's own weight | "*the check's purpose*: scheduled completion is missing or failed" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
+| Queue age | Any queue, dead-letter boxes aside, whose oldest waiting message is more than fifteen minutes old; an empty queue is never a finding | every minute | for review | "*queue* holds a message older than fifteen minutes" | [Check the monitor is running](/handbook/running/check-the-monitor-is-running) |
 
 ## Condition words
 

@@ -35,7 +35,7 @@ A check is one question asked on a clock. There are three families.
 
 - **Business checks** look at records: a checkout payment whose outcome is uncertain, a cancelled job that is still collectible, an invoice whose totals disagree with its payments, a payroll calendar about to run out, a timesheet with no pay period, a lead that converted with no customer behind it, a human-review flag nobody has closed, a property with no imagery, a stored text or transcript holding a card number.
 - **Work checks** watch the queues: a queued action that passed its deadline or died as a dead letter, a notification or credential rotation with no established outcome.
-- **Self-checks** watch the engine's own clockwork: every timer still matches what was deployed, every scheduled database job left evidence that it ran, every check completed on time, and the nightly jobs that run on GitHub reported back.
+- **Self-checks** watch the engine's own clockwork: every timer still matches what was deployed, every scheduled database job left evidence that it ran, every check completed on time, no queue holds a message older than fifteen minutes, and the nightly jobs that run on GitHub reported back.
 
 Quick checks run every minute. The rest run every 5 or 15 minutes, once an hour, or once a night. A few housekeeping jobs also run as checks so that their completion is watched the same way. Every check, its schedule, its weight and the title it gives its issues are on [Monitor checks](/reference/monitor-checks).
 
