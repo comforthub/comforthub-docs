@@ -23,9 +23,9 @@ Supabase is the engine. It holds the database every other system reads, runs the
 The engine holds one Zoho login token, shared by every worker and refreshed when it expires. Zoho refuses a refresh when too many arrive in a row, and scripts run by hand against Zoho use the same allowance.
 
 - A blocked refresh shows as one urgent **Deliveries and logins** condition, "oauth: credential rotation is blocked", so one Sentry issue and one email.
-- A queued message gets 10 tries with a growing pause between them, so the queue rides out a short refusal spell on its own. Past the tenth try the message becomes a dead letter; see [Redrive a dead letter](/handbook/running/redrive-a-dead-letter).
+- A queued message gets 10 tries with a growing pause between them, so the queue rides out a brief refusal on its own. Past the tenth try the message becomes a dead letter; see [Redrive a dead letter](/handbook/running/redrive-a-dead-letter).
 
-Do not run more than one Zoho script in a short spell while the sync is busy.
+Two scripts refreshing the Zoho login within a few minutes of each other trip the CRM's limit, and inbound sync stalls until the refusal lifts.
 
 ## Backups
 

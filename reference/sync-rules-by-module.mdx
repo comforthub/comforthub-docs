@@ -19,7 +19,7 @@ Direction reads: **both** means a record can be made and edited on either side; 
 | stock material | both | shared; the supplier link is the engine's | deactivate here | |
 | supplier | both | shared | deactivate here | branches belong to the supplier; a supplier with none gets a **Default branch** when a purchase order arrives from the CRM |
 | purchase order | both | notes shared; the supplier is the CRM's; the number and creation time are the engine's | delete here | the engine numbers an order made in the CRM |
-| work order | both | name, status, type, billing status and notes shared; the customer, subscription, number, discount and fee are the CRM's; completion notes are the engine's | refuse and flag | line items and equipment links go with the work order; a change to one line re-sends the whole work order |
+| work order | both | name, status, type, billing status and notes shared; the customer, subscription, number, discount and fee are the CRM's; completion notes are the engine's | refuse and flag | the number and the name are two different things: the number is the CRM's own autonumber, and a work order booked here has none until the sync brings one back, while the name is minted here the moment the job is booked. Line items and equipment links go with the work order; a change to one line re-sends the whole work order |
 | appointment | both | name, date, service type, status, duration, technicians and arrival window shared; the customer, property, work order, territory, checklists, number and notify-client switch are the CRM's; no-show and completion time are the engine's | delete here | |
 | territory | both | active flag shared; name and arrival windows are the CRM's; the major service area is the engine's | deactivate here | the arrival windows are ticked in the CRM and never pushed back |
 | technician | both | shared | deactivate here | a technician made in the CRM with an email gets an app login and an invite email |
@@ -28,7 +28,7 @@ Direction reads: **both** means a record can be made and edited on either side; 
 | payment | both | the engine's | refuse and flag | a CRM edit to an engine-owned field is refused, flagged and put back |
 | subscription | both | the engine's | deactivate here | a CRM edit to an engine-owned field is refused, flagged and put back |
 | subscription payment | engine → CRM | the engine's; the subscription link is the CRM's | refuse and flag | Stripe is the only path; one typed into the CRM is refused once and flagged |
-| checklist template | CRM → engine | name shared; category and equipment type are the CRM's | delete here | nothing flows up: author templates in the CRM; a template that still has a submission here cannot be deleted |
+| checklist template | CRM → engine | the CRM's. Nothing written here ever reaches the CRM, the name included | delete here | author templates in the CRM; a template that still has a submission here cannot be deleted |
 | assigned checklist | both | name shared; type and description are the CRM's | delete here | |
 | checklist submission | both | completion time and technician shared; the template and the appointment are the CRM's | delete here | one typed into the CRM has no answers; the real path is the app |
 | timesheet | both | technician, status, approval time and rejection reason shared; the period, hours and submitted time are the engine's | delete here | a status set in the CRM is applied here and stamps the approval or rejection; a change here pushes once, however many entries it touches |
@@ -41,9 +41,8 @@ Direction reads: **both** means a record can be made and edited on either side; 
 ## How ownership works
 
 - **Shared is the default.** Both sides may write a shared field, and the last writer wins; there is no arbitration. Edit one side at a time.
-- **A transform converts between the two houses' value styles**, for example the engine's lowercase statuses and the CRM's title-case picklists. It is the only thing safe to apply on a write.
-- **A comparison-only normalizer never stands in for a transform.** It makes two spellings of one value compare equal in the sweep; on its own it would silence a finding while the wrong value is still written.
-- **The CRM returns a picklist's display value on a read, while a push must send the actual value.** The two differ on some picklists, and the transform knows which is which.
+- **A field one side owns is only ever written by that side.** An edit made on the other side is either overwritten on the next crossing or, for the modules marked *refuse and flag*, put straight back and flagged for a person.
+- **The same value is often spelled differently in the two systems**, such as a status written in lower case here and picked from a title-case list in the CRM. The sync converts between them on the way through, so a difference of spelling alone is not drift.
 
 ## Related
 

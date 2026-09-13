@@ -96,6 +96,7 @@
               "handbook/parts/how-ordering-parts-works",
               "handbook/parts/order-stock",
               "handbook/parts/delete-a-purchase-order",
+              "handbook/parts/record-a-return",
               "handbook/parts/how-purchase-order-numbers-work"
             ]
           },
@@ -235,10 +236,6 @@
     },
     {
       "source": "/handbook/parts/raise-a-purchase-order",
-      "destination": "/handbook/parts/how-ordering-parts-works"
-    },
-    {
-      "source": "/handbook/parts/record-a-return",
       "destination": "/handbook/parts/how-ordering-parts-works"
     },
     {

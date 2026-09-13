@@ -1,6 +1,6 @@
 ---
 title: "How purchase order numbers work"
-description: "One counter for stocking orders and counter purchase orders, handed out before you save"
+description: "One numbering sequence for stocking orders and counter purchase orders, handed out before you save"
 kind: explanation
 ---
 
@@ -8,7 +8,7 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="the-7am-app, supabase-backend" />
 
-Every purchase order number, on a stocking order or a counter purchase order, comes from one counter in the engine, and you get it before you save.
+Every purchase order number, on a stocking order or a counter purchase order, comes from one numbering sequence in the engine, and you get it before you save.
 
 ## The shape of it
 
@@ -29,16 +29,17 @@ flowchart LR
 ## Why it works this way
 
 - The number is ready before saving because the supplier needs it on the paper before the order is placed.
-- Stocking orders and counter purchase orders share one counter so there is one series to look up.
+- Stocking orders and counter purchase orders share one sequence so there is one series to look up.
 - Only the newest number can go back, because handing back an older one could give two orders the same number.
 
 ## What can go wrong
 
-- Gaps. A number handed out and never used leaves a gap in the series. Gaps are harmless; what matters is that no number repeats, and the counter never repeats one.
+- Gaps. A number handed out and never used leaves a gap in the series. Gaps are harmless; what matters is that no number repeats, and the sequence never repeats one.
 
 ## Related
 
 - [How ordering parts works](/handbook/parts/how-ordering-parts-works)
 - [Delete a purchase order](/handbook/parts/delete-a-purchase-order)
 - [Order stock from a supplier](/handbook/parts/order-stock)
+- [Record a return](/handbook/parts/record-a-return)
 - [The engine](/systems/supabase-backend)

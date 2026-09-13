@@ -34,7 +34,7 @@ flowchart LR
   end
   AS[The assistant]
 
-  Z <-->|two-way sync, 27 modules| S
+  Z <-->|two-way sync, every mirrored module| S
   WG -->|writes Zoho fields| Z
   APP <-->|reads views, writes tables| S
   S -->|customers, items, invoices| QB
@@ -52,11 +52,12 @@ flowchart LR
 ## Reading the map
 
 - **Zoho and Supabase mirror each other.** A change on either side crosses over within a minute. Which side wins for each field is fixed in advance; see [Who is the source of truth](/systems/who-is-the-source-of-truth).
-- **The widgets never write to Supabase.** They write a Zoho field, and the sync carries it over. That keeps one door into the engine.
+- **The widgets are the screens inside Zoho**: the Service calendar, the sales scheduler, and the actions on a new lead. They write Zoho fields and the sync carries them over, so there is one door into the engine; the only thing they ask the engine for directly is the next work order name. See [the widgets](/reference/glossary).
 - **The app talks only to Supabase.** It reads prepared views and writes a small set of tables. It never talks to Zoho or QuickBooks directly.
 - **QuickBooks is told about invoices.** A payment taken on the pay page is recorded in Supabase, and Helcim's own accounting link writes it into QuickBooks; the engine does not.
 - **Email goes out through one door**, and that door redirects every message to the owner's inbox until the allowlist is widened on purpose. See [Email safety](/handbook/running/email-safety).
 - **Sentry watches from outside.** The engine sends it every crash and every condition the monitor opens; Sentry asks the engine once a minute whether a technician can still read their work; and Sentry, not the engine, emails the owner. See [Sentry](/systems/sentry).
+- **The assistant proposes; it never sends.** It watches the owner's email, drafts a reply in his voice and pushes the draft to the app, where he approves it or does not. See [the assistant](/reference/glossary).
 
 ## The systems
 

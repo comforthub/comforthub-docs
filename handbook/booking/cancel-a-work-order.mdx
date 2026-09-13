@@ -8,7 +8,7 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="zoho-crm, supabase-backend, quickbooks, the-7am-app" />
 
-Cancel the work order in Zoho and the engine cleans up behind it: open appointments are cancelled here and in Zoho, checklists that were never completed are removed, and an invoice that was already made is voided. Completed work is never touched.
+Cancel the work order in Zoho and the engine cleans up behind it: open appointments are cancelled here and in Zoho, checklists that were never completed are removed, and an invoice that has taken no money is voided. Completed work is never touched.
 
 ## Before you start
 
@@ -27,7 +27,8 @@ Cancel the work order in Zoho and the engine cleans up behind it: open appointme
 - Every appointment on the job that was not already completed shows **Cancelled** in Zoho. A completed appointment stays completed.
 - The checklists on those appointments are gone, unless they were completed.
 - Each technician on a cancelled appointment gets an **Appointment Cancelled** push.
-- If the job was already invoiced, the invoice is voided, unless a payment was received or is in flight; then the void is refused and the invoice stays. See [Void an invoice](/handbook/invoicing/void-an-invoice).
+- If the job was already invoiced, the invoice reads Void here and in QuickBooks. An invoice that has taken any money, part or whole, is left standing instead: that is a business decision for a person. A payment still running on the pay page holds the void back until it finishes. See [Void an invoice](/handbook/invoicing/void-an-invoice).
+- The work order's billing status is not changed by the cancel. It keeps the value it had.
 
 ## Related
 

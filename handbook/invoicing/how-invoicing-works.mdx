@@ -10,28 +10,39 @@ import { Touches } from "/snippets/touches.mdx";
 
 The moment a job is marked complete, the engine builds the invoice from the lines billed to the customer, sends it to QuickBooks, files the PDF, makes the Zoho copy, and emails the customer. Nobody builds an invoice by hand.
 
+## What is billed, and to whom
+
+Every line on a work order is billed to the customer, to warranty, or to the customer's plan. A line is warranty when its **Charge To** says warranty. A line is on the plan when its product is one of the plan's covered items and the plan's status covers visits; see [Statuses](/reference/statuses). Everything else is billed to the customer at its catalog price.
+
+What the engine does with that:
+
+| The job's lines | What happens |
+|---|---|
+| at least one billed to the customer | the job is Draft, and completing it makes an invoice for those lines. Warranty and plan lines are on it at no charge |
+| none billed to the customer, every line covered by warranty or a plan | the job is Non-Billable and no invoice is ever made |
+| none billed to the customer, and a line that matches no QuickBooks item | the engine refuses to decide and raises a human-review flag, because marking the job non-billable would write off work that may be owed |
+| no lines at all | nothing is decided; the billing status stays as it is |
+
+A discount that would take the invoice to zero or below stops it too, and leaves a human-review flag.
+
 ## What happens, in order
 
 | Step | What the engine does |
 |---|---|
 | Build | The invoice is built from the work order's lines. Billable lines are priced; warranty and plan lines are on it at no charge. |
-| QuickBooks | The invoice is created in QuickBooks, which adds the tax and sets the due date. |
+| QuickBooks | The invoice is created in QuickBooks, which adds the tax and answers with the due date. |
 | PDF | The invoice PDF is drawn and filed. |
 | Zoho | The Zoho invoice is made, linked to the contact, the account, the work order and both addresses, with the PDF attached. |
 | Work order | The work order's billing status becomes Invoiced. |
 | Email | "Invoice INV… from Comfort Hub" goes to the customer with the PDF, any certificate the job earned, and the pay link. The invoice is then marked sent. |
 
-A job whose lines are all warranty or all covered by a plan is marked Non-Billable and never invoiced. A discount that would take the total to zero or below stops the invoice too, and leaves a human-review flag.
-
-Every figure on the invoice PDF is rounded before the page is drawn, so the document never shows a half cent.
-
-## Three fields the office controls
+## Three fields and who sets them
 
 | Field in Zoho | Who sets it | What the engine does with it |
 |---|---|---|
 | **Discount** | The office, on the work order before the job is completed, or on the invoice after | Copies it onto the invoice and sends it to QuickBooks as a discount line, taken off before tax, so the tax is right and all three totals agree |
 | **Enable Processing Fee** | The office, on the work order or the invoice | Mirrors the Yes or No onto the invoice, in both directions |
-| **Due Date** | QuickBooks, when the invoice is created | Copies QuickBooks' date to the invoice and to Zoho. Zoho only shows it |
+| **Due Date** | QuickBooks | The engine asks for thirty days out when it makes the invoice, then keeps the date QuickBooks answers with and copies it to Zoho. Zoho only shows it |
 
 The amount itself is never typed. Zoho computes it from the lines, and the engine reads it. See [Fix an invoice](/handbook/invoicing/fix-an-invoice).
 
@@ -40,9 +51,9 @@ The amount itself is never typed. Zoho computes it from the lines, and the engin
 An invoice has two statuses, each with one home.
 
 - **Status** is Zoho's and describes the document: Created, Delivered or Void in Zoho read as Draft, Sent or Void here. Setting it in Zoho sticks.
-- **Payment Status** is the engine's and describes the money: New, In Progress, Due, Partial, Paid, Overdue or Void. Zoho shows it; nothing typed there changes it.
+- **Payment Status** is the engine's and describes the money. Zoho shows it; nothing typed there changes it.
 
-The values are listed on [Statuses](/reference/statuses).
+Both lists are on [Statuses](/reference/statuses).
 
 ## Reminders
 
@@ -54,10 +65,9 @@ Deleting an invoice in Zoho changes nothing here or in QuickBooks. The engine wr
 
 Setting the Zoho invoice to Void voids it in QuickBooks and files a VOID copy of the PDF. See [Void an invoice](/handbook/invoicing/void-an-invoice).
 
-## Two things to know
+## Certificates
 
-- Both the issued time and the paid time are kept on one clock, and the app shows them in the phone's time zone.
-- A completed visit with a finished maintenance or commissioning checklist also produces a certificate, and the invoice email carries it. See [Certificates](/handbook/invoicing/certificates).
+A completed visit with a finished maintenance or commissioning checklist also produces a certificate, and the invoice email carries it. See [Certificates](/handbook/invoicing/certificates).
 
 ## Related
 

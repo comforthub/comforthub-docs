@@ -31,11 +31,13 @@ When the work is done, the technician checks the completion note and taps **Comp
 
 ## The completion note starts from a template
 
-The note does not start empty. For a service, maintenance or installation job the app fills the box from a fixed template for that type of job, and the recommendations box from a second template. You edit them; the templates are the starting point, not the answer. Both live in the database, so the office can reword them without an app release. The other types of job open with an empty box on purpose. A note containing a blocked word cannot be saved; that list lives in the database too.
+Opening the note fills the box for you. For a service, maintenance or installation job the app writes in the template for that type of job, and the recommendations box from a second template; you then change what does not fit. Every other type of job opens with an empty box on purpose. A note holding a blocked word cannot be saved.
 
-## Equipment is made when an install completes
+The templates and the blocked words are rows in the engine, not in the app: a developer changes a template row, and the next note started in the app uses the new wording. No app release is needed.
 
-When a work order is completed, each line whose product converts to an asset becomes a piece of equipment on the customer, at their service address, whether the job was booked from the dispatch widget or typed into the CRM. The piece is also added to the work order's own equipment list in Zoho. A job that already has equipment gets none added, so a widget-booked installation, which made its equipment at booking time, is left alone. The model, brand and type come from the product; the serial and the photos are what you record on site.
+## Tapping Complete makes the job's equipment
+
+Each line whose product converts to an asset becomes a piece of equipment on the customer, at their service address, whether the job was booked from the **Service calendar** widget in Zoho or typed straight into Zoho. The piece is added to the work order's equipment list in Zoho too. A job that already has equipment gets none added, so a widget-booked installation, which made its equipment at booking time, is left alone. The model, brand and type come from the product; the serial and the photos are what you record on site.
 
 ## How you know it worked
 
@@ -44,7 +46,7 @@ When a work order is completed, each line whose product converts to an asset bec
 
 ## What happens next
 
-Billing runs on its own: see [How invoicing works](/handbook/invoicing/how-invoicing-works). A job with only warranty or plan lines is marked **Non-Billable** and stops there. A maintenance or commissioning job with a finished checklist also gets a certificate; see [Certificates](/handbook/invoicing/certificates).
+Billing runs on its own: the engine builds the invoice from the lines billed to the customer, or marks a job with only warranty and plan lines **Non-Billable** and stops there. See [How invoicing works](/handbook/invoicing/how-invoicing-works). A completed visit produces a certificate when the checklists answered on it all share the Maintenance or Commissioning category; a Service job never produces one. See [Certificates](/handbook/invoicing/certificates).
 
 ## If the job was completed in Zoho instead
 

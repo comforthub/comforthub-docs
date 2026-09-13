@@ -1,52 +1,33 @@
 ---
-title: "Reach an agent by extension or personal line"
-description: "How a caller rings one person instead of a queue, and where the call goes if nobody answers"
-kind: how-to
+title: "How extensions and personal lines work"
+description: "The two ways a caller rings one person instead of a queue, and where the call goes if nobody answers"
+kind: explanation
 ---
 
 import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="twilio, supabase-backend, the-7am-app" />
 
-A caller can ring one agent two ways: press star on the main menu and dial an extension, or call the agent's own number. Either way the agent's app rings for 25 seconds, and an unanswered call becomes a voicemail.
+A caller reaches one agent two ways: by pressing star on the main menu and dialling an extension, or by calling that agent's own number. Either way one app rings, for 25 seconds, and an unanswered call becomes a voicemail.
 
-## Before you start
+## Dialling an extension
 
-- The agent has an extension on their app user record. An admin sets it; nobody can set their own. Two people with the same extension ring nobody.
-- The agent is an active phone agent and signed in to the app.
-- For a personal line: a second number on the Twilio account, with that agent as its owner in the engine.
+Star is the one key no department can own. Press it during the greeting and the line says **Please enter the extension, followed by the pound key**. The caller types the extension and pound, and the agent's app rings.
 
-## Steps
+The extension has to name exactly one person who is an active phone agent. Two people sharing an extension resolve to nobody rather than to a guess, and so does an extension nobody holds or that belongs to an agent who is switched off. All three sound the same to the caller: **Sorry, that extension is not in service**, and back to the menu. That counts as one of the menu's three tries, and after the third the line says goodbye and hangs up.
 
-<Steps>
-  <Step title="Dial an extension from the menu">
-    The caller presses star during the greeting, hears **Please enter the extension, followed by the pound key**, and types the extension (up to six digits) and pound. The agent's app rings. An unknown extension hears **Sorry, that extension is not in service** and lands back on the menu; that counts as one of the menu's three tries, and after the third the line says goodbye and hangs up.
-  </Step>
-  <Step title="Call a personal line">
-    A number that has an owner rings only that owner, even when the closed switch is on. The menu does not play and the queues are not offered.
-  </Step>
-  <Step title="Nobody answers">
-    After 25 seconds the caller hears the voicemail prompt. A message left on a personal line is filed under that line, not the main one.
-  </Step>
-</Steps>
+## Calling a personal line
 
-## How you know it worked
+A second number on the Twilio account can have an agent as its owner. A call to it rings only that owner, before any other check, so it rings even while the closed switch is on. The menu does not play and the queues are not offered. A message left there is filed under that line, not the main one.
 
-- The agent's app rings within a few seconds of the extension or the number being dialled, and only that agent's app.
-- The call is in the CRM's call history within a minute, naming the agent who answered.
-- A missed call on a personal line shows up as a voicemail under that line, with a **Missed call** push only when no message was left.
+A call to a personal line is not recorded, and the caller is not told it might be.
 
-## If it did not work
+## Where an extension comes from
 
-- The caller hears **not in service**: the extension is missing, is on two people, or the person is not an active phone agent. Fix the extension on the app user record or the phone agent record.
-- The app did not ring: the agent is signed out. Sign in and try again.
-
-## Good to know
-
-- A call to a personal line is not recorded, and the caller is not told it might be.
+An extension lives on the agent's app user record. Nobody sets their own, and no screen in the app or in Zoho sets anybody else's: a developer writes it in the engine. The agent sees their own under **Profile** in the app, and the office reaches them on it once it is there.
 
 ## Related
 
 - [How the phone works](/handbook/phone/how-the-phone-works)
+- [Roles and what they can do](/handbook/app/roles-and-what-they-can-do)
 - [Twilio](/systems/twilio)
-- [The 7am app](/systems/the-7am-app)

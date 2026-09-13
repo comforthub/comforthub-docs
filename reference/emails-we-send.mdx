@@ -4,7 +4,7 @@ description: "Every email the engine sends, who gets it, what triggers it, and w
 kind: reference
 ---
 
-Every email leaves through one sender that keeps a ledger and checks the address first; only allowed addresses are delivered to as written, and everything else goes to the operator instead. The rule is on [Email safety](/handbook/running/email-safety). The engine sends no operator alert email: a problem the monitor finds becomes a condition on [Sentry](/systems/sentry), and Sentry does the mailing.
+Every email leaves through one sender that keeps a ledger and checks the address first; only allowed addresses are delivered to as written, and everything else goes to the owner instead. The rule is on [Email safety](/handbook/running/email-safety). The engine sends no alert email of its own: a problem the monitor finds becomes a condition on [Sentry](/systems/sentry), and Sentry does the mailing.
 
 Times are Ottawa time; the engine's timers run in UTC, four hours ahead of Ottawa in summer.
 
@@ -13,15 +13,13 @@ Times are Ottawa time; the engine's timers run in UTC, four hours ahead of Ottaw
 | Booking confirmation | Your Comfort Hub appointment on … | customer | an appointment is saved as scheduled with **Notify Client** on and a date today or later | none; an **Add to calendar** link |
 | Appointment moved | Your Comfort Hub appointment has moved to … | customer | the date changes on a scheduled appointment with **Notify Client** on | none; an **Update your calendar** link |
 | Appointment reminder | Reminder: your Comfort Hub appointment on … | customer | daily at 16:10, for every scheduled appointment tomorrow with **Notify Client** on and a customer email; sent once per appointment | none |
-| Invoice | Invoice INV… from Comfort Hub | customer | the invoice gets its QuickBooks counterpart, and is not void, paid or already sent | the invoice PDF; on a completed maintenance or commissioning job, one certificate PDF per certifiable visit; a pay link |
+| Invoice | Invoice INV… from Comfort Hub | customer | the invoice gets its QuickBooks counterpart, and is not void, paid or already sent | the invoice PDF; every certificate the job earned, as on [Certificates](/handbook/invoicing/certificates); a pay link |
 | Invoice reminder | A reminder about invoice INV… from Comfort Hub | customer | daily at 10:15, for an emailed, unpaid, non-void invoice seven or more days past due; once per invoice | none; a pay link |
 | Invoice overdue | Invoice INV… from Comfort Hub is overdue | customer | daily at 10:15, for the same invoice once it is twenty-one or more days past due; once per invoice | none; a pay link |
-| Receipt | Payment received for INV… | customer | a payment on the invoice is recorded, whether or not it clears the balance; the body shows the amount paid and the balance left | the receipt PDF and the current invoice PDF |
+| Receipt | Payment received for INV… | customer | the engine records a payment on the invoice, whether or not it clears the balance; the body shows the amount paid and the balance left. See [How payments work](/handbook/payments/how-payments-work) | the receipt PDF and the current invoice PDF |
 | Quote | Your Comfort Hub quote for WO… | customer | a quote is saved as sent | none; an approve button that works for 30 days |
 | Stocking order | Purchase order … from Comfort Hub | the supplier email on the order; replies go to the technician who saved it | a stocking order is saved with its PDF and has not been emailed | the order PDF, named after the order number |
 | App login invite | Your Comfort Hub app login | technician | a technician is created active with an email, or an active technician's email changes; skipped when the technician already has an app login | none; a set-password button that works once |
-
-A demo invoice, made for testing the pay page, gets the same invoice and receipt emails with "Demo" in the receipt's subject and body.
 
 ## When an email is skipped
 

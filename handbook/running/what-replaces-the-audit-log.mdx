@@ -25,7 +25,7 @@ Two more places hold the story when something went wrong:
 - **Sentry** holds every crash and refusal from every function, grouped so one cause is one issue, with the trace that led there. A dead letter is one grouped issue; a condition the monitor opens is one issue too.
 - **The review route** on the ops function lists every event a person still owes a look, and closes each one with a required note. That note is the audit trail for the decision a person made; see [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
 
-The thread through all of them is the correlation id: one id per request or queue message, carried into every ledger line, every email and every Sentry event it caused. Given one id, the whole chain is one query.
+The thread through all of them is the [correlation id](/reference/glossary): one id per request or queued message, carried into every ledger line, every email and every Sentry event it caused. Given one id, the whole chain is one query.
 
 ## What we do not build
 
@@ -56,7 +56,7 @@ The thread through all of them is the correlation id: one id per request or queu
 
 - Zoho's log has a horizon. Once it passes, the CRM side of a story is gone. Export it before then if a question is likely to outlive it.
 - The webhook log is pruned at 90 days and the integration ledger at 13 months. A question older than that has only the sent-mail ledger, the app activity log and the monitor's conditions to go on.
-- A change that no record captures is invisible everywhere. The known one is a field edited in Zoho that is not synced: it leaves no trace on our side at all.
+- A change that no record captures is invisible everywhere. A field edited in Zoho that the mirror does not carry is the case that bites: it leaves no trace on our side at all.
 
 ## Related
 

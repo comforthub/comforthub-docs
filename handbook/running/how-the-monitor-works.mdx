@@ -27,7 +27,7 @@ flowchart LR
   D --> M
 ```
 
-The evaluator books first and runs second. A booking is a row that says "this check was due at this minute", so if the evaluator dies half way, the missing result is still visible to the self-check that looks for it. Quick checks run two at a time, each allowed 12 seconds, the whole minute's batch allowed 30 seconds. Slow checks are booked the same way and handed to the maintenance worker, which takes them off its queue two at a time and gives each up to 70 seconds; a check that has more to do can save its place and continue on the next wake.
+The evaluator books first and runs second. A booking is a row that says "this check was due at this minute", so if the evaluator dies half way, the missing result is still visible to the self-check that looks for it. Every check has a time budget, and one that runs out of it saves its place and carries on at the next wake rather than starting over. Quick checks run inside the evaluator's own minute; slow ones are booked the same way and handed to the maintenance worker, which takes them off its queue.
 
 ## The checks
 
@@ -82,7 +82,7 @@ Sentry may bundle several alert emails into one digest. Follow the issue link in
 Sentry, from outside, asks the engine's front door once a minute. The door answers two yes-or-no questions.
 
 - **Can a technician still read their work?** The engine logs in as the stand-in technician through the same public door the app uses, reads that technician's one job and its two lines, checks the content is exactly what it should be, and logs out. The stand-in technician is switched off and owns one cancelled, non-billable job with no customer on it. The database refuses any edit or delete of that job, its lines, or the technician, whoever asks.
-- **Is the monitor keeping up?** Yes only when the monitor is switched on, a clean evaluator run finished within the last 90 seconds, no finished result has waited more than 90 seconds to be turned into conditions, no urgent notification has waited more than 2 minutes and no review notification more than 15, and the stand-in technician is still the switched-off, registered technician it should be.
+- **Is the monitor keeping up?** Yes only when the monitor is switched on, the evaluator's latest run finished cleanly and recently, no finished result is still waiting to be turned into conditions, no notification has waited longer than its allowance, and the stand-in technician is still the switched-off, registered technician it should be. The limits are on [Sentry](/systems/sentry).
 
 If either answer is no, the door answers unhealthy. Sentry opens an incident after a few unhealthy answers in a row and closes it after clean answers in a row; the counts are on [Sentry](/systems/sentry). What to do when that email arrives is [Check the monitor is running](/handbook/running/check-the-monitor-is-running).
 
@@ -103,7 +103,7 @@ A review condition emails you once, when it opens, and a digest can hide it. Not
 ## What can go wrong
 
 - **The monitor itself stops.** The uptime check turns unhealthy and the incidents rule emails you. See [Check the monitor is running](/handbook/running/check-the-monitor-is-running).
-- **Sentry rate-limits the engine.** The notifier records when it may try again and waits; nothing is dropped, because a notification leaves the queue only after Sentry has confirmed the issue exists. A wait that grows past 2 minutes for an urgent notification, or 15 for a review one, makes the uptime check unhealthy, so you hear about it rather than nothing.
+- **Sentry rate-limits the engine.** The notifier records when it may try again and waits; nothing is dropped, because a notification leaves the queue only after Sentry has confirmed the issue exists. A wait that grows past its allowance makes the uptime check unhealthy, so you hear about it rather than nothing; the allowances are on [Sentry](/systems/sentry).
 - **A timer is changed by hand.** The self-check compares every timer with the deployed contract every minute and opens an urgent condition for any that differ. Restore it through a deployment, never by hand.
 - **A check has more than 500 hits.** It reports the first 500 and one capacity condition on top. It cannot declare recovery for anything it did not list, so the capacity condition stays until fewer than 500 remain.
 - **A check fails or times out.** It closes nothing. The self-check that watches completion looks every 15 minutes and opens a condition naming the check, carrying that check's own weight; a minute that has already caught up by then is not a finding.

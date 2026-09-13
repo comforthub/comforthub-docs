@@ -25,7 +25,7 @@ A message that fails all its retries, or that the engine refuses in a way a retr
     In the engine's GitHub repository, open **Actions** and run the **redrive** workflow with:
 
     - **mode**: **write**. The other choice, **list**, only prints what is in the boxes and moves nothing.
-    - **queue**: the dead-letter box to search. Leave it blank to search every box; the field's own hint shows the shape of a box name.
+    - **queue**: the dead-letter box to search. Type the box the issue's evidence names; the three box names are on [Names](/reference/names). Leave it blank to search every box.
     - the **message number** field: the message number from the evidence.
     - the **max** field: how many messages the run may move. It defaults to one and the run refuses if more would move.
 

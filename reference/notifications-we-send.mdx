@@ -38,9 +38,9 @@ Every push is written by the engine and handed to Apple for delivery to the app.
 |---|---|---|---|
 | Appointment not completed | the technicians on the appointment | an appointment from the last seven days is still scheduled an hour after its arrival window ended; one push the first hour, then one a day | every hour; the daily repeat at 8:00 |
 | Task due soon | the task's owner | a task is due within the next 24 hours and is not completed or cancelled | 9:00 daily |
-| Timesheet reminder | everyone except the super admins whose timesheet for the period does not exist or is a draft | the pay period's submit-by day is tomorrow | 9:00 the day before |
+| Timesheet reminder | every app user who is not a super admin and whose timesheet for that period is missing or still a draft | the pay period's submit-by day is tomorrow | 9:00 the day before |
 | Urgent: timesheet due now | the same people | the same day; marked time-sensitive so it breaks through focus modes | 19:00 the day before |
-| Pipeline needs attention | the super admins | at least one pipeline state has something stuck in it; the body lists the states and their counts | 8:40 daily |
+| Pipeline needs attention | the super admins | at least one state of [the pipeline](/reference/glossary) is holding something; the body lists the states and their counts | 8:40 daily |
 | Pipeline monitor alive | the super admins | nothing; it is the weekly proof the digest above is still running | 8:50 on Mondays |
 
 ## Related

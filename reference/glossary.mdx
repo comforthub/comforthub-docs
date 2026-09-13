@@ -6,21 +6,28 @@ kind: reference
 
 | Word | Means |
 |---|---|
+| **ACH** | A bank transfer made on the pay page. It shows as processing until it clears, days later. |
+| **ADP** | The payroll provider. The pay calendar is parsed from the schedule PDF it publishes. |
 | **allowlist** | The short list of email addresses that mail is allowed to reach. Everything else is redirected to the owner. |
 | **asset** | A piece of equipment at a customer's property. Same thing as *equipment*. |
+| **the assistant** | A separate program that watches the owner's email, drafts a reply in his voice and sends it to the app as a proposal. Nothing goes out until he approves it. |
 | **billable, warranty, subscription** | The three kinds of line item. Only billable lines end up on an invoice. |
-| **billing decision** | Supabase looking at a work order's lines and marking it *draft* (to be invoiced) or *non-billable*. |
+| **billing decision** | Supabase reading a work order's lines and settling what happens to it. One billable line marks it *draft*, to be invoiced. Lines all covered by warranty or a subscription mark it *non-billable*. Nothing billable, plus a line that matches no QuickBooks product, is refused and flagged for a person, because marking it non-billable would write off work that may be owed. |
 | **callback request** | A caller who chose to be called back instead of waiting. The engine files it, a person works it, and it is marked done. |
+| **certificate** | A PDF the engine writes for a completed visit whose checklists all share the Maintenance or the Commissioning category. See [Certificates](/handbook/invoicing/certificates). |
 | **check** | One question the monitor asks on a clock, such as "is any cancelled work still collectible?". The list is [Monitor checks](/reference/monitor-checks). |
 | **checklist category** | Maintenance or Commissioning, set on the checklist template. It decides whether a completed visit earns a certificate. See [Certificates](/handbook/invoicing/certificates). |
-| **closed switch** | The one setting that makes the phone say the office is closed regardless of the hours table. See [Change hours and holidays](/handbook/phone/change-hours-and-holidays). |
+| **closed switch** | The one setting that makes the phone say the office is closed regardless of the hours table. See [Opening hours and holidays](/handbook/phone/change-hours-and-holidays). |
 | **completion note** | The note a technician writes when completing a job. It starts from a template chosen by the job type, which the office can reword. See [Complete a work order](/handbook/on-site/complete-a-work-order). |
 | **condition** | One problem on one record, found by a check and held open until a later run of the same check finds it gone. Each one is a Sentry issue. |
 | **converts to asset** | A flag on a product. An install line for such a product becomes a piece of equipment on the customer when the job is completed. |
+| **correlation id** | The one id the engine stamps on everything a single request or queued message caused, so the whole trail can be followed across the ledgers, the emails and Sentry. A message that arrives without one is given a fresh one. |
 | **covered item** | A product a subscription pays for. A visit whose lines are all covered items is not billed. |
+| **the CRM** | Zoho. The two words mean the same system. Handbook pages say Zoho; Systems and Reference pages may say the CRM. |
 | **crosswalk** | The table that remembers which Zoho record is which Supabase record. Rows are never deleted, only marked. |
 | **dead letter** | A queued job that failed too many times and was parked. The Unfinished work check opens a condition for it, so it shows up in Sentry. |
 | **delete policy** | What the engine does when the CRM deletes a record: deactivate the copy here, delete it here, or refuse and raise a flag. Set per module on [Sync rules by module](/reference/sync-rules-by-module). |
+| **department** | A group of phone agents a caller reaches by pressing a digit, with its own weekly hours, ring length and holiday list. See [How the phone works](/handbook/phone/how-the-phone-works). |
 | **echo guard** | How a push to the CRM avoids bouncing back as a change: the engine stores a fingerprint of what the CRM ended up holding, so the CRM's own notification about that write is recognised and ignored. |
 | **the engine** | Supabase: the database and the automation around it. |
 | **escalated** | A condition that opened as for review and was found urgent by a later run of its check. |
@@ -28,20 +35,28 @@ kind: reference
 | **expand and contract** | The safe way to change the database: add the new column first and stop reading the old one, then remove the old one in a later deployment, so no running code reads a column that is not there. |
 | **finding** | One difference the nightly sweep recorded between a record here and its twin in the CRM. See [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync). |
 | **for review** | The lighter of the two weights a condition can have. Sentry emails it once, when its spell opens. |
-| **human-review flag** | A note the system leaves when the two sides disagree about money and a person must rule. The Human review check turns each open flag into a condition, so it shows up in Sentry until a person closes it. |
-| **lead** | Someone who might become a customer. The module in Zoho is Leads, and the engine's table is named the same way; the old word prospect is gone. |
+| **Helcim** | The card processor behind the pay page. It also posts the payment into QuickBooks itself; the engine never writes that payment. |
+| **human-review flag** | A mark the engine leaves on a ledger line when it stopped rather than guess, and a person has to rule. It is not only about money: a push the CRM refused for good, a record from the CRM this side would not accept, an email, text or push whose outcome is unknown, a blocked vendor login, and a payment whose effect is uncertain all raise one. The Human review check turns each open flag into a condition, so it shows up in Sentry until a person closes it. |
+| **integration ledger** | The engine's record of every attempt to talk to another system: what was sent, whether it worked, the error, and whether a person was wanted. See [What replaces the audit log](/handbook/running/what-replaces-the-audit-log). |
+| **lead** | Someone who might become a customer. |
 | **line item** | One part or one block of labour on a work order. |
-| **the maintenance worker** | The monitor's worker that runs the slow checks, one at a time, from a queue the evaluator fills. |
+| **the maintenance worker** | The monitor's worker that runs the slow checks, two at a time, from a queue the evaluator fills. |
 | **the monitor** | The part of the engine that watches the business and the engine itself: the checks, the open conditions, and the three workers behind them. See [How the monitor works](/handbook/running/how-the-monitor-works). |
+| **no-show** | The mark a technician puts on an appointment when nobody was there. It locks the work order in the app until someone unlocks it, and it is carried to the CRM. It invoices nothing and cancels nothing. |
 | **the notifier** | The monitor's worker that hands each opened, escalated or recovered condition to Sentry and does not let go until Sentry confirms an issue exists. |
 | **off, rehearsing, live** | The monitor's three settings. Off runs nothing. Rehearsing runs every check and records conditions but sends none of them to Sentry. Live does both. |
+| **the ops function** | The part of the engine that answers the monitor's three workers, the review route and the uptime check. Nothing a person uses day to day talks to it. |
 | **pay calendar** | The year's pay periods and holidays, parsed from ADP's PDF. Timesheets read it. |
 | **pay page** | The web page a customer opens from the invoice email to pay. Runs on Helcim. |
+| **phone agent** | A person who takes calls on the office line. Each one has an extension, belongs to departments, and answers in the app. |
+| **the pipeline** | The invoices between being raised and being settled. The daily pipeline digest push names each state holding something: an invoice in progress for more than a week, one paid but never sent, one paid with no receipt, and a duplicate invoice number. See [Notifications we send](/reference/notifications-we-send). |
 | **public door** | The engine's web interface that the app reads and writes through. Every request is checked against who is signed in. |
 | **purchase order** | Parts bought for one work order, usually a counter pickup, recorded in the app with its own number and copied to the CRM. Not the same as a stocking order. |
 | **push** | A notification on a technician's phone. |
+| **QuickBooks id** | The number QuickBooks gives a customer, a product, an invoice or a payment. The engine keeps it in the crosswalk, and Zoho shows it on the record. |
 | **reconciler** | The tool that, run on purpose, fixes findings by copying the CRM's value here. It never runs on its own. |
 | **required actions** | The rings at the top of a work order in the app: forms, serials, photos. All must be done before Complete. |
+| **route optimisation** | The overnight job that puts a day's appointments in driving order for each technician. It runs for a day on which some technician holds three or more appointments. |
 | **Sentry** | The outside service that holds every crash and every condition as an issue, asks the engine once a minute whether it is serving, and emails the owner. See [Sentry](/systems/sentry). |
 | **settle job** | The step that, after a pay-page payment, finds the payment QuickBooks holds and finishes the paperwork here and in the CRM. See [Take a payment](/handbook/payments/take-a-payment). |
 | **spell** | One stretch of a condition being open, from opened to recovered. The same problem coming back is a fresh spell and a fresh Sentry issue. |
@@ -57,7 +72,8 @@ kind: reference
 | **the uptime check** | Sentry, from outside, asking the engine once a minute whether the stand-in technician can read their work and whether the monitor is keeping up. |
 | **urgent** | The heavier of the two weights a condition can have. Sentry emails every urgent event: the opening and any escalation. |
 | **webhook** | A message a vendor (QuickBooks, Stripe, Zoho, Twilio) sends us when something happened on their side. |
-| **widget** | A screen embedded inside Zoho, like the dispatch calendar. |
+| **the widgets** | The screens embedded inside Zoho: the Service calendar, the sales scheduler, and the actions on a new lead. |
+| **worker** | The record on Twilio's side that stands for one phone agent. TaskRouter rings the worker and the app is what actually rings. The engine writes it; nobody makes one by hand. |
 | **writer lock** | A rule that only one of the jobs that write to the crosswalk runs at a time, so the sweep and the crosswalk bootstrap never overlap. |
 
 ## Related

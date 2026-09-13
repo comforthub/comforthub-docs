@@ -1,0 +1,55 @@
+---
+title: "Record a return"
+description: "Put the return date and the credit note on the purchase order the parts came from"
+kind: how-to
+---
+
+import { Touches } from "/snippets/touches.mdx";
+
+<Touches systems="the-7am-app, supabase-backend" />
+
+A part taken back to the counter is recorded on the purchase order it came in on, not on a new one. You add the date it went back and scan the credit note. The order keeps its number and its original paperwork.
+
+## Before you start
+
+- The app signed in as a technician or higher. An apprentice can see purchase orders but cannot change one.
+- The purchase order in the app's **Purchase orders** list.
+- The credit note from the counter, on paper, to scan.
+
+## Steps
+
+<Steps>
+  <Step title="Open the return">
+    In **Purchase orders**, swipe the order to the left and tap **Return**. The order opens ready to edit, with a **Return** section on it.
+  </Step>
+  <Step title="Set the date">
+    Pick the day the parts went back under **Returned**. It cannot be earlier than the day the order was raised.
+  </Step>
+  <Step title="Scan the credit note">
+    Tap **Scan return paperwork** and photograph the credit note. The screen says how many pages are ready. Scanning again replaces what you scanned.
+  </Step>
+  <Step title="Save it">
+    Tap the confirm button at the top. The date and the credit note are saved together: the engine refuses a credit note with no return date.
+  </Step>
+</Steps>
+
+## How you know it worked
+
+- The order's **Return** section reads **Returned** with the date you picked, and the credit note sits beside the original paperwork.
+- Reopening the order and tapping **Edit** offers **Change the return** if the date needs correcting.
+
+## If it did not work
+
+- **The confirm button stays off.** Nothing has changed yet. Set the date, or scan the credit note, and it comes on.
+- **Saving failed with no connection.** The return needs one, because the credit note is filed as you save. Reconnect and save again.
+
+## Good to know
+
+- The return stays on our side. Zoho's copy of the purchase order carries the supplier, the number, the notes and the day it was raised, and none of those change.
+- Removing the credit note while editing deletes the scan; the return date stays.
+
+## Related
+
+- [How ordering parts works](/handbook/parts/how-ordering-parts-works)
+- [Delete a purchase order](/handbook/parts/delete-a-purchase-order)
+- [The 7AM app](/systems/the-7am-app)

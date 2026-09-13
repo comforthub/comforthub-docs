@@ -4,17 +4,21 @@ description: "Which visits produce a certificate, where it is stored, and who ge
 kind: reference
 ---
 
-A certificate is a PDF the engine writes when a job is completed, one per visit whose checklist earned it. The checklist template's category decides which certificate, not the job type.
+A certificate is a PDF the engine writes when a job is completed, one per visit that earned it. Two things decide it: the job's type, then the category of the checklists answered on that visit.
 
-| Checklist category | Certificate | Where it goes |
-|---|---|---|
-| Maintenance | Certificate of Maintenance | filed by the engine; attached to the Zoho work order; attached to the invoice email next to the invoice PDF |
-| Commissioning | Certificate of Commissioning | the same |
-| Any other category, or two categories on one visit | none | |
+| The job's type | What happens |
+|---|---|
+| Service | no certificate, whatever the checklists say |
+| Maintenance, Installation | each visit is read, as below |
 
-A service job never produces a certificate, whatever its checklists. On every other kind of job, each completed visit with at least one finished checklist gets one certificate when all its checklists share one of the two categories. The file is named after the certificate kind, the job and the visit date.
+| The visit's completed checklists | Certificate |
+|---|---|
+| all in the Maintenance category | Certificate of Maintenance |
+| all in the Commissioning category | Certificate of Commissioning |
+| none completed | none |
+| two categories on one visit, or a category that is neither | none, and the completion dies as a dead letter for a person to look at |
 
-The invoice email waits for every certificate the job earned before it goes out, and attaches each one.
+Each certificate is filed by the engine, attached to the Zoho work order, and attached to the invoice email next to the invoice PDF. The file is named after the certificate kind, the job and the visit date. The invoice email waits for every certificate the job earned before it goes out.
 
 ## Related
 

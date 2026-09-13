@@ -30,14 +30,14 @@ import { Touches } from "/snippets/touches.mdx";
 ## How you know it worked
 
 - **Processing Status** reads Completed and **Processing Summary** says how many periods and holidays were read and that every check passed.
-- The **Schedule** table lists the year's pay periods with period end, submit-by, processing and pay dates; the **Holidays** table lists the year's ten holidays with a statutory yes or no.
-- The engine holds the same calendar: every pay period, and the eight statutory holidays. The two worked holidays, marked statutory No, stay in Zoho only; they are normal work days in the app.
+- The **Schedule** table lists the year's pay periods with period end, submit-by, processing and pay dates; the **Holidays** table lists the year's holidays, each marked statutory yes or no.
+- The engine holds every pay period and every holiday marked statutory. A holiday marked statutory No is a worked holiday: it stays in Zoho, and the app treats that day as an ordinary work day.
 
 ## If it did not work
 
 - **Processing Status** reads Needs Review: the PDF was read, but a check did not pass, and the summary names it. Nothing reaches the engine until a clean read. Fix the PDF and upload again.
 - **Processing Status** reads Failed: the summary says why. "No PDF found on the ADP Schedule field" means the upload did not stick; "Could not read the PDF" means the file is not the ADP schedule the engine knows. Fix and upload again.
-- The status never changes: the read died on the queue and the monitor has opened a condition in Sentry. See [Act on a Sentry email](/handbook/running/act-on-a-sentry-email), then [Redrive a dead letter](/handbook/running/redrive-a-dead-letter) once the record is fixed.
+- The status never changes: the read failed and left a dead letter, and the monitor has opened a condition in Sentry. See [Act on a Sentry email](/handbook/running/act-on-a-sentry-email), then [Redrive a dead letter](/handbook/running/redrive-a-dead-letter) once the record is fixed.
 
 ## Related
 

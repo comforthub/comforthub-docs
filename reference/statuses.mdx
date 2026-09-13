@@ -13,7 +13,7 @@ The status you see in the CRM is the same one the engine holds, spelled the way 
 | New | the office | booked, no visit yet |
 | Scheduled | the office | it has at least one appointment |
 | Completed | the technician's **Complete** tap, or the office in the CRM | the work is done; billing starts |
-| Cancelled | the office | the job is off; a live invoice is voided |
+| Cancelled | the office | the job is off; an invoice that has taken no money is voided |
 
 ## Work order billing status
 
@@ -24,7 +24,7 @@ The status you see in the CRM is the same one the engine holds, spelled the way 
 | Non-Billable | the engine, when no line is billed to the customer | no invoice is made |
 | Invoiced | the engine, when the invoice is issued | the customer owes it |
 | Paid | the engine, when the balance is settled | nothing owed |
-| Cancelled | the engine, when the job is cancelled | closed with nothing to bill |
+| Cancelled | the office, in the CRM | nothing follows from it; the engine never sets it, and cancelling a job leaves the billing status alone. See [Cancel a work order](/handbook/booking/cancel-a-work-order) |
 
 Two older values, "No charge (subscription)" and "No charge (warranty)", are kept on the records that carry them and are not written any more.
 
@@ -54,7 +54,7 @@ An invoice carries two statuses. **Status** says where the document is; **Paymen
 | Paid | the engine, after the balance reaches zero | nothing owed |
 | Void | the engine, when the invoice is voided | nothing owed, nothing collectible |
 
-New, In progress and Overdue are older values, kept on the records that carry them and not written any more.
+New, In progress and Overdue are older values. The column still accepts them and invoices carry them, but nothing writes one any more.
 
 ## Lead
 
@@ -62,7 +62,18 @@ The list is the CRM's: New, Scheduled, Quote Sent, Quote Accepted, No response, 
 
 ## Subscription
 
-Active, Trialing, Past due, Paused, Unpaid, Incomplete, Incomplete expired, Canceled. Stripe sets them. Active, Trialing and Past due are the three that count as a live plan; the rest bill as usual.
+Stripe sets them. When the status does not cover a visit, the plan's lines are billed to the customer like any other job; see [How invoicing works](/handbook/invoicing/how-invoicing-works).
+
+| Status | In the CRM | Covers a visit |
+|---|---|---|
+| Active | Active | yes |
+| Trialing | Active | yes |
+| Past due | Past Due | yes |
+| Unpaid | Past Due | no |
+| Paused | Paused | no |
+| Incomplete | Canceled | no |
+| Incomplete expired | Canceled | no |
+| Canceled | Canceled | no |
 
 ## Timesheet and time off
 

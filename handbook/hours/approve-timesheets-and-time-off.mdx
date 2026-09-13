@@ -10,14 +10,14 @@ import { Touches } from "/snippets/touches.mdx";
 
 ## Before you start
 
-- The app signed in as an approver, or Zoho with rights to edit the **Timesheets** and **Time Off Requests** modules. Either place works; the verdict reaches the other within seconds.
+- The app signed in as an admin or a super admin, or Zoho with rights to edit the **Timesheets** and **Time Off Requests** modules. Either place works; the verdict reaches the other within seconds. Admin is the rung that can approve; see [Roles and what they can do](/handbook/app/roles-and-what-they-can-do).
 - The timesheet must be Submitted. A draft never reaches Zoho and does not appear in the app's approvals list.
 
 ## Steps in the app
 
 <Steps>
   <Step title="Open Approvals">
-    Under **You** in the Search hub, **Approvals** lists every submitted timesheet and every pending time off request. It only appears for people who can approve.
+    Under **You** on the **Search** tab (see [The app tour](/handbook/app/the-app-tour)), **Approvals** lists every submitted timesheet and every pending time off request. The row shows only for an admin or a super admin.
   </Step>
   <Step title="Approve or reject">
     Swipe the row right for **Approve**, or left for **Reject**, or open the item and use the **Decision** menu. A rejection asks for a reason, and the **Reject** button stays off until you type one: it is the only thing the technician is told, and it stays on the sheet so they can read it again later.
@@ -44,7 +44,7 @@ import { Touches } from "/snippets/touches.mdx";
 ## How you know it worked
 
 - The technician's **Hours** screen shows the status you set within seconds, with the reason under it on a rejected sheet.
-- The technician gets a push: "Timesheet Approved", or "Timesheet Rejected" followed by "Reason:" and your text; "Time Off Approved", or "Time Off Rejected" followed by "Notes:" and your message.
+- The person whose sheet it is gets a push: "Timesheet Approved", or "Timesheet Rejected" followed by "Reason:" and your text. The person who asked for the time off gets "Time Off Approved", or "Time Off Rejected" followed by "Notes:" and your message. Nobody else is told; see [Notifications we send](/reference/notifications-we-send).
 - A decision made in the app reaches Zoho the same way: the Zoho timesheet shows the **Status** you set, and **Approved At** or **Rejection Reason** carries what you entered.
 
 ## If it did not work

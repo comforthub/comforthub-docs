@@ -11,7 +11,7 @@ import { Touches } from "/snippets/touches.mdx";
 ## Before you start
 
 - A Sentry login for the backend project.
-- The monitor token, if you want to ask the engine's front door yourself. It lives in the secrets vault with the engine's other function secrets; never paste it into a page or a chat.
+- The monitor's header token, if you want to ask the engine's front door yourself. It lives in the secrets vault with the engine's other function secrets; its name and the header that carries it are on [Names](/reference/names). Never paste it into a page or a chat.
 - The backend repository's **Actions** page on GitHub.
 
 ## Steps
@@ -20,7 +20,7 @@ import { Touches } from "/snippets/touches.mdx";
   <Step title="Read the incident">
     The uptime incident names the uptime check, **Comfort Hub technician access and monitoring**, and the front-door address it asked. It tells you the door answered unhealthy or did not answer in time. It does not show which of the door's two answers was no.
 
-    To see that, ask the door yourself: a GET to the front-door address with the monitor token in the `x-monitor-token` header. The reply carries two yes-or-no answers.
+    To see that, ask the door yourself: a read of the front-door address, presenting the monitor's header token (see [Names](/reference/names)). The reply carries two yes-or-no answers.
 
     - **The technician's read is no.** The stand-in technician could not log in through the public door, could not read their one job and its two lines exactly as expected, or could not log out.
     - **The monitoring answer is no.** The monitor is behind. One of: the monitor is switched off; no clean evaluator run finished in the last 90 seconds, or the latest one failed or timed out; a finished result has waited more than 90 seconds to become conditions; an urgent notification has waited more than 2 minutes, or a review one more than 15; or the stand-in technician is no longer the switched-off, registered technician it should be.

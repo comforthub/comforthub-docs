@@ -12,8 +12,8 @@ A record that did not sync is one the sweep has a finding for: it exists on one 
 
 ## Before you start
 
-- The SQL editor for the engine, to read the finding and the crosswalk.
-- Access to the backend repo's Actions page on GitHub, for the workflows below.
+- The SQL editor for the engine, with three tables open in it: the findings the sweep writes, the crosswalk that pairs the two sides, and the integration ledger that records every attempt to cross. Their names are on [Names](/reference/names), and how to read the ledger is on [What replaces the audit log](/handbook/running/what-replaces-the-audit-log).
+- Access to the backend repo's Actions page on GitHub, for the workflows below. Each workflow's name and its boxes are on [Names](/reference/names).
 - The record open in Zoho, if it exists there.
 - Nothing else touching the same record. A push writes every shared field, so an edit on the other side in the same few seconds is lost.
 
@@ -40,9 +40,9 @@ A finding closes itself: once the next sweep no longer sees the difference, the 
     If one side was deleted on purpose, the other side is the one to fix, and the delete policy for the module says what a delete there does; see [Sync rules by module](/reference/sync-rules-by-module). If the record was created on one side and never crossed, look for its dead letter or its human-review flag: a create the engine refused is recorded with the reason, and fixing that reason is the whole fix. See [Redrive a dead letter](/handbook/running/redrive-a-dead-letter) and [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
   </Step>
   <Step title="A record that exists only in the CRM">
-    If the row here was retired and Zoho still has the record, the two need pairing again: fill the engine's id field on the Zoho record, then run the **bootstrap-crosswalk** workflow, first in **dry-run** and then in **write**. The dry run prints the pairs it would seed; the write seeds them and then runs the sweep as a gate, which goes red if any findings stay open above the number in the ceiling box. Before it seeds a pair it checks three things: the pair does not already exist, neither side is claimed by another live pair, and the ids are ones the engine accepts. A side already claimed by another pair is retired with the reason "bootstrap remap" and the new pair takes its place. A module whose Zoho records carry no engine id at all has nothing to seed from, and the run fails closed on it unless you name the module in the allow-empty box on purpose.
+    If the row here was retired and Zoho still has the record, the two need pairing again: fill the engine's id field on the Zoho record, then run the **bootstrap-crosswalk** workflow, first as a rehearsal and then for real. The rehearsal prints the pairs it would seed; the real run seeds them and then runs the sweep as a gate, which goes red if more findings stay open than the ceiling you give it. Before it seeds a pair it checks three things: the pair does not already exist, neither side is claimed by another live pair, and the ids are ones the engine accepts. A side already claimed by another pair is retired with the reason "bootstrap remap" and the new pair takes its place. A module whose Zoho records carry no engine id at all has nothing to seed from, and the run fails closed on it unless you name the module, on purpose, as one allowed to yield nothing.
 
-    If the record was never here at all and is old (its create notification is long gone), run the **backfill** workflow for the module, dry first: it counts what it would create, and only with the write box ticked does it create the rows and their pairs, up to the number in the max box. A record it cannot create is listed with the reason, most often a required link whose target has no pair yet: pair the target first.
+    If the record was never here at all and is old (its create notification is long gone), run the **backfill** workflow for the module, as a rehearsal first: it counts what it would create, and only when you ask it to write does it create the rows and their pairs, up to the limit you give it. A record it cannot create is listed with the reason, most often a required link whose target has no pair yet: pair the target first.
 
     If the record was created in Zoho and refused on arrival, fix what the refusal names in Zoho and save the record. The next edit sends a fresh notification and the record applies.
   </Step>
@@ -51,7 +51,7 @@ A finding closes itself: once the next sweep no longer sees the difference, the 
 
     A row whose Zoho twin was deleted keeps a tombstone and is never pushed again on purpose; for a module whose delete policy is deactivate, the row is inactive and stays that way. If the CRM record should exist again, create it in Zoho with the engine's id in its id field and pair it with **bootstrap-crosswalk** as in the previous step.
 
-    Rows that were never mapped in bulk, after a module is switched on, are sent with the **backfill-outbound** workflow: **list** counts them, **write** queues them, and the max box says how many. Go one, then ten, then a hundred, then the rest, reading the outcome between runs.
+    Rows that were never mapped in bulk, after a module is switched on, are sent with the **backfill-outbound** workflow: it counts them first, queues them when you ask it to write, and sends no more than the limit you give it. Go one, then ten, then a hundred, then the rest, reading the outcome between runs.
   </Step>
   <Step title="A pair that points at nothing here">
     The row here is gone and the pair is still live. Retire the pair in the SQL editor with a reason that says who removed the row and why; a pair retired with no reason gets a default one stamped by the engine, which is less useful to the next reader. The next sweep closes the finding.

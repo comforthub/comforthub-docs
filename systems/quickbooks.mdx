@@ -4,7 +4,7 @@ description: "Customers, items, invoices and payments: what the engine writes th
 kind: reference
 ---
 
-QuickBooks is where money is counted. The engine writes customers, items and invoices into it, and reads a payment back from it once the payment is there. Nobody types an invoice into QuickBooks; nobody marks an invoice paid anywhere but QuickBooks.
+QuickBooks is where money is counted. The engine writes customers, items and invoices into it, and reads each invoice's totals back to check they agree. Nobody types an invoice into QuickBooks by hand.
 
 ## What QuickBooks holds, and who writes it
 
@@ -13,19 +13,19 @@ QuickBooks is where money is counted. The engine writes customers, items and inv
 | Customer | the engine | a customer is created here, or its name, email, phone or address changes, or the address of one of its properties changes |
 | Item | the engine | a product is created, or its name, description, code, type or price changes. The item is made inactive when the product is deleted in Zoho |
 | Invoice | the engine | an invoice is made here and has no QuickBooks copy yet |
-| Payment | the pay page's processor | a customer pays on the pay page |
+| Payment | Helcim, the pay page's processor | a customer pays on the pay page |
 | Void | the engine | an invoice is voided here, or its work order is cancelled |
 
 The invoice number in QuickBooks is our INV number, so the two are always the same document.
 
-## What the engine reads back
+## Payments
 
-QuickBooks does not call the engine. When a payment is made on the pay page, the processor posts it into QuickBooks itself, and the engine's settle step looks for it there against the invoice, asking again until it is there, for up to two hours. Once the payment is found the engine does the rest: amounts and status on our side, the receipt PDF, the payment and PDFs on the Zoho invoice, the work order's billing status, and the receipt email after each payment. See [How payments work](/handbook/payments/how-payments-work).
+QuickBooks does not call the engine, and nothing here goes looking through QuickBooks for payments. A payment made on the pay page is posted into QuickBooks by the processor, and recorded here by the engine at the same time; the engine does the rest of the paperwork from its own record. See [How payments work](/handbook/payments/how-payments-work). A payment the office types into QuickBooks by hand reaches nothing else, and the nightly check finds the difference.
 
 ## Rules worth knowing
 
 - A payment must be applied to an invoice. A payment with no invoice is flagged for a person and nothing else happens.
-- The method shown in Zoho comes from the QuickBooks payment method: Cash, Cheque, Credit Card or e-Transfer. A payment with no method reads Credit Card, or ACH when its reference says so. Any other method is labelled Credit Card and flagged.
+- The method shown in Zoho says how the customer paid: Credit Card for a card, ACH for a bank transfer. The CRM's list also holds Cash, Cheque and e-Transfer for payments taken another way.
 - A void in QuickBooks is recognised by its zeroed amounts and the "Voided" note QuickBooks writes; QuickBooks puts no status on an invoice.
 - Every night the monitor compares each live invoice's total here, in QuickBooks and in Zoho, and its balance where the pay page keeps the accounting, and holds a condition open in Sentry for any that differ by more than two cents. See [Monitor checks](/reference/monitor-checks) and [How the monitor works](/handbook/running/how-the-monitor-works).
 

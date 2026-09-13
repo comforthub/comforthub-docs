@@ -8,7 +8,7 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="zoho-crm, supabase-backend, resend, the-7am-app" />
 
-A job starts as a **work order** in Zoho with its lines, its equipment and one or more **appointments**. The dispatch calendar widget writes all of that in one go; the engine copies each piece to our side within seconds and acts on it.
+A job starts as a **work order** in Zoho with its lines, its equipment and one or more **appointments**. The **Service calendar** widget in Zoho writes all of that in one go; the engine copies each piece to our side within seconds and acts on it. A phone agent can also book a visit from the app while on the call; see [Book a work order](/handbook/booking/book-a-work-order).
 
 ## What the engine does with a booking
 
@@ -21,32 +21,28 @@ A job starts as a **work order** in Zoho with its lines, its equipment and one o
 
 ## The billing decision
 
-Every line is billed to the customer, to warranty, or to the customer's subscription. The engine looks at the lines the moment the work order arrives and again whenever a line is added, removed or changed, and writes the answer back to Zoho's **Billing Status**:
+Every line is billed to the customer, to warranty, or to the customer's plan. The engine reads the lines the moment the work order arrives and again whenever a line is added, removed or changed, and writes the answer to Zoho's **Billing Status**. What each outcome means is on [How invoicing works](/handbook/invoicing/how-invoicing-works).
 
-- Any line billed to the customer: **Draft**, to be invoiced on completion.
-- Only warranty and plan lines: **Non-Billable**. No invoice is ever made.
-- Nothing billed to the customer, but a line that matches no QuickBooks item: the engine refuses to decide and flags the job for review, rather than write off work that may be owed.
+A line is a warranty line when its **Charge To** says warranty. It is a plan line when the customer's plan covers that product: the office ticks the covered products on the Zoho subscription (**Covered Items**), and a line naming one of them costs nothing.
 
-A line is a warranty line when its **Charge To** says warranty. A line is a plan line when the customer's subscription covers that product: the office ticks the covered products on the Zoho subscription (**Covered Items**), and a line naming one of them costs nothing. The subscription named on the work order is the one that counts; with none named, the customer's live subscription is used.
+**Which plan counts.** The subscription named on the work order is the one that decides what is covered. With none named, the customer's own running plan is used, and only when they have exactly one. A plan is running while it is active, in trial, or past due.
 
-A plan job is also written onto the customer's subscription in Zoho as a visit (**Subscription Visits**: the covered item, **Scheduled**, and the work order). When the job completes, the visit turns **Completed** with the date. Deleting the line takes the visit off again.
+**A line the engine cannot price.** A line that is neither warranty nor plan has to name a catalog product with a QuickBooks item behind it; when no line on the job is billable and one of them names no such product, the engine refuses to decide and flags the job for a person rather than write off work that may be owed.
 
-## Booking from the app on a call
-
-A service visit booked from the app during a phone call is written on our side first: the work order, its lines and the appointment are our rows, and the engine creates their copies in Zoho. The technician chosen in the app goes with it. The territory is filled from the customer's property, so it stays empty when the property has no territory.
+A plan job is also written onto the customer's subscription in Zoho as a visit, but only when the work order's **Subscription** lookup names that subscription. What the visit list holds and what its states mean are on [Subscriptions](/handbook/payments/subscriptions).
 
 ## Emails and pushes
 
 - With **Notify Client** on, the customer gets "Your Comfort Hub appointment on …" with an **Add to calendar** link.
 - The day before the visit, the same customer gets "Reminder: your Comfort Hub appointment on …".
-- Moving the appointment sends "Your Comfort Hub appointment has moved to …" with an **Update your calendar** link, and no second confirmation. The calendar entry keeps one identity per appointment, so adding it again replaces the old date.
+- Moving the appointment sends "Your Comfort Hub appointment has moved to …" with an **Update your calendar** link, and no second confirmation; see [Reschedule or restaff an appointment](/handbook/booking/reschedule-or-restaff).
 - The technician's phone gets a push when an appointment is booked, moved or cancelled, and when they are added to one. That needs the technician to have the app; see [Add a technician](/handbook/catalog-and-staff/add-a-technician).
 - An appointment still open an hour past its arrival window gets its technician an **Appointment Not Completed** push ("… is still open. Please complete or update it."). The engine looks every hour; after the first push it repeats once a day, in the morning, until the appointment is completed or cancelled. See [Scheduled jobs](/reference/scheduled-jobs).
 
 ## Two things to know
 
 - **Line descriptions.** What you type on a line in Zoho is kept. A line saved from the app takes the catalog item's name and description instead.
-- **Equipment.** The widget makes equipment when it books an installation. A job booked any other way gets its equipment when it is completed; see [Complete a work order](/handbook/on-site/complete-a-work-order).
+- **Equipment.** The **Service calendar** widget makes equipment when it books an installation. A job booked any other way gets its equipment when it is completed; see [Complete a work order](/handbook/on-site/complete-a-work-order).
 
 ## Related
 

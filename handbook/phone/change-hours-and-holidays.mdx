@@ -1,47 +1,35 @@
 ---
-title: "Change opening hours and holidays"
-description: "Control when the line answers, queues, or goes to voicemail"
-kind: how-to
+title: "Opening hours and holidays"
+description: "The three settings that decide whether a caller reaches a queue or the closed greeting, and who changes them"
+kind: explanation
 ---
 
 import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="twilio, supabase-backend" />
 
-Three switches decide whether a caller reaches a queue or hears the closed greeting: the closed switch for the whole line, the holiday list, and each department's weekly hours. All three live in the engine's phone settings. The phone reads them fresh every 30 seconds, so a change is live within half a minute.
+Three settings decide whether a caller reaches a queue or hears the closed greeting: the switch that closes the whole line, the holiday list, and each department's weekly hours. All three live in the engine.
 
-## Before you start
+| Setting | What it does |
+|---|---|
+| The closed switch | Closes the line for everyone. Every caller hears the closed greeting and is asked to leave a message, and the menu never plays. It stays on until someone turns it off; nothing resets it. A personal line still rings its owner |
+| The holiday list | A date, for every department or for one. On that day the menu still plays, and a caller who picks a department that is on holiday hears the closed greeting and voicemail. A department with no holiday that day answers as usual |
+| A department's weekly hours | An opening and a closing time per weekday. Outside them, the caller who picks that department hears the closed greeting and voicemail. A weekday with no hours is closed all day |
 
-- You can edit the engine's phone settings. The app shows the holiday list but cannot change any of the three.
-- You know which department the change is for. Sales and other matters keep weekday hours, 8 am to 5 pm Toronto time. Support is marked always open and ignores hours and holidays.
-- Times are Toronto time, whatever the caller's own clock says.
+The closed switch is checked before the menu plays; the holiday list and the hours are checked after the caller picks a department. The whole path is on [How the phone works](/handbook/phone/how-the-phone-works).
 
-## Steps
+## The departments and their hours
 
-<Steps>
-  <Step title="Close the whole line right away">
-    Turn on the closed switch. Every caller to the main line hears the closed greeting and is asked to leave a message. A technician's personal line still rings its owner. Turn the switch off again when you are back; nothing else resets it.
-  </Step>
-  <Step title="Add a holiday">
-    Add the date, for every department or for one. On that day the menu still plays, and a caller who picks a department on holiday hears the closed greeting and voicemail. A department with no holiday that day answers as usual.
-  </Step>
-  <Step title="Change a department's weekly hours">
-    Each department has an opening and a closing time per weekday. Outside those times the caller who picks that department hears the closed greeting and voicemail. A weekday with no hours is closed all day.
-  </Step>
-</Steps>
+Sales and other matters open at 8 in the morning and close at 5 in the afternoon, Monday to Friday. Support is marked always open, so hours and holidays do not apply to it. Times are Ottawa time, whatever the caller's own clock says.
 
-## How you know it worked
+## Who changes them
 
-- Wait 30 seconds, then call the line and pick the department. With the closed switch on, the closed greeting plays before the menu. With a holiday or closed hours, the menu plays and the closed greeting follows your choice.
-- The call is in the CRM's call history within a minute.
+A developer changes them in the engine. There is no screen for any of the three: not in the app, not in Zoho. Everyone else can read the departments, their hours and the holidays, and nobody can write them.
 
-## If it did not work
-
-- Wait 30 seconds and call again; the phone caches its settings for that long.
-- Check the closed switch is off. It stays on until someone turns it off.
-- A holiday for one department does not close the others.
+A change needs no restart and no deploy. The phone re-reads all three every 30 seconds, so a change is live within half a minute.
 
 ## Related
 
 - [How the phone works](/handbook/phone/how-the-phone-works)
+- [How extensions and personal lines work](/handbook/phone/reach-an-agent-by-extension)
 - [Twilio](/systems/twilio)

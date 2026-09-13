@@ -4,7 +4,7 @@ description: "The five roles and what each one can see and change"
 kind: reference
 ---
 
-Every person in the app has one of five roles, on a ladder. The engine checks the ladder on every write. The app does not grey out or hide most controls by role, so an edit above your rank matches nothing and comes back as if it saved; adding a record above your rank is refused with an error.
+Every person in the app has one of five roles, on a ladder. The engine checks the ladder on every write. The app does not grey out or hide most controls by role, so an edit above your rank is silently ignored and the screen shows it as saved; adding a record above your rank is refused with an error.
 
 ## The ladder
 
@@ -20,7 +20,7 @@ Every person in the app has one of five roles, on a ladder. The engine checks th
 
 - An admin or a super admin sets roles. Nobody sets their own, nobody grants a role above their own rung, and nobody changes the role of someone above them.
 - A new app user starts as an apprentice.
-- An extension is set the same way; nobody sets their own.
+- An extension is set by a developer, in the engine. Nobody sets their own, and there is no screen for anyone else's; see [How extensions and personal lines work](/handbook/phone/reach-an-agent-by-extension).
 
 ## Related
 

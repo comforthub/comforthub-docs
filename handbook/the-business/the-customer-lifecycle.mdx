@@ -17,10 +17,10 @@ A customer's life with Comfort Hub is one loop that runs again every year: a vis
 | A lead is typed in | Zoho, **Leads** | Mirrors it on our side |
 | The lead is converted | Zoho, **Convert** | Makes the customer, the account, the property and the QuickBooks customer, all linked |
 | A work order is typed with a furnace line | Zoho | Mirrors it, matches the line to the catalog, writes the billing decision back to Zoho |
-| An appointment is booked with the commissioning checklist | Zoho | Mirrors it, emails the customer, pushes the technician's phone |
+| An appointment is booked with the commissioning checklist | Zoho | Mirrors it, emails the customer, sends the technician a [push notification](/reference/notifications-we-send) |
 | The checklist is answered and **Complete** is tapped | The app | Marks the appointment and the work order complete in Zoho, and makes the furnace a piece of equipment on the customer |
 | Nothing | | Builds the invoice, puts it in QuickBooks and Zoho, emails it, and files the certificate on the work order |
-| The payment is recorded | QuickBooks | Marks the invoice partly or fully paid and emails the receipt |
+| The customer pays | The pay page | Records the payment, marks the invoice partly or fully paid, emails the receipt, and marks the work order paid. See [How payments work](/handbook/payments/how-payments-work) |
 
 ## Every visit after: maintenance
 
@@ -30,7 +30,7 @@ The same customer, the same furnace. A maintenance work order in Zoho with the f
 
 - The customer, account and property are made once. Every later job hangs off them.
 - Equipment is made once, on the job that installs it, and every later job links to it. See [Complete a work order](/handbook/on-site/complete-a-work-order).
-- Certificates are made per visit and filed on that visit's work order. What the customer receives is on [How invoicing works](/handbook/invoicing/how-invoicing-works).
+- Certificates are made per visit and filed on that visit's work order. Which visits earn one is on [Certificates](/handbook/invoicing/certificates).
 - Each invoice is its own QuickBooks invoice and its own Zoho invoice, and each payment its own record in both.
 
 ## Related

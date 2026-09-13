@@ -1,6 +1,6 @@
 ---
 title: "Book a work order"
-description: "Use the dispatch calendar to create the job, its lines, and the appointment"
+description: "Use the Service calendar widget to create the job, its lines, and the appointment"
 kind: how-to
 ---
 
@@ -8,7 +8,7 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="zoho-crm, supabase-backend" />
 
-You book from the **Service calendar** widget in Zoho. You click a day, and a side panel asks who the visit is for, what kind of visit it is, the arrival window, the lines, the equipment and the technician, then writes the work order and the appointment for you. The work order's name comes from the engine, so it is never handed out twice.
+You book from the **Service calendar** widget in Zoho. You click a day, and a side panel asks who the visit is for, what kind of visit it is, the arrival window, the lines, the equipment and the technician, then writes the work order and the appointment for you.
 
 ## Before you start
 
@@ -34,7 +34,7 @@ You book from the **Service calendar** widget in Zoho. You click a day, and a si
 
 ## How you know it worked
 
-- Zoho has a work order named like WO458 with its lines, and an appointment under it.
+- Zoho has the work order with its lines, and an appointment under it.
 - The work order shows a **Billing Status** within a minute; see [How booking works](/handbook/booking/how-booking-works).
 - If you asked for an email, the customer has "Your Comfort Hub appointment on …" within a minute.
 - The technician's phone gets a push, if they have the app.
@@ -43,9 +43,13 @@ You book from the **Service calendar** widget in Zoho. You click a day, and a si
 
 A phone agent can book a service visit from the app while on the call. The app writes the job on our side and the engine makes the Zoho copies; the technician picked in the app is on the Zoho appointment. The territory is set only when the customer's property has one.
 
+## The name and the number are two things
+
+The work order's **Name** is minted by the engine, from its own sequence, and it skips any name a work order already holds, so no two work orders share one. **Work Order Number** is a separate field that Zoho fills in with its own numbering; our side reads it and never writes it.
+
 ## An install typed into Zoho
 
-A work order typed straight into Zoho, without the widget, gets its equipment when the job is completed; see [Complete a work order](/handbook/on-site/complete-a-work-order).
+A work order typed straight into Zoho, without the **Service calendar** widget, gets its equipment when the job is completed; see [Complete a work order](/handbook/on-site/complete-a-work-order).
 
 ## Changing lines afterwards
 

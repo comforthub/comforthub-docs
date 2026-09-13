@@ -22,24 +22,23 @@ The invoice email carries a pay link. The customer opens it, sees the invoice, a
     The page shows the invoice number, the amount due, the due date, the items and the balance. A paid, void or draft invoice shows its badge and no way to pay.
   </Step>
   <Step title="Tap Pay invoice">
-    If the invoice allows part payment, an amount box appears first with the balance remaining under it. Helcim's payment window opens over the invoice; the customer pays by card or by bank transfer.
+    When the invoice has **Allow Partial Payment** ticked in Zoho, an amount box appears first with the balance remaining under it. Helcim's payment window opens over the invoice; the customer pays by card or by bank transfer.
   </Step>
   <Step title="Read the result">
-    A **Paid** badge means Helcim approved the card and the engine recorded it; **Partially paid** means something is still owed. **Declined** means the card was refused and the invoice stays Due. A bank transfer shows **Processing** until it clears, days later.
+    A **Paid** badge means Helcim approved the card and the engine recorded it; **Partially paid** means something is still owed. **Declined** means the card was refused and nothing on the invoice changed. A bank transfer shows **Processing** until it clears, days later.
   </Step>
 </Steps>
 
 ## How you know it worked
 
 - The page shows **Paid**, and our copy of the invoice reads Paid with nothing due.
-- Within a few hours the customer has "Payment received for INV…" with the receipt attached, the work order reads Paid in the app and in Zoho, Zoho has one Payment on the invoice, and QuickBooks shows exactly one payment on it, posted by Helcim.
-- The pay link is never guessable: it is a random slug minted by the engine, not a Helcim id.
+- The customer has "Payment received for INV…" with the receipt attached, the work order reads Paid in the app and in Zoho, Zoho has one Payment on the invoice, and QuickBooks shows exactly one payment on it, posted by Helcim.
 
 ## If it did not work
 
 - **Declined**: nothing was recorded. The customer can try again from the same link.
-- The invoice reads Paid here but no receipt has arrived after two hours: Helcim did not post the payment into QuickBooks, so the settle job gave up and the monitor opened an urgent condition in Sentry. See [Act on a Sentry email](/handbook/running/act-on-a-sentry-email).
-- A bank transfer is settled only when it clears. Nothing is wrong while it shows **Processing**.
+- The invoice reads Paid here but no receipt arrives: a step after the payment is failing. It is tried again, and the monitor opens an urgent condition in Sentry once it dies. See [Act on a Sentry email](/handbook/running/act-on-a-sentry-email).
+- A bank transfer pays nothing until it clears. Nothing is wrong while it shows **Processing**.
 
 ## Related
 

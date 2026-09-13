@@ -8,11 +8,11 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="zoho-crm, supabase-backend, quickbooks" />
 
-Converting is one click. You use Zoho's own **Convert** button on the lead. Zoho makes the contact, and the engine makes the account, the property or properties and the QuickBooks customer, and links them all. Setting **Status** to **Converted** by hand does nothing: the engine only watches Zoho's converted flag.
+Converting is one click. You use Zoho's own **Convert** button on the lead. Zoho makes the customer (a contact in Zoho), and the engine makes the account, the property or properties and the QuickBooks customer, and links them all. Setting **Status** to **Converted** by hand does nothing: the engine only watches Zoho's converted flag.
 
 ## Before you start
 
-- The lead has an email and a complete service address: street, city and postal code at least.
+- The lead has an email and a complete service address: street, city and postal code. A lead is kept with less than that, but the set-up refuses to run without all three.
 - If the customer is billed somewhere else, the billing address is filled in completely too. A different billing address makes a second property; a blank or matching one does not.
 
 ## Steps
@@ -31,14 +31,14 @@ Converting is one click. You use Zoho's own **Convert** button on the lead. Zoho
 
 ## How you know it worked
 
-- In **Contacts** there is one contact with the lead's name. It shows a **QBO Id**, an **Account Name**, a **Service Address** and a **Billing Address**.
-- In **Accounts** there is one account with the same name, linked to the contact and to the same addresses.
+- In **Contacts** there is one customer with the lead's name. It shows a **QuickBooks id**, an **Account Name**, a **Service Address** and a **Billing Address**.
+- In **Accounts** there is one account with the same name, linked to the customer and to the same addresses.
 - In **Properties** there is one property per distinct address. Each shows a **Latitude** and **Longitude**, a picture of the house, and a **Major Service Area**.
 - In QuickBooks there is one customer with that name.
 
 ## If it did not work
 
-- **The contact is there but nothing else appeared after a few minutes.** The service address is probably missing its street, city or postal code. The engine refused and recorded why. See [Fix a customer that did not set up properly](/handbook/new-customers/fix-a-customer-that-did-not-set-up).
+- **The customer is there but nothing else appeared after a few minutes.** The service address is missing its street, city or postal code. The engine refused and recorded why. See [Fix a customer that did not set up properly](/handbook/new-customers/fix-a-customer-that-did-not-set-up).
 - **Something appeared but not all of it.** Same page.
 
 ## Good to know
@@ -46,7 +46,7 @@ Converting is one click. You use Zoho's own **Convert** button on the lead. Zoho
 - Converting the same lead twice does nothing the second time. There is never a second account or a second QuickBooks customer for one lead.
 - Two customers can each have a property at the same street. Within one account, the same street is one property: the engine reuses it rather than making a twin.
 - The lead stays in **Leads**, marked converted. It is not moved or deleted.
-- From here on, edit the contact, account and property, not the lead. Changes to the lead after conversion do not reach the customer records.
+- From here on, edit the customer, account and property, not the lead. Changes to the lead after conversion do not reach the customer records.
 
 ## Related
 

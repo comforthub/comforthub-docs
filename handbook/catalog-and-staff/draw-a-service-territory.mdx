@@ -13,7 +13,7 @@ A territory is two things: a record in Zoho with a name, a code and an active fl
 ## Before you start
 
 - Zoho open, on **Service Territories**.
-- A short code for the territory in the same shape as the others (for example TERR-EAST-003).
+- A short code for the territory, in the same shape as the codes already in use.
 - The rough map area agreed, so the developer knows what to draw.
 
 ## Steps
@@ -39,7 +39,7 @@ A territory is two things: a record in Zoho with a name, a code and an active fl
 
 - The **Allowed Time Slots** you tick in Zoho are the arrival windows the territory offers. Zoho owns them: a tick or a clear made in Zoho reaches our side, and nothing on our side changes them.
 - **Is Active** is two-way. Switching it off on either side reaches the other.
-- **Supabase Territory Id** stays empty on a territory you create in Zoho until our side first pushes an edit back; then it fills in. Either way the link is kept on our side.
+- **Supabase Territory Id** stays empty on a territory you create in Zoho until our side first pushes an edit back; then it fills in. The pairing between the two records is kept on our side, not in that field.
 - A property only gets its territory when its address can be placed on the map. An address the map does not know keeps no territory and no picture. Fix the address and the property is tried again, and a nightly sweep retries any property still without a picture.
 - Two overlapping areas: the property goes to the one whose code sorts first.
 

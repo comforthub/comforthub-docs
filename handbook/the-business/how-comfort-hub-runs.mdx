@@ -34,14 +34,14 @@ flowchart LR
 | Warranty | Covered repair | No |
 | Plan visit | A visit the customer's subscription covers | No, logged on the subscription instead |
 
-The work order's lines decide this. Every line is billed to the customer, to warranty, or to the subscription. The job is invoiced only for what is billed to the customer, and a job with nothing billed to the customer never makes an invoice. See [How booking works](/handbook/booking/how-booking-works) for the rule.
+The work order's lines decide this. Every line is billed to the customer, to warranty, or to the subscription, and the job is invoiced only for what is billed to the customer. The rule, and what happens when the lines do not settle it, is on [How invoicing works](/handbook/invoicing/how-invoicing-works).
 
 ## Who does what
 
 - **The office works in Zoho.** Leads, customers, booking, checklists, timesheet approvals, and anything that needs a record edited by hand.
 - **The engine (Supabase) runs in the background.** It mirrors Zoho both ways, makes the billing decision, builds invoices, talks to QuickBooks, sends the emails, and runs the phone. Nobody edits it by hand day to day.
 - **Technicians work in the app.** Their day, the work order, checklists, parts, quotes, hours, time off, the phone and texts.
-- **QuickBooks holds the money.** Customers, items, invoices, payments. It is the one that tells us a payment happened.
+- **QuickBooks holds the books.** Customers, items, invoices, payments. The card processor behind the pay page posts each payment into it; the engine records the same payment and does the paperwork. See [How payments work](/handbook/payments/how-payments-work).
 - **The customer sees email and the pay page.** A booking confirmation, an invoice with a link to pay, and a receipt.
 
 ## The chapters

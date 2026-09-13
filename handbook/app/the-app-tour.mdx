@@ -1,6 +1,6 @@
 ---
 title: "The app tour"
-description: "The three tabs, the Search hub, and where every screen lives"
+description: "The three tabs, the Search tab, and where every screen lives"
 kind: explanation
 ---
 
@@ -8,7 +8,7 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="the-7am-app, supabase-backend" />
 
-The app has three tabs along the bottom: **Home**, **Phone**, and a magnifying glass that opens the **Search** hub. Home is the day. Phone is the line. Everything else in the app lives behind the magnifying glass.
+The app has three tabs along the bottom: **Home**, **Phone**, and a magnifying glass that opens the **Search** tab. Home is the day. Phone is the line. Everything else in the app lives behind the magnifying glass.
 
 ## Home
 
@@ -16,9 +16,9 @@ Home is the technician's day, not a menu. It shows the month, a week strip, and 
 
 A stop card carries the customer's name and the service type. Tap it and it expands to the address, with **Directions** and **Work order**. Tap **Work order** and you are on the job.
 
-## The Search hub
+## The Search tab
 
-Twenty-two rows in five groups, with **Agent** on its own at the top. The hub is the app's table of contents.
+Twenty-two rows in five groups, with **Agent** on its own at the top. The tab is the app's table of contents.
 
 | Group | Rows |
 |---|---|
@@ -29,9 +29,13 @@ Twenty-two rows in five groups, with **Agent** on its own at the top. The hub is
 | **Operations** | **Assets**, **Stock lists**, **Work orders**, **Purchase orders**, **Suppliers** |
 | **You** | **Hours**, **Time off**, **Approvals**, **History**, **Profile** |
 
-**Agent** opens over the whole screen rather than pushing, because it is a conversation you step into and back out of.
+Three rows need a word of their own.
 
-**Approvals** shows only for someone who can approve; everyone else sees four rows under **You**.
+- **Agent** is where you talk to the assistant ([Glossary](/reference/glossary)): ask it to make a change, or ask the equipment manuals a question. It opens over the whole screen rather than pushing, because it is a conversation you step into and back out of.
+- **Route** draws the day's stops on a map in the order you drive them, and lets you reorder them.
+- **Mail** is the queue of replies the assistant has drafted to customer email. You open one, then send it or discard it.
+
+**Approvals** shows only for an admin or a super admin; everyone else sees four rows under **You**.
 
 ### What the numbers next to a row mean
 
@@ -51,15 +55,15 @@ A row with no number has nothing outstanding, which is not the same as having no
 
 ### Typed search
 
-The search box at the bottom of the hub searches across the app at once and groups what it finds: **Contacts**, **Jobs**, **Equipment**, **Tasks**, **Notes**, **Suppliers**, **Messages**, **Voicemail**, **Callbacks** and **Screens**.
+The search box at the bottom of the tab searches across the app at once and groups what it finds: **Contacts**, **Jobs**, **Equipment**, **Tasks**, **Notes**, **Suppliers**, **Messages**, **Voicemail**, **Callbacks** and **Screens**.
 
 Type a customer's surname and you get the person, their job and their equipment in one list. Type a work order number and you get that job. Type part of a serial and you get the equipment. Type a screen's name and you get the screen.
 
 Results appear a moment after you stop typing. Search looks first in what your phone already holds, then asks the engine, so a list that grows a second later is normal.
 
-## What you cannot do from the app
+## Hours, and signing out
 
-**Hours** is empty for the owner. It says the owner does not file hours, which is correct: the owner approves them and does not submit them. Technicians see their pay period there instead.
+**Hours** is empty for the owner, and says so: the owner approves hours and does not file them. Technicians see their pay period there instead; see [File hours and request time off](/handbook/hours/file-hours-and-request-time-off).
 
 Signing out is in **Profile**.
 

@@ -29,7 +29,7 @@ A department's ring length, wait limit and whether it is always open are setting
 5. An open department puts the caller in that department's queue. The department's agents ring for the department's ring length; a task nobody takes falls back to the main queue, where every agent is a target.
 6. While waiting, the caller is offered a callback at the callback interval. A caller who accepts types or confirms a number, and a callback request is filed for the department.
 
-An agent with no department of their own belongs to every active department. The routing script writes one queue per active department, keeps the main queue as the catch-all, and writes the workflow's per-department rule (the department's queue for its ring length, then the main queue). It runs dry by default and reports what it would change; a second write run must find nothing to change.
+An agent with no department of their own belongs to every active department. A developer runs a script that writes TaskRouter's shape from the departments here: one queue per active department, the main queue as the catch-all, and a per-department rule that rings the department's own queue for its ring length and then the main queue.
 
 ## What a call ends as
 

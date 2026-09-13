@@ -33,9 +33,10 @@ A supplier is where we buy parts. Its branches are the counters a technician dri
 
 ## Good to know
 
-- Only the supplier's name and its active flag cross to our side; the branches cross with it, from Zoho to us only.
+- Two fields on the vendor cross, both ways: the supplier's name and its active flag. Nothing else on the vendor record is copied.
+- A branch crosses from Zoho to us only, with its name, address, phone, email and map position. An edit made here never goes back.
 - A branch you remove from the list in Zoho is removed here, unless a purchase order names it; then it stays.
-- A branch's map position (**Branch Latitude** and **Branch Longitude**) is typed by hand in Zoho, not worked out from the address.
+- The picture is the one thing the engine works out from the branch address: it looks the address up on the map to fetch the Street View shot, then saves the picture and nothing else. **Branch Latitude** and **Branch Longitude** stay exactly as they were typed in Zoho.
 
 ## Related
 

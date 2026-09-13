@@ -27,7 +27,7 @@ The engine listens to five Stripe events. Each one is checked against Stripe's s
 | Stripe says | Our side | Zoho |
 |---|---|---|
 | Subscription created | A subscription with the plan, the monthly amount, the covered visits and the term start | A Subscription named after the customer and the plan: Status, Plan, Monthly Amount |
-| Subscription updated (plan changed, paused, past due) | Plan, amount and status follow. Stripe's active or trialing read Active; past due or unpaid read Past Due; paused reads Paused | The same fields follow |
+| Subscription updated (plan changed, paused, past due) | Plan, amount and status follow | The same fields follow; the status each one shows as is on [Statuses](/reference/statuses) |
 | Subscription deleted | Status Canceled, with the cancelled-on date | Status Canceled |
 | Invoice paid | A subscription payment for that Stripe invoice, once; a zero-amount invoice makes none. The Subscription's roll-up is recomputed: Months Paid counts the payments in the current term, Paid This Term adds them up | A Subscription Payment named "Payment" plus the Stripe invoice id, Status Paid, with the amount, the period and the payment date; the Subscription's Months Paid, Paid This Term, Remaining This Term and Last Payment Date |
 | Invoice payment failed | Recorded and left alone: no payment row, no status change. The Past Due status arrives with the subscription update Stripe sends next | Nothing |
@@ -37,27 +37,23 @@ The engine listens to five Stripe events. Each one is checked against Stripe's s
 ## Two rules the engine enforces
 
 - **One live subscription per customer.** The database refuses a second subscription for a customer who already has one switched on. Stripe would have to send one; the engine refuses it, and the failure shows up as an urgent condition in Sentry.
-- **One writer for the Zoho Subscription Payment.** Only the engine's sync push makes the Zoho record, keyed on our payment. The Stripe step writes our payment row and nothing in Zoho, so one paid invoice is one Zoho record. A Subscription Payment in Zoho with no Status or no Amount was not made this way; delete it in Zoho.
+- **One writer for the Zoho Subscription Payment.** Only the engine's sync push makes the Zoho record, keyed on our payment. The Stripe step writes our payment row and nothing in Zoho, so one paid invoice is one Zoho record. A Subscription Payment in Zoho with no Status or no Amount was not made this way.
 
 ## Plan visits
 
-A work order counts as a plan visit when its **Subscription** lookup in Zoho names the customer's subscription and its lines are the plan's covered maintenance products. Those lines are priced at nothing, and a job with no other lines is marked Non-Billable and never invoiced. The billing decision itself is on [How booking works](/handbook/booking/how-booking-works).
+A work order counts as a plan visit when its **Subscription** lookup in Zoho names the customer's subscription and its lines are the plan's covered maintenance products. Those lines are priced at nothing. What that makes of the job's billing is on [How invoicing works](/handbook/invoicing/how-invoicing-works).
 
 The engine rebuilds the Subscription's visit list whenever a plan work order, its lines or its appointment change, and once a day for every subscription. The list shows every completed visit, and for each covered item with nothing completed this term one row saying Scheduled when a job is booked or Available when it is still owed.
 
-The Subscription link on a work order belongs to Zoho. Set it there, as the dispatch calendar does. A link written only on our side is cleared by Zoho's next echo, so the job loses its plan status.
+The Subscription link on a work order belongs to Zoho. Set it there, as the Service calendar does. A link written only on our side is overwritten the next time Zoho sends the work order, and the job loses its plan status.
 
 ## A payment typed into Zoho is refused
 
-Stripe is the only way a subscription payment is made. A Subscription Payment typed into Zoho by hand is refused: nothing is written here, and the refusal says the Zoho record can never sync. Delete it in Zoho. A value typed in Zoho over a field this side owns on a subscription or a subscription payment is refused the same way: a human-review flag names the field and the engine pushes its own value back. See [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
-
-## How to test it
-
-The account holds one live Stripe key and no test-mode key, so a test subscription cannot be billed without charging a real card. Developers use the replay harness in the [backend repo](/reference/repos-and-links) instead, which plays Stripe's events against the production endpoint; it only accepts a customer whose name starts with "Probe", and its cleanup takes back everything it made.
+Stripe is the only way a subscription payment is made. A Subscription Payment typed into Zoho by hand is refused: nothing is written here, and the refusal says the Zoho record can never sync. A value typed in Zoho over a field this side owns on a subscription or a subscription payment is refused the same way: a human-review flag names the field and the engine pushes its own value back. See [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
 
 ## What can go wrong
 
-- Stripe's call is refused (HTTP 401): the endpoint secret in Stripe and the one the engine holds differ. Rotate them together; see [Environments and secrets](/systems/environments-and-secrets).
+- Stripe's call is refused: the endpoint secret in Stripe and the one the engine holds differ. Rotate them together; see [Environments and secrets](/systems/environments-and-secrets).
 - An event names a Stripe product the engine does not know: the event is not applied, and the monitor opens an urgent condition in Sentry. See [Act on a Sentry email](/handbook/running/act-on-a-sentry-email).
 - A paid invoice arrives for a subscription the engine has not seen yet: the payment is retried until the subscription lands.
 - A live plan covers no items: every visit on it would bill as if the customer had no plan, so the engine raises a human-review flag instead. Set the plan's covered items in Zoho.

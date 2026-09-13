@@ -8,15 +8,15 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="zoho-crm, supabase-backend, quickbooks" />
 
-Converting a lead with Zoho's **Convert** button is what sets the customer up everywhere. Zoho makes the contact; the engine sees the lead turn converted and makes everything else, then links it all. Nobody types the customer into QuickBooks or our side.
+Converting a lead with Zoho's **Convert** button is what sets the customer up everywhere. Zoho makes the customer (a contact in Zoho); the engine sees the lead turn converted and makes everything else, then links it all. Nobody types the customer into QuickBooks or our side.
 
 ## What gets created
 
 | Record | Where | What it carries |
 |---|---|---|
-| Contact | Zoho, made by **Convert** | The lead's name, email and phone. The engine adds **Account Name**, **Service Address**, **Billing Address**, **QBO Id** and **Supabase Customer Id** |
+| Customer | Zoho, made by **Convert** | The lead's name, email and phone. The engine adds **Account Name**, **Service Address**, **Billing Address**, **QuickBooks id** and **Supabase Customer Id** |
 | Customer | Our side | Same name, email and phone, and a pointer back to the lead |
-| Account | Zoho and our side | Named after the person, linked to the contact, with the phone. If **Convert** already made one, it is reused |
+| Account | Zoho and our side | Named after the person, linked to the customer, with the phone. If **Convert** already made one, it is reused |
 | Property (service address) | Zoho and our side | The service address, named after the person and the street, linked to the account |
 | Property (billing address) | Zoho and our side | Only when the lead's billing address is complete and differs from the service address |
 | Customer | QuickBooks | Name, email, phone; the service address as the shipping address, the billing address as the billing address |
@@ -30,23 +30,29 @@ A lead that already has its customer is left alone, whoever converts it or how m
 ## What the lead shows afterwards
 
 - Zoho fills **Converted Contact** and **Converted Account** on the lead. Those are the links to the customer records.
-- The engine writes nothing back to a converted lead, and an edit to the lead after conversion goes nowhere: it is not copied to the contact, and it is not pushed to Zoho. Edit the contact, account and property from then on.
+- The engine writes nothing back to a converted lead, and an edit to the lead after conversion goes nowhere: it is not copied to the customer, and it is not pushed to Zoho. Edit the customer, account and property from then on.
 
 ## A lead born on our side
 
 A phone agent who books a visit in the app for a caller nobody has heard of does not type a lead into Zoho. The app saves the lead on our side, the engine pushes it to Zoho, then asks Zoho to convert it, and the same set-up as above follows. The app waits up to 25 seconds for the customer to be ready before it books the visit.
 
-The engine expects the lead's Zoho copy to exist a few seconds after the row does. If it is not there yet, the set-up waits and tries again, at growing intervals, up to ten times; it gives up only when the lead's own push to Zoho has failed for good. If the app times out, it says **Couldn't set the caller up. Check the address, then book again.** Booking again keeps the same lead and asks for the set-up again.
+The set-up needs the lead's Zoho copy. While that copy is not there, the set-up waits and tries again, at growing intervals, up to ten times; it gives up only when the lead's own push to Zoho has failed for good. If the app times out, it says **Couldn't set the caller up. Check the address, then book again.** Booking again keeps the same lead and asks for the set-up again.
+
+## When the set-up does not happen
+
+Every five minutes the monitor looks for a lead that is converted, or that the app asked to convert, and has had no customer for fifteen minutes. Each one becomes a condition you can act on; what to do with it is on [Fix a customer that did not set up properly](/handbook/new-customers/fix-a-customer-that-did-not-set-up).
+
+The same run does two things about it. It asks Zoho for conversions the engine never heard about, because Zoho sends no conversion event of its own, and replays each one it finds. And it queues the set-up again itself, up to twenty-five leads a run, for every lead that has neither a dead letter nor an open review flag against it. A dead letter is a failed job parked instead of retried; a review flag means a person has to decide before anything runs again. Both are in the [Glossary](/reference/glossary).
 
 ## After the conversion
 
 The customer, the account and the properties are ordinary two-way records. An edit on either side reaches the other, and a change to the customer's name, email, phone or addresses reaches QuickBooks too.
 
-If the same record is edited on both sides within a few seconds, the side that pushes last wins and the other edit is lost. Edit one side, wait a few seconds, then the other.
+Edit one side at a time: a push writes every shared field, so an edit made on the other side in the same seconds is overwritten. See [How sync works](/handbook/running/how-sync-works).
 
 ## What the engine refuses
 
-- A service address without a street, a city or a postal code. The province and country are worked out; those three are not. The refusal is recorded as a dead letter and flagged for review; see [Fix a customer that did not set up properly](/handbook/new-customers/fix-a-customer-that-did-not-set-up).
+- A service address without a street, a city or a postal code. The province and country are worked out; those three are not. The refusal becomes a dead letter and is flagged for review; see [Fix a customer that did not set up properly](/handbook/new-customers/fix-a-customer-that-did-not-set-up).
 - A caller with no email cannot be saved as a lead from the app, because Zoho addresses a lead by its email. The agent fills it in on the call.
 
 ## Related

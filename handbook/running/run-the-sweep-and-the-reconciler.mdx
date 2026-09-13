@@ -23,7 +23,7 @@ The sweep compares every synced record on both sides and keeps a list of finding
     In the SQL editor, list the open findings grouped by kind and module. Each row names the record on both sides and, for a field difference, the field with our value and Zoho's. The kinds, and which fix goes with each, are on [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync).
   </Step>
   <Step title="Run the sweep by hand if you cannot wait for the night">
-    On the Actions page, open the **sweep** workflow and click **Run workflow**. Leave the ceiling box at its default. The job goes red when the open findings exceed the ceiling; the findings are still written in full, and the red is the gauge telling you the pile is too big. The sweep and the crosswalk bootstrap share one writer lock, so they never run at the same time: a run started while the other is going waits its turn.
+    On the Actions page, open the **sweep** workflow and click **Run workflow**. Leave the ceiling at its default; the number is on [Scheduled jobs](/reference/scheduled-jobs). The job goes red when the open findings exceed the ceiling; the findings are still written in full, and the red is the gauge telling you the pile is too big. The sweep and the crosswalk bootstrap share one writer lock, so they never run at the same time: a run started while the other is going waits its turn.
   </Step>
   <Step title="Run the reconciler dry">
     Open the **reconcile** workflow and click **Run workflow**. Its four inputs, in words: the mode, **dry-run** or **write**; a module name to limit the run, or blank for every module; the most writes it may make before it refuses to run at all; and a box that prints sample values, which may include customer data, so leave it off unless you need it. Dry, it prints per module how many records it would write and which fields, then "dry run — nothing written". Fields it measured but never writes are listed separately with the reason: a link, or a field we own. Read this list before anything else.
@@ -45,7 +45,6 @@ When a module is switched on with rows here that Zoho has never seen, the **back
 - A finding you opened on purpose appears in the list after a sweep, naming the record, the field, our value and Zoho's.
 - A dry run of the reconciler lists that record under its module with the field, and writes nothing.
 - After the record is put right on either side, the next sweep closes the finding, and the Zoho record was never touched by the sweep.
-- The nightly run is scheduled from GitHub, and GitHub starts it late when busy. The monitor allows eight hours after the scheduled start before it opens a condition; see [Monitor checks](/reference/monitor-checks).
 
 ## If it did not work
 

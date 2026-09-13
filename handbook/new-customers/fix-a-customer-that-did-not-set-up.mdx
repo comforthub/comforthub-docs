@@ -8,7 +8,7 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="zoho-crm, supabase-backend, quickbooks" />
 
-When a lead converts, the engine sets the customer up: a customer here, a QuickBooks customer, an account here and in Zoho, one property per distinct address, and the links between them. When that run stops, the lead is converted but has no customer. The monitor notices and opens a condition; this page is what you do with it. How the set-up is meant to go is on [How a lead becomes a customer](/handbook/new-customers/how-a-lead-becomes-a-customer).
+When a lead converts, the engine sets the customer up: a customer here, a QuickBooks customer, an account here and in Zoho, one property per distinct address, and the links between them. When that run stops, the lead is converted but has no customer. The monitor notices and opens a condition; this page is what you do with it. How the set-up is meant to go, and how the monitor finds a lead it missed, are on [How a lead becomes a customer](/handbook/new-customers/how-a-lead-becomes-a-customer).
 
 ## Before you start
 
@@ -20,15 +20,15 @@ When a lead converts, the engine sets the customer up: a customer here, a QuickB
 
 <Steps>
   <Step title="Read the condition">
-    The monitor checks every five minutes for a lead that is converted, or that the app asked to convert, and has had no customer for fifteen minutes. Each one is a review condition on the Sentry issue, with the lead as the resource. The action text on the condition tells you which of two states you are in: the engine is still working on it (a set-up is queued and it asks you to follow it), or a person must act (a refusal or an uncertain outcome is retained and it asks you to resolve that before redriving). The same check also asks the CRM for conversions the engine never heard about and replays them; one of those shows as "the CRM converted a lead the mirror had not seen" and needs nothing from you unless it stays open.
+    Open the Sentry issue. The condition names one lead, and its action text says which of two states you are in: the engine is still working on it, and asks you to follow the set-up through; or a person must act, and it asks you to clear a refusal or an uncertain outcome before redriving. A third wording says Zoho converted a lead our copy of Zoho had not seen. That one is the check replaying the conversion for you, and it needs nothing from you unless it is still open on the next run.
   </Step>
   <Step title="Read the refusal">
     When a person must act, the set-up died as a dead letter, and the dead letter names the lead and the reason in words. Find it as on [Redrive a dead letter](/handbook/running/redrive-a-dead-letter). The engine refuses for good, without retrying, when:
 
     - the service address is incomplete: street, city and postal code are all required;
     - the lead's own copy in Zoho was never made, because the push that creates it died;
-    - the Zoho lead is gone, or is converted without a contact;
-    - the Zoho contact already names a QuickBooks customer that QuickBooks does not hold, or gains a different one part-way through;
+    - the Zoho lead is gone, or is converted without a customer;
+    - the customer in Zoho already names a QuickBooks customer that QuickBooks does not hold, or gains a different one part-way through;
     - the property in Zoho at that address is already paired with a different property here.
 
     Two reasons mean wait, not act: the lead's Zoho copy is not there yet, and a QuickBooks sync for the customer is still in flight. The engine retries both on its own.
@@ -36,18 +36,18 @@ When a lead converts, the engine sets the customer up: a customer here, a QuickB
   <Step title="Fix the cause where it lives">
     - **Incomplete service address.** Fill in the street, city and postal code on the lead in Zoho and save.
     - **No Zoho copy of the lead.** The lead was born in the app and its push to Zoho died. Fix and redrive that dead letter first; the set-up needs the Zoho lead to exist.
-    - **A record already claimed.** For the QuickBooks case, clear or correct the QuickBooks id on the Zoho contact so it names a customer QuickBooks holds, or none. For the property case, the address is already a property here that is paired with a different Zoho property: put the pair right first, as on [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync).
+    - **A record already claimed.** For the QuickBooks case, clear or correct the QuickBooks id on the customer in Zoho so it names a customer QuickBooks holds, or none. For the property case, the address is already a property here that is paired with a different Zoho property: put the pair right first, as on [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync).
   </Step>
   <Step title="Run the set-up again">
     Redrive the set-up's dead letter with the **redrive** workflow in **write** mode, naming the queue and the message number, as on [Redrive a dead letter](/handbook/running/redrive-a-dead-letter). The set-up reads the lead's current state and picks up what it already made: a customer, account or property that exists is adopted, not duplicated.
 
-    If a human-review flag was raised for the set-up, close it with a note once the cause is fixed; see [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag). While a dead letter or an open flag stands for the lead, the monitor leaves it alone; once neither does, the monitor queues the set-up itself on its next run, up to twenty-five leads a run.
+    If a human-review flag was raised for the set-up, close it with a note once the cause is fixed; see [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag). While a dead letter or an open flag stands for the lead, the monitor leaves it alone; once neither does, it queues the set-up itself on its next run.
   </Step>
 </Steps>
 
 ## How you know it worked
 
-- The lead in Zoho shows its contact and account, and the contact shows an account, a service address, a billing address and the QuickBooks id.
+- The lead in Zoho shows its customer and account, and the customer shows an account, a service address, a billing address and the QuickBooks id.
 - On our side the lead names its customer, and the customer, account and property each exist once.
 - QuickBooks has one customer with that name.
 - The condition recovers on the monitor's next run and the Sentry issue resolves.
@@ -56,7 +56,7 @@ When a lead converts, the engine sets the customer up: a customer here, a QuickB
 
 - **The dead letter came straight back with the same reason.** The cause is not fixed. Re-read the reason; the engine uses the same words every time.
 - **A different reason appeared.** The set-up got further and hit the next problem. Work through the list above again.
-- **The condition stays open with no dead letter and no flag.** A set-up is queued and the worker has not got to it. Check the queue is draining: see [How the monitor works](/handbook/running/how-the-monitor-works).
+- **The condition stays open with no dead letter and no flag.** The set-up is queued and the action worker, which runs the engine's follow-up jobs, has not reached it. The integration ledger shows what the worker has been doing; see [What replaces the audit log](/handbook/running/what-replaces-the-audit-log). A job that is stuck rather than waiting ends as a dead letter, and [Redrive a dead letter](/handbook/running/redrive-a-dead-letter) is how you put it back.
 
 ## Related
 

@@ -8,37 +8,25 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="supabase-backend, zoho-crm, quickbooks, sentry" />
 
-When the engine stops on something rather than guess, it flags the event for a person. The monitor lists every open flag as one review condition per record and operation, titled **A business discrepancy still requires review**; a flag about money whose effect is uncertain is urgent instead, titled **A recorded financial effect remains uncertain**. The condition stays open until you close every flag behind it, and closing is two calls to the ops function: one to see the list, one to close a flag with a note saying why.
+When the engine stops on something rather than guess, it flags the event for a person. The monitor lists every open flag as one review condition per record and operation, titled **A business discrepancy still requires review**; a flag about money whose effect is uncertain is urgent instead, titled **A recorded financial effect remains uncertain**. The condition stays open until you close every flag behind it. Closing takes two requests to [the ops function](/reference/glossary): one to see the list, one to close a flag with a note saying why.
 
 ## Before you start
 
 - The Sentry issue, or the wish to check the list anyway. Under **Additional Data**, the evidence names the operation, one event id, and how many events sit behind the condition.
-- The cron secret for the engine. It lives in the secrets vault under the edge-functions folder; never paste it into a page or a chat.
-- The engine's functions address: the production project's address followed by the functions path. See [Environments and secrets](/systems/environments-and-secrets) for where addresses and keys live.
+- The cron token. It lives in the functions folder of the secrets vault; the folder's name and the header that carries the token are on [Names](/reference/names). Never paste the token into a page or a chat.
+- The engine's functions address. See [Environments and secrets](/systems/environments-and-secrets) for where addresses and keys live.
 
 ## Steps
 
 <Steps>
   <Step title="List the open flags">
-    Call `GET /ops/review` with the cron secret in the `x-cron-token` header. The answer lists every flag a person has not closed, newest first: when it happened, which integration and operation, the record in words where the engine knows them, the error class and detail, and whether the flag is open or already taken.
-
-    ```
-    curl -H "x-cron-token: <the cron secret>" \
-      <the engine's functions address>/ops/review
-    ```
+    Send a request to the review route with the cron token; both are on [Names](/reference/names). The answer lists every flag a person has not closed, newest first: when it happened, which integration and operation, the record in words where the engine knows them, the error class and detail, and whether the flag is open or already taken.
   </Step>
   <Step title="Fix the cause in the system that owns it">
     A flag is a fact about the past; closing it does not retry anything. Put the record right first, in Zoho, QuickBooks or the engine, following [Act on a Sentry email](/handbook/running/act-on-a-sentry-email).
   </Step>
   <Step title="Close the flag with a note">
-    Call `POST /ops/review/<event id>` with a JSON body. The note is required and is the only record of why a person closed it. The status is optional: it defaults to **resolved**; **ignored** says the flag was noise; **in_review** says you have taken it but are not done, which keeps it on the list and keeps the condition open.
-
-    ```
-    curl -X POST -H "x-cron-token: <the cron secret>" \
-      -H "content-type: application/json" \
-      -d '{"status": "resolved", "note": "probe payment, deleted on purpose"}' \
-      <the engine's functions address>/ops/review/<event id>
-    ```
+    Send the closing request to the same route, naming the flagged event. The note is required, and it is the only record of why a person closed it. The status you choose is one of **resolved**, **ignored** or **in review**, and it is **resolved** unless you say otherwise. **Ignored** says the flag was noise. **In review** says you have taken it but are not done, which keeps it on the list and keeps the condition open.
 
     One condition can stand for several events on the same record and operation; the evidence says how many. Close each of them.
   </Step>
@@ -52,7 +40,7 @@ When the engine stops on something rather than guess, it flags the event for a p
 
 ## If it did not work
 
-- **401**: the cron secret is wrong or missing.
+- **401**: the cron token is wrong or missing.
 - **400**: the note is empty, the status is not one of the three, or the id is not an event id.
 - **404**: that id is not a flagged event. Only events the engine flagged can be given a status; the flag itself is never cleared, so the fact that a person was wanted stays on record.
 - **The issue is still open after 15 minutes.** Another event behind the same condition is still open, or a flag was moved to in review rather than closed. List again.

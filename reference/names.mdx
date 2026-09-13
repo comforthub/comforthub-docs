@@ -41,6 +41,7 @@ Use the first column everywhere in the handbook. The other columns exist so you 
 | stock list | (not in Zoho) | app.stock_lists |
 | task, note | (not in Zoho) | operations.tasks, app.notes |
 | app user | (not in Zoho) | app.users |
+| QuickBooks id | QBO Id, on the customer and the product | integrations.external_ids, system qbo |
 | covered items | Covered Items on the subscription | billing.subscription_covered_items |
 | subscription visit | Subscription Visits on the subscription | (kept in the CRM; the engine sweeps it) |
 | checklist question | Checklist Questions on the template | checklists.template_steps |
@@ -126,6 +127,37 @@ The condition keys are the `check` and `condition_id` tags on the Sentry issue; 
 | SENTRY_DSN, SENTRY_ORG_SLUG, SENTRY_OPS_TOKEN, SENTRY_ENVIRONMENT, SENTRY_TRACES_SAMPLE_RATE | /edge-functions | the functions: crash reporting, the notifier, the evaluator's check-in |
 | RELIABILITY_PROBE_SECRET, RELIABILITY_PROBE_IDENTITY | /edge-functions | the uptime check's door on the ops function |
 | SENTRY_PERSONAL_TOKEN | /operator-tools, and a GitHub repository secret | the gate's production-clean check |
+
+## Routes and inputs
+
+The raw forms other pages may not carry. Say the words in the first column and link here.
+
+| We say | The raw name |
+|---|---|
+| the review route, to list the open flags | `GET /ops/review` |
+| the review route, to close one flag | `POST /ops/review/<event id>` |
+| the cron token | the `x-cron-token` header, carrying `CRON_INVOKE_SECRET` |
+| the monitor's header token | the `x-monitor-token` header, carrying `RELIABILITY_PROBE_SECRET` |
+| resolved, ignored, in review | `resolved`, `ignored`, `in_review` |
+| the dead-letter boxes | `action_outbound_dlq`, `sync_outbound_dlq`, `webhook_inbound_dlq` |
+| the functions folder in the vault | `/edge-functions` |
+| the database vault folder | `/postgres-vault` |
+| the GitHub folder | `/github-actions` |
+| the gate's own folder | `/operator-tools` |
+| the Sentry project | `comforthub-backend`, in the `akon-dion` organisation |
+
+## The workflows on GitHub
+
+Each workflow's name is what GitHub shows on the **Actions** page. The boxes are what you fill in when you run it by hand.
+
+| Workflow | Its boxes |
+|---|---|
+| **redrive** | `mode` (`list`, `write`), `queue`, `msg_id`, `max` |
+| **sweep** | `max_findings`, `recovery_scheduled_at` |
+| **reconcile** | `mode` (`dry-run`, `write`), `entity`, `max`, `show_values` |
+| **backfill** | `entity`, `max`, `write` |
+| **backfill-outbound** | `mode` (`list`, `write`), `entity`, `max` |
+| **bootstrap-crosswalk** | `mode` (`dry-run`, `write`), `max_findings`, `max_invalid`, `allow_empty` |
 
 ## Related
 

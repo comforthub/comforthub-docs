@@ -8,23 +8,23 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="supabase-backend, resend" />
 
-Every email the engine sends passes one gate before it leaves. The gate has a short list of addresses that may receive mail. Anything else is not sent to the customer: it is sent to the operator instead, with the intended address written into the subject. This page is the one home for that rule; [Resend](/systems/resend) and [Emails we send](/reference/emails-we-send) point here.
+Every email the engine sends passes one gate before it leaves. The gate has a short list of addresses that may receive mail. Anything else is not sent to the customer: it is sent to the owner instead, with the intended address written into the subject. This page is the one home for that rule; [Resend](/systems/resend) and [Emails we send](/reference/emails-we-send) point here.
 
 ## The three outcomes
 
 | The address is | What happens | How it looks |
 |---|---|---|
-| On the allowed list: the operator's own address | delivered as written | normal subject |
+| On the allowed list: the owner's own address | delivered as written | normal subject |
 | At the test mail domain used for probe records | delivered as written | normal subject |
-| Anything else, including every real customer | delivered to the operator | subject starts with **[TEST → the address it was meant for]** |
+| Anything else, including every real customer | delivered to the owner | subject starts with **[TEST → the address it was meant for]** |
 
 There is no fourth outcome. A mistake in a record, a typo, an old customer email: none of them can reach a person outside the company. The comparison ignores case and surrounding spaces, and an address at the test domain counts only when it is shaped like a real one.
 
 ## A redirected copy is not the customer's email
 
-The engine keeps a ledger of every email it sends, so nothing goes out twice. A copy the gate redirected to the operator is written in that ledger as redirected, not as sent: the customer has not had it, and the send is still owed. What happens next depends on the kind of email.
+The engine keeps a ledger of every email it sends, so nothing goes out twice. A copy the gate redirected to the owner is written in that ledger as redirected, not as sent: the customer has not had it, and the send is still owed. What happens next depends on the kind of email.
 
-- **Reminders** (the day-before appointment reminder, the two invoice reminders) are found again by their daily sweep while the redirected copy stands. The sweep marks the earlier copy superseded and sends again under a fresh ledger entry, and the operator gets another TEST copy, once a day, until the gate lets the real one through.
+- **Reminders** (the day-before appointment reminder, the two invoice reminders) are found again by their daily sweep while the redirected copy stands. The sweep marks the earlier copy superseded and sends again under a fresh ledger entry, and the owner gets another TEST copy, once a day, until the gate lets the real one through.
 - **Everything else** (a booking confirmation, an invoice, a receipt, a quote, an invite) is sent once. A redirected copy counts as done for these, and asking for the same send again sends nothing.
 
 ## Turning it on for real

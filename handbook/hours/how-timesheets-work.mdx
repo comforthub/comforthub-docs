@@ -21,7 +21,7 @@ flowchart LR
   E --> F[App shows Approved or Rejected, technician gets a push]
 ```
 
-1. **The pay calendar comes first.** The year's pay periods and holidays are read from ADP's schedule PDF; see [Load the year's payroll calendar](/handbook/hours/load-the-payroll-calendar). Every timesheet names one period: fourteen days, Monday to Sunday, with a submit-by date a few days after the period ends. The PDF drives payroll, so the engine reads every value on it two independent ways, by position on the page and by reading order, and refuses the calendar unless both agree and the PDF's own totals add up.
+1. **The pay calendar comes first.** The year's pay periods and holidays are read from the schedule PDF published by ADP, the payroll provider; see [Load the year's payroll calendar](/handbook/hours/load-the-payroll-calendar). Every timesheet names one period: fourteen days, Monday to Sunday, with a submit-by date a few days after the period ends. The PDF drives payroll, so the engine reads it two ways and refuses a calendar whose two readings disagree.
 2. **The technician files hours.** One number per day. Each statutory holiday in the period is filled with 8 hours by the app. When the sheet is submitted the engine stamps the overtime: every hour past 80 in the period.
 3. **Submit sends one message.** The sheet and its fourteen day rows go to Zoho as one timesheet. A later change updates that same Zoho record; while a message for the sheet is still waiting, a further change rides along in it instead of queueing another.
 4. **The office decides.** Setting **Status** to Approved or Rejected on the Zoho timesheet, or deciding in the app, is the verdict. The engine stamps the approval time itself when the CRM sends none, and pushes "Timesheet Approved" or "Timesheet Rejected" with the reason to the technician. See [Approve timesheets and time off](/handbook/hours/approve-timesheets-and-time-off).
@@ -33,13 +33,11 @@ The technician's deadline is the day before the submit-by date. Three timed jobs
 
 | When | What happens |
 |---|---|
-| 9 am in summer, 8 am in winter, the day before submit-by | "Timesheet Reminder" push to everyone whose sheet for that period is still a draft or does not exist |
+| 9 am in summer, 8 am in winter, the day before submit-by | "Timesheet Reminder" push to every app user except the super admins whose sheet for that period is still a draft or was never started |
 | 7 pm in summer, 6 pm in winter, the same day | "Urgent: Timesheet Due Now" push to the same people |
-| 1 am in summer, midnight in winter, on the submit-by day | The engine submits every sheet for that period still in draft or rejected, with whatever hours it holds |
+| 1 am in summer, midnight in winter, on the submit-by day | The engine submits every sheet still in draft or rejected whose deadline has passed, with whatever hours it holds, again leaving the super admins out |
 
-The owner is left out of all three: owners approve hours, they do not file them.
-
-The reminder jobs have no once-a-day guard of their own; running one twice by hand sends twice. The timer is the guard, so leave them to it.
+The super admins are left out of all three, the owner among them: they approve hours, they do not file them.
 
 ## Why it works this way
 

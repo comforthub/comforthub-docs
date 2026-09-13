@@ -24,7 +24,7 @@ The timer list is written into the engine's build as a contract, and the monitor
 |---|---|---|
 | Prune cron history | 23:25 | Drops timer run records older than 7 days |
 | Prune queue archives | 23:35 | Drops archived queue messages older than 90 days |
-| Close the call sync window | 00:17 | Stops syncing calls and voicemails older than 30 days |
+| Close the call sync window | 00:17 | Marks calls and voicemails over 30 days old as finished with, so the engine stops pushing them to the CRM and an old record is left alone |
 | Prune integration history | 00:30 | Drops ledger lines older than 13 months and raw vendor notifications older than 90 days |
 | Sweep property imagery | 01:40 | Queues the Street View fetch for properties still missing an image, 25 at a time |
 
@@ -32,20 +32,20 @@ The timer list is written into the engine's build as a contract, and the monitor
 
 | Job | When | What it does |
 |---|---|---|
-| Optimise routes | 01:00 | Queues one route optimisation for the day when any technician holds three or more appointments that day |
-| Subscription visit ledger | 02:20 | Asks the action worker to re-derive every live subscription's visit ledger, two seconds apart |
+| Optimise routes | 01:00 | Puts today's stops in driving order for each technician, so nobody criss-crosses the city. It runs only for a day on which some technician holds three or more appointments |
+| Subscription visit ledger | 02:20 | Asks the action worker to re-derive every live subscription's visit ledger |
 
 ## Reminders and pushes
 
 | Job | When | What it does |
 |---|---|---|
 | Open-appointment push | every hour | Looks for appointments still open an hour past their window. Each technician on it gets one push the first hour it is overdue, then one a day at 08:00 until it is completed |
-| Auto-submit overdue timesheets | 01:00 | On the submit-by day, submits every timesheet for that period still open, with whatever hours it holds |
+| Auto-submit overdue timesheets | 01:00 | Submits every timesheet that is still a draft or was rejected once its submit-by day has arrived, with whatever hours it holds. Super admins are left out |
 | Timesheet reminder, morning | 09:00 | The day before submit-by: "Timesheet Reminder" push to everyone whose sheet for that period is a draft or does not exist |
-| Tasks due soon | 09:00 | Push for tasks due today |
+| Tasks due soon | 09:00 | A push to each task's owner for every task due within the next 24 hours that is not completed or cancelled |
 | Invoice reminders | 10:15 | Queues a reminder email for every emailed, unpaid invoice seven or more days past due: one at seven days, another at twenty-one |
 | Appointment reminders | 16:10 | Queues a reminder email for every scheduled appointment tomorrow whose customer has an email and asked to be notified |
-| Timesheet reminder, evening | 19:00 | The same day, same people: "Urgent: Timesheet Due Now", marked time-sensitive. Running either reminder twice by hand sends twice; the timer is the only guard |
+| Timesheet reminder, evening | 19:00 | The same day, same people: "Urgent: Timesheet Due Now", marked time-sensitive |
 
 ## Digests
 
