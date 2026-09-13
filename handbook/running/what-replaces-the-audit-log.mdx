@@ -1,28 +1,28 @@
 ---
 title: "What replaces the audit log"
-description: "The four records the engine already keeps, what we will not build, and how to answer who changed what and when"
+description: "The records the engine already keeps, what we do not build, and how to answer who changed what and when"
 kind: explanation
 ---
 
 import { Touches } from "/snippets/touches.mdx";
-import { Linear } from "/snippets/linear.mdx";
 
 <Touches systems="supabase-backend, zoho-crm" />
 
-Zoho's audit log answered one question: who changed what, when, from where. Nothing is being built to replace it. The engine already keeps four records that between them answer that question for everything the engine does, and Zoho keeps its own log for the edits people make in the CRM. This page is the decision (<Linear issue="COM-163" />), written 4 September 2026 against the production engine.
+Zoho's audit log answered one question: who changed what, when, from where. Nothing is built to replace it. The engine already keeps five records that between them answer that question for everything the engine does, and Zoho keeps its own log for the edits people make in the CRM.
 
 ## What we keep
 
-| Record | What it answers | Who is named | Size on 4 September 2026 | Kept for |
-|---|---|---|---|---|
-| The integration ledger | Every crossing between the engine and Zoho, QuickBooks, Stripe, Twilio and the mailer: what was sent or received, whether it worked, the error, and whether a person was wanted | the integration and the worker, never a person | 14,896 lines, oldest 18 August 2026 | 13 months, pruned nightly |
-| The webhook log | Every notification that arrived at the door, verbatim, before anything was done with it: which system, which record, which operation, when it was received and when it was processed | the sending system | 5,717 notifications | not pruned |
-| The sent-mail ledger | Every email the engine sent or refused to send: kind, recipient, subject, the provider's id, and the delivery outcome | the recipient | 150 messages, oldest 19 August 2026 | not pruned |
-| The app activity log | What people did in the app: created, completed, assigned, submitted, approved, cancelled, shared | the app user | 943 entries | not pruned |
+| Record | What it answers | Who is named | Kept for |
+|---|---|---|---|
+| The integration ledger | Every crossing between the engine and Zoho, QuickBooks, Stripe, Twilio and the mailer: what was sent or received, whether it worked, the error, and whether a person was wanted | the integration and the worker, never a person | 13 months, pruned nightly |
+| The webhook log | Every notification that arrived at the door, verbatim, before anything was done with it: which system, which record, which operation, when it was received and when it was processed | the sending system | 90 days, pruned nightly |
+| The sent-mail ledger | Every email the engine sent, redirected or refused to send: kind, recipient, subject, the provider's id, and the delivery outcome | the recipient | not pruned |
+| The app activity log | What people did in the app: created, completed, assigned, submitted, approved, cancelled, shared | the app user | not pruned |
+| The monitor's conditions | Every problem the monitor has held open, when it opened, when it recovered, and the Sentry issue it became | the check that found it | not pruned; see [How the monitor works](/handbook/running/how-the-monitor-works) |
 
 Two more places hold the story when something went wrong:
 
-- **Sentry** holds every crash and refusal from every function, grouped so one cause is one issue, with the trace that led there. A dead letter is one grouped issue. On 4 September 2026 the backend project held one unresolved issue.
+- **Sentry** holds every crash and refusal from every function, grouped so one cause is one issue, with the trace that led there. A dead letter is one grouped issue; a condition the monitor opens is one issue too.
 - **The review route** on the ops function lists every event a person still owes a look, and closes each one with a required note. That note is the audit trail for the decision a person made; see [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag).
 
 The thread through all of them is the correlation id: one id per request or queue message, carried into every ledger line, every email and every Sentry event it caused. Given one id, the whole chain is one query.
@@ -30,8 +30,8 @@ The thread through all of them is the correlation id: one id per request or queu
 ## What we do not build
 
 - **No audit table for CRM edits.** Mirroring every Zoho field change into the engine would mean subscribing to every module and every field, synced or not, and storing changes the engine never acts on. Zoho already keeps that log; export it before its horizon passes rather than copy it live.
-- **No second copy of any of the four records.** They are the source. A view that joins them can come later if a real question needs it; nothing so far has.
-- **No screen.** The questions below are answered with a query in the SQL editor, from the query each alert email carries. A screen is a project for when the questions repeat.
+- **No second copy of any of the five records.** They are the source.
+- **No screen.** The questions below are answered with a query in the SQL editor, starting from the evidence on the Sentry issue.
 
 ## How to answer "who changed what, and when"
 
@@ -43,22 +43,23 @@ The thread through all of them is the correlation id: one id per request or queu
 | Did the engine send an email about it, and did it arrive | The sent-mail ledger, filtered by the record id; the delivery outcome comes back from the mailer |
 | Who did it in the app | The app activity log, which names the user |
 | Why did it fail | Sentry, by the correlation id; the issue holds the stack and the trace |
+| What was wrong, and for how long | The monitor's conditions, by the check and the record |
 | Who decided to close the flag, and why | The review note on the event, set through the review route |
 
 ## Why it works this way
 
-- The four records already exist and are already written on every path; the decision costs nothing and removes nothing.
+- The five records already exist and are already written on every path; the decision costs nothing and removes nothing.
 - The app log is the only place a person's name is recorded, and it is the only place one is needed. Everything else is done by a system, and the system is named.
 - Zoho's log covers the one thing the engine cannot see. Copying it would be expensive; reading it in Zoho is free.
 
 ## What can go wrong
 
 - Zoho's log has a horizon. Once it passes, the CRM side of a story is gone. Export it before then if a question is likely to outlive it.
-- The integration ledger is pruned at 13 months. A question older than that has only the webhook log and the sent-mail ledger to go on.
+- The webhook log is pruned at 90 days and the integration ledger at 13 months. A question older than that has only the sent-mail ledger, the app activity log and the monitor's conditions to go on.
 - A change that no record captures is invisible everywhere. The known one is a field edited in Zoho that is not synced: it leaves no trace on our side at all.
 
 ## Related
 
-- [How alerts work](/handbook/running/how-alerts-work)
+- [How the monitor works](/handbook/running/how-the-monitor-works)
 - [Resolve a human-review flag](/handbook/running/resolve-a-human-review-flag)
 - [The Supabase backend](/systems/supabase-backend)

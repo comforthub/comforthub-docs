@@ -1,44 +1,38 @@
 ---
 title: "Email safety"
-description: "Why no email can reach a real customer today, and how to change that on purpose"
+description: "Why no email can reach a real customer, what the redirect looks like, and how to change that on purpose"
 kind: explanation
 ---
 
 import { Touches } from "/snippets/touches.mdx";
-import { Linear } from "/snippets/linear.mdx";
 
 <Touches systems="supabase-backend, resend" />
 
-Every email the engine sends passes one gate before it leaves. The gate has a short list of addresses that may receive mail. Anything else is not sent to the customer: it is sent to the operator instead, with the intended address written into the subject.
+Every email the engine sends passes one gate before it leaves. The gate has a short list of addresses that may receive mail. Anything else is not sent to the customer: it is sent to the operator instead, with the intended address written into the subject. This page is the one home for that rule; [Resend](/systems/resend) and [Emails we send](/reference/emails-we-send) point here.
 
 ## The three outcomes
 
 | The address is | What happens | How it looks |
 |---|---|---|
-| On the allowed list (the operator's own address today) | delivered as written | normal subject |
+| On the allowed list: the operator's own address | delivered as written | normal subject |
 | At the test mail domain used for probe records | delivered as written | normal subject |
 | Anything else, including every real customer | delivered to the operator | subject starts with **[TEST → the address it was meant for]** |
 
-There is no fourth outcome. A mistake in a record, a typo, an old customer email: none of them can reach a person outside the company.
+There is no fourth outcome. A mistake in a record, a typo, an old customer email: none of them can reach a person outside the company. The comparison ignores case and surrounding spaces, and an address at the test domain counts only when it is shaped like a real one.
 
 ## A redirected copy is not the customer's email
 
 The engine keeps a ledger of every email it sends, so nothing goes out twice. A copy the gate redirected to the operator is written in that ledger as redirected, not as sent: the customer has not had it, and the send is still owed. What happens next depends on the kind of email.
 
-- **Reminders** (the day-before appointment reminder, the overdue-invoice reminder) are found again by their daily sweep while the redirected copy stands. The sweep sends again under a fresh ledger entry, and the operator gets another TEST copy, once a day for the invoice reminder and once for the appointment reminder, until the gate lets the real one through.
-- **Everything else** (a booking confirmation, an invoice, a receipt, a quote, an alert) is sent once. A redirected copy counts as done for these, and running the same send again sends nothing.
-
-Watched 5 September 2026 on a probe customer with a made-up address: the appointment reminder went out at 00:05:48 UTC and its ledger row read redirected. The sweep run again three minutes later picked the appointment up, marked the first row superseded, and sent a second copy under a new entry at 00:08:48, half a second end to end; both copies arrived in the operator's inbox with the TEST prefix. The probe invoice emailed earlier that evening was asked to send again at 00:12:29 and declined, because it already carried its sent time. Before that day a redirected reminder was written as sent, so the customer would never have received the real one (<Linear issue="COM-198" />).
-
-## What was seen
-
-On 3 September 2026 every email in the walk went through this gate: booking confirmations, the invoice, the receipt, the quote, the technician's app invite. The ones addressed to a probe address at the test domain arrived there. One addressed to a made-up customer address arrived in the operator's inbox with the TEST prefix, and the engine logged it as delivered to the operator instead.
+- **Reminders** (the day-before appointment reminder, the two invoice reminders) are found again by their daily sweep while the redirected copy stands. The sweep marks the earlier copy superseded and sends again under a fresh ledger entry, and the operator gets another TEST copy, once a day, until the gate lets the real one through.
+- **Everything else** (a booking confirmation, an invoice, a receipt, a quote, an invite) is sent once. A redirected copy counts as done for these, and asking for the same send again sends nothing.
 
 ## Turning it on for real
 
-Widening the allowed list is a decision, not a setting. It lives in the engine's code, and changing it is a code change that goes through review, so nobody can flip it in a hurry. When the day comes, the list is replaced by the rule "any address", and the TEST prefix stops appearing.
+Widening the allowed list is a decision, not a setting. The list and the test domain live in the engine's code, and changing either is a code change that goes through review, so nobody can flip it in a hurry. The monitor treats a redirected send as delivered, so the redirect never shows as a delivery problem.
 
 ## Related
 
 - [Emails we send](/reference/emails-we-send)
+- [Resend](/systems/resend)
 - [How sync works](/handbook/running/how-sync-works)

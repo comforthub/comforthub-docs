@@ -1,6 +1,6 @@
 ---
 title: "How sync works"
-description: "How a change in Zoho reaches Supabase and back, and why it never loops"
+description: "How a change in Zoho reaches the engine and back, why it never loops, and what happens on a delete"
 kind: explanation
 ---
 
@@ -8,27 +8,36 @@ import { Touches } from "/snippets/touches.mdx";
 
 <Touches systems="zoho-crm, supabase-backend" />
 
-Zoho tells the engine when a record changes; the engine tells Zoho when it changes one. Each side keeps a copy, and the rules on [Sync rules by module](/reference/sync-rules-by-module) say which side wins for each field.
+Zoho tells the engine when a record changes; the engine tells Zoho when it changes one. Each side keeps a copy, and the crosswalk pairs each record here with its CRM twin. This page is the one home for the mechanics; the per-module table of owners and delete rules is on [Sync rules by module](/reference/sync-rules-by-module).
 
 ## Zoho to us
 
-Zoho sends a notification for every create, edit and delete in the 27 modules we watch. The engine reads the record back from Zoho and applies it. From Zoho's notification to the change being on our side takes about 1 second; the whole trip is usually 1 to 4 seconds.
-
-The wait is Zoho's, not ours. On 3 September 2026 Zoho held its notifications for 40 seconds to 2½ minutes between 06:38 and 06:47 EDT, then went back to instant. Delivery from Zoho's stamp to our door was 1 second every time, and Zoho's status page showed nothing. Nothing on our side can shorten that.
+Zoho sends a notification for every create, edit and delete in the modules we watch. The notification names the module, the record and the operation, nothing more. The engine writes it to the webhook log, queues it, and the sync worker reads the record back from Zoho and applies it: a create makes a row and a crosswalk pair, an edit sets every mapped field, a delete follows the module's delete policy. A record born in the CRM gets the engine's id written back into its id field on first arrival, so the two sides can always find each other again.
 
 ## Us to Zoho
 
-A change here is queued and pushed within a few seconds. The push writes every shared field of the record, so an edit made in Zoho during those same seconds is overwritten: edit one side at a time.
+A change here to a shared field queues a push, and the sync worker sends it within a minute. The push writes every shared field of the record, plus its subform rows and link lists, so an edit made in Zoho during those same seconds is overwritten: edit one side at a time. A row with no pair yet is created in Zoho on its first push, when the module allows creates from this side.
+
+Two refusals are re-sent on their own. A push refused because the Zoho record is locked is sent once more when the lock lifts. A create refused because a link's target had no pair yet is sent again when that pair arrives.
 
 ## Why it never loops
 
-Every write the sync makes is marked as its own. When Zoho echoes a change we pushed, the engine sees the mark and applies nothing; when we apply a change from Zoho, no push goes back. Seen 3 September 2026: five pushes came back as five silent applies, and one Zoho edit came in as exactly one apply.
+Every write the sync makes is marked as its own, so the trigger that queues pushes ignores it: a change applied from Zoho never pushes back. The other direction is the echo guard. A push provokes a notification carrying what was just written; the engine re-reads the settled record from Zoho, stores a hash of it on the crosswalk, and when the echo arrives the hash matches and nothing is applied. The record is re-read rather than assumed because Zoho normalises what it stores, a picklist's casing or a currency's precision, and a hash of what was sent would miss by exactly those edits.
 
-## When something did not sync
+## Who owns a field
 
-See [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync). The nightly sweep compares both sides and lists every difference; see [Scheduled jobs](/reference/scheduled-jobs).
+Each mapped field has an owner. A CRM-owned field is Zoho's: its value is applied here and the engine never pushes it. An engine-owned field is ours: the engine pushes it, the reconciler never writes it, and on the money modules an edit to it in Zoho is refused and put back, with a human-review flag saying so. A shared field goes both ways: the engine pushes it, an edit in Zoho is applied here, and when the two drift apart the reconciler copies Zoho's value. The owner of every field is on [Sync rules by module](/reference/sync-rules-by-module).
+
+## What a delete does
+
+A delete in Zoho does one of three things, set per module: the row here is marked inactive and its children are left alone; the row and the children it owns are removed; or nothing is written and a human-review flag is raised, because the row records money that changed hands. In the first two cases the crosswalk pair is retired first, with a tombstone that carries the reason, so the delete cannot bounce back out as a second delete and a resurrected record is recognised. Which module does which is on [Sync rules by module](/reference/sync-rules-by-module).
+
+## What the sweep sees
+
+The nightly sweep reads every module in full on both sides and compares them. A module scan in Zoho does not return subform rows or multi-select lookups, so the sweep reads those from their own modules and resolves each link through the crosswalk before it compares. What it finds, and what to do about each kind, is on [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync); how to run it is on [Run the sweep and the reconciler](/handbook/running/run-the-sweep-and-the-reconciler).
 
 ## Related
 
 - [Who is the source of truth](/systems/who-is-the-source-of-truth)
 - [Sync rules by module](/reference/sync-rules-by-module)
+- [Fix a record that did not sync](/handbook/running/fix-a-record-that-did-not-sync)
