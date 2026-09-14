@@ -40,7 +40,9 @@ Every page declares `kind:` in its front matter and is exactly one of these. Nev
 | `reference` | facts to look up, in tables | a plain noun: "Statuses" | `## Related` |
 | `hub` | a landing page of cards | | none |
 
-Copy the matching file from `templates/` to start. A page exists only when it is written. There are no placeholder pages: if a topic is not documented, it is not in the menu.
+Copy the matching file from `templates/` to start.
+
+A topic that is real but not written yet gets a stub, so the gap shows in the menu instead of being forgotten. A stub is front matter with `stub: true` and `tag: "Stub"`, then the `NotWrittenYet` warning from `snippets/not-written-yet.mdx`, and nothing else. It is listed in `docs.json` like any page. The check skips a stub's required sections and fails a stub that carries any other content: the moment you write it, drop `stub: true`. A stub is never a place for notes; a note belongs in the ticket.
 
 ## Linking
 
@@ -88,7 +90,7 @@ These rules come from Diátaxis, the Google and Microsoft style guides, and the 
 2. A page exists but is not in `docs.json`, or `docs.json` lists a page that does not exist.
 3. Template text from the starter kit is still present.
 4. Anything that looks like a key, token, or password is in the docs.
-5. A page is missing the sections its kind requires, or has no `## Related` link.
+5. A page is missing the sections its kind requires, or has no `## Related` link. A stub is exempt, and fails if it carries anything but the stub warning.
 6. A code-shaped name appears outside `reference/names.mdx`.
 7. A banned phrase appears.
 8. A heading is not sentence case.
@@ -101,4 +103,4 @@ A rule the script cannot check is still a rule: one kind per page, plain languag
 
 - Never put keys, tokens, passwords, or customer data in a page. Point to where they live instead.
 - Do not paste code from the project repos. Link to the repo and describe what it does.
-- Do not document what does not exist. No placeholder pages, no "coming soon".
+- Do not document what does not exist. A stub marks a real topic that is owed a page; it is not a page for something that does not exist, and never says "coming soon".

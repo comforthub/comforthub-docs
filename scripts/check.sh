@@ -50,9 +50,16 @@ grep -rn -E 'sk_(live|test)_[A-Za-z0-9]{8,}|eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]
   && say "something above looks like a secret"
 
 # 5. Every page has the sections its kind requires, and ends with Related.
+#    A stub is exempt: it carries 'stub: true', shows the stub warning and nothing else.
 for p in $pages; do
   f=$(front "$p"); b=$(body "$p")
   kind=$(sed -n 's/^kind: *//p' <<<"$f" | tr -d ' ')
+  if has "$f" '^stub: *true *$'; then
+    [ "$(grep -v -E '^\s*$|^import \{ NotWrittenYet \}|^<NotWrittenYet />$' <<<"$b")" = "" ] \
+      || say "$p.mdx is a stub with content; write the page and drop 'stub: true', or keep only the NotWrittenYet warning"
+    continue
+  fi
+  has "$b" 'NotWrittenYet' && say "$p.mdx shows the stub warning but is not marked 'stub: true'"
   case "$kind" in
     how-to)
       has "$b" '^## Before you start' || say "$p.mdx is a how-to with no '## Before you start'"
@@ -118,7 +125,7 @@ done
 
 # 9. No notebook content. A page says what is true, never when it was checked or what is owed.
 #    Each pattern is a regex, case-insensitive, run over front matter and body alike.
-notebook='TODO|\bCOM-[0-9]+\b|linear|NotWrittenYet|\b[0-9]{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) 20[0-9]{2}\b|\b20[0-9]{2}-[0-9]{2}-[0-9]{2}\b|\b[0-9]{1,2}:[0-9]{2}:[0-9]{2}\b|\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b|\b[0-9]{18,19}\b|\bas of\b|at the time of writing|\bcurrently\b|\bnot yet\b|\bfor now\b|\bunverified\b|\bnot verified\b|\bnot measured\b|\bnot checked\b|\bnot exercised\b|\bseen on\b|\btested on\b|\bobserved on\b|\bmeasured on\b|\bpull request\b|\bPR #|\bknown gap\b|\bwill be written\b|\bplanned\b|\bships in\b|^## How this was checked|^## What was done|^## What was seen|\| *(Seen|Tested) *\|'
+notebook='TODO|\bCOM-[0-9]+\b|linear|\b[0-9]{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) 20[0-9]{2}\b|\b20[0-9]{2}-[0-9]{2}-[0-9]{2}\b|\b[0-9]{1,2}:[0-9]{2}:[0-9]{2}\b|\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b|\b[0-9]{18,19}\b|\bas of\b|at the time of writing|\bcurrently\b|\bnot yet\b|\bfor now\b|\bunverified\b|\bnot verified\b|\bnot measured\b|\bnot checked\b|\bnot exercised\b|\bseen on\b|\btested on\b|\bobserved on\b|\bmeasured on\b|\bpull request\b|\bPR #|\bknown gap\b|\bwill be written\b|\bplanned\b|\bships in\b|^## How this was checked|^## What was done|^## What was seen|\| *(Seen|Tested) *\|'
 for p in $pages; do
   hits=$(grep -n -i -E "$notebook" "$p.mdx" || true)
   [ -z "$hits" ] && continue
