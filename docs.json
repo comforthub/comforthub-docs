@@ -70,6 +70,9 @@
               "handbook/on-site/a-visit-in-the-app",
               "handbook/on-site/complete-a-work-order",
               "handbook/on-site/answer-a-checklist",
+              "handbook/on-site/record-equipment",
+              "handbook/on-site/add-parts-and-labour",
+              "handbook/on-site/handle-a-no-show",
               "handbook/on-site/quote-extra-work"
             ]
           },
@@ -95,6 +98,7 @@
             "pages": [
               "handbook/parts/how-ordering-parts-works",
               "handbook/parts/order-stock",
+              "handbook/parts/raise-a-purchase-order",
               "handbook/parts/delete-a-purchase-order",
               "handbook/parts/record-a-return",
               "handbook/parts/how-purchase-order-numbers-work"
@@ -114,9 +118,13 @@
             "group": "Phone and messages",
             "pages": [
               "handbook/phone/how-the-phone-works",
+              "handbook/phone/set-up-a-phone-agent",
               "handbook/phone/change-hours-and-holidays",
               "handbook/phone/reach-an-agent-by-extension",
+              "handbook/phone/handle-voicemail-and-callbacks",
+              "handbook/phone/text-a-customer",
               "handbook/phone/how-card-numbers-stay-out-of-texts-and-transcripts",
+              "handbook/phone/transfer-and-record-calls",
               "handbook/phone/how-a-twilio-error-reaches-the-owner"
             ]
           },
@@ -124,8 +132,11 @@
             "group": "The app, day to day",
             "pages": [
               "handbook/app/the-app-tour",
+              "handbook/app/invite-someone-to-the-app",
               "handbook/app/roles-and-what-they-can-do",
-              "handbook/app/team-messages-and-group-chats"
+              "handbook/app/tasks-and-notes",
+              "handbook/app/team-messages-and-group-chats",
+              "handbook/app/the-assistant"
             ]
           },
           {
@@ -164,10 +175,14 @@
               "systems/supabase-backend",
               "systems/the-7am-app",
               "systems/quickbooks",
+              "systems/pay-page",
               "systems/stripe",
               "systems/twilio",
               "systems/resend",
-              "systems/sentry"
+              "systems/sentry",
+              "systems/the-assistant",
+              "systems/crm-widgets",
+              "systems/website-and-portal"
             ]
           }
         ]
@@ -187,6 +202,7 @@
               "reference/notifications-we-send",
               "reference/scheduled-jobs",
               "reference/monitor-checks",
+              "reference/documents-and-pdfs",
               "reference/repos-and-links"
             ]
           }
@@ -221,70 +237,6 @@
     {
       "source": "/handbook/running/when-an-alert-email-arrives",
       "destination": "/handbook/running/act-on-a-sentry-email"
-    },
-    {
-      "source": "/handbook/on-site/record-equipment",
-      "destination": "/handbook/on-site/complete-a-work-order"
-    },
-    {
-      "source": "/handbook/on-site/add-parts-and-labour",
-      "destination": "/handbook/on-site/a-visit-in-the-app"
-    },
-    {
-      "source": "/handbook/on-site/handle-a-no-show",
-      "destination": "/handbook/on-site/a-visit-in-the-app"
-    },
-    {
-      "source": "/handbook/parts/raise-a-purchase-order",
-      "destination": "/handbook/parts/how-ordering-parts-works"
-    },
-    {
-      "source": "/handbook/phone/set-up-a-phone-agent",
-      "destination": "/systems/twilio"
-    },
-    {
-      "source": "/handbook/phone/handle-voicemail-and-callbacks",
-      "destination": "/handbook/phone/how-the-phone-works"
-    },
-    {
-      "source": "/handbook/phone/text-a-customer",
-      "destination": "/handbook/phone/how-the-phone-works"
-    },
-    {
-      "source": "/handbook/phone/transfer-and-record-calls",
-      "destination": "/handbook/phone/how-the-phone-works"
-    },
-    {
-      "source": "/handbook/app/invite-someone-to-the-app",
-      "destination": "/systems/the-7am-app"
-    },
-    {
-      "source": "/handbook/app/tasks-and-notes",
-      "destination": "/handbook/app/the-app-tour"
-    },
-    {
-      "source": "/handbook/app/the-assistant",
-      "destination": "/handbook/app/the-app-tour"
-    },
-    {
-      "source": "/systems/the-assistant",
-      "destination": "/systems/how-it-all-fits-together"
-    },
-    {
-      "source": "/systems/crm-widgets",
-      "destination": "/systems/how-it-all-fits-together"
-    },
-    {
-      "source": "/systems/website-and-portal",
-      "destination": "/systems/how-it-all-fits-together"
-    },
-    {
-      "source": "/systems/pay-page",
-      "destination": "/handbook/payments/take-a-payment"
-    },
-    {
-      "source": "/reference/documents-and-pdfs",
-      "destination": "/handbook/invoicing/certificates"
     },
     {
       "source": "/handbook/sync-checks/checklist-templates",
